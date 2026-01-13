@@ -1,0 +1,57 @@
+:root{
+  /* Background colors */
+  --bg: #0a0e14;
+  --bg-gradient: linear-gradient(180deg, #0a0e14 0%, #121620 100%);
+  --panel: rgba(255,255,255,0.02);
+  --panel-hover: rgba(255,255,255,0.04);
+  --glass: rgba(255,255,255,0.02);
+  
+  /* Text colors */
+  --fg: #e6eef8;
+  --fg-muted: #8b95a5;
+  --fg-subtle: #5a6270;
+  
+  /* Accent colors */
+  --accent: #10b981;
+  --accent-light: #34d399;
+  --accent-bg: rgba(16, 185, 129, 0.1);
+  
+  /* Status colors */
+  --success: #10b981;
+  --success-bg: rgba(16, 185, 129, 0.1);
+  --warning: #f59e0b;
+  --warning-bg: rgba(245, 158, 11, 0.1);
+  --danger: #ef4444;
+  --danger-bg: rgba(239, 68, 68, 0.1);
+  --info: #3b82f6;
+  --info-bg: rgba(59, 130, 246, 0.1);
+  
+  /* Card colors */
+  --card-bg: rgba(255,255,255,0.03);
+  --card-border: rgba(255,255,255,0.05);
+  --card-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  
+  /* Glassmorphism */
+  --glass-blur: 12px;
+  --glass-border: 1px solid rgba(255,255,255,0.05);
+  
+  /* Spacing */
+  --radius: 16px;
+  --radius-sm: 12px;
+  --radius-lg: 20px;
+  --spacing-xs: 8px;
+  --spacing-sm: 12px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  
+  /* Sidebar */
+  --sidebar-width: 240px;
+  --sidebar-bg: rgba(10, 14, 20, 0.8);
+  --sidebar-item-hover: rgba(255,255,255,0.05);
+  
+  /* Breakpoints */
+  --break-sm: 640px;
+  --break-md: 768px;
+  --break-lg: 1024px;
+}
