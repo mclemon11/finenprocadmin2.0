@@ -53,9 +53,7 @@ export default function AdminDashboard(){
       <div className="grid grid-4">
         {stats.map(s=> (
           <Card key={s.id} className="stat-card">
-            <div className="stat-icon" style={{
-              background: s.changeType === 'positive' ? 'var(--success-bg)' : 'var(--danger-bg)'
-            }}>
+            <div className={`stat-icon stat-icon-${s.changeType}`}>
               {s.icon}
             </div>
             <div className="stat-label">{s.label}</div>

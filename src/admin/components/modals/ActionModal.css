@@ -1,0 +1,116 @@
+.action-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.action-modal {
+  background: var(--card-bg);
+  border: var(--glass-border);
+  border-radius: var(--radius);
+  padding: var(--spacing-xl);
+  max-width: 400px;
+  width: 90%;
+  backdrop-filter: blur(var(--glass-blur));
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.action-modal-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 12px 0;
+  color: var(--fg);
+}
+
+.action-modal-message {
+  font-size: 14px;
+  color: var(--fg-muted);
+  margin: 0 0 16px 0;
+  line-height: 1.5;
+}
+
+.action-modal-textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 12px;
+  border: var(--glass-border);
+  border-radius: var(--radius-sm);
+  background: var(--panel);
+  color: var(--fg);
+  font-family: inherit;
+  font-size: 13px;
+  resize: vertical;
+  margin-bottom: 16px;
+}
+
+.action-modal-textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.action-modal-textarea:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.action-modal-footer {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: flex-end;
+}
+
+.btn-cancel,
+.btn-confirm {
+  padding: 10px 20px;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-cancel {
+  background: var(--panel);
+  color: var(--fg-muted);
+  border: var(--glass-border);
+}
+
+.btn-cancel:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--fg);
+}
+
+.btn-confirm {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+.btn-confirm:hover:not(:disabled) {
+  background: var(--accent);
+  opacity: 0.9;
+}
+
+.btn-cancel:disabled,
+.btn-confirm:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

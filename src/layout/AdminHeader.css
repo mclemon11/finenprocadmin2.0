@@ -1,0 +1,39 @@
+.header-left h1 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--fg);
+}
+
+.header-title-main {
+  opacity: 0.6;
+}
+
+.header-title-badge {
+  padding: 4px 8px;
+  background: var(--accent-bg);
+  color: var(--accent);
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.btn-ghost {
+  background: transparent;
+  border: none;
+  color: var(--fg-muted);
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn-ghost:hover {
+  background: var(--panel);
+  color: var(--fg);
+}

@@ -1,0 +1,24 @@
+.admin-not-authorized {
+  padding: 24px;
+}
+
+.admin-not-authorized h2 {
+  margin: 0 0 12px 0;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.admin-not-authorized p {
+  margin: 8px 0;
+  font-size: 14px;
+}
+
+.admin-not-authorized a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.admin-not-authorized a:hover {
+  text-decoration: underline;
+}

@@ -2,6 +2,7 @@ import React from 'react';
 import { signOut } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { auth } from '../firebase/firebaseConfig';
+import './AdminHeader.css';
 
 export default function AdminHeader({ admin }) {
   const navigate = useNavigate();
@@ -19,15 +20,8 @@ export default function AdminHeader({ admin }) {
     <header className="admin-header">
       <div className="header-left">
         <h1>
-          <span style={{opacity: 0.6}}>FINENPROC</span>
-          <span style={{
-            padding: '4px 8px',
-            background: 'var(--accent-bg)',
-            color: 'var(--accent)',
-            borderRadius: '6px',
-            fontSize: '12px',
-            fontWeight: '600'
-          }}>ADMIN</span>
+          <span className="header-title-main">FINENPROC</span>
+          <span className="header-title-badge">ADMIN</span>
         </h1>
       </div>
       <div className="header-right">

@@ -28,14 +28,14 @@ export default function useAdminAuth() {
         // Debug (mandatory)
         console.log('ADMIN AUTH CHECK', {
           uid,
-          userExists: !!userDoc,
-          role: userDoc?.data()?.role,
-          status: userDoc?.data()?.status,
+          userExists: userDoc.exists(),
+          role: role,
+          status: status,
         });
 
-        const authorizedRoles = ['admin', 'user_admin'];
+        // Permitir acceso solo a admin
         const authorized = Boolean(
-          userDoc.exists() && authorizedRoles.includes(role) && status === 'active'
+          userDoc.exists() && role === 'admin' && status === 'active'
         );
 
         setIsAdmin(authorized);

@@ -1,0 +1,248 @@
+.project-timeline {
+  background: var(--card-bg);
+  border: var(--glass-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.timeline-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-lg) var(--spacing-xl);
+  border-bottom: var(--glass-border);
+  background: rgba(16, 185, 129, 0.05);
+}
+
+.timeline-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--fg);
+}
+
+.add-event-btn {
+  background: var(--accent);
+  color: var(--bg);
+  border: none;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.add-event-btn:hover {
+  background: #0ea472;
+}
+
+.event-form {
+  padding: var(--spacing-xl);
+  border-bottom: var(--glass-border);
+  background: rgba(16, 185, 129, 0.02);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.event-form .form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-md);
+}
+
+.event-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fg);
+}
+
+.event-form input,
+.event-form select,
+.event-form textarea {
+  padding: 10px 12px;
+  border: var(--glass-border);
+  border-radius: var(--radius-sm);
+  background: var(--panel);
+  color: var(--fg);
+  font-size: 14px;
+  font-family: inherit;
+}
+
+.event-form input:focus,
+.event-form select:focus,
+.event-form textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.form-actions {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: flex-end;
+}
+
+.cancel-btn,
+.submit-btn {
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancel-btn {
+  background: var(--panel);
+  border: var(--glass-border);
+  color: var(--fg);
+}
+
+.submit-btn {
+  background: var(--accent);
+  border: none;
+  color: var(--bg);
+}
+
+.cancel-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.submit-btn:hover {
+  background: #0ea472;
+}
+
+.cancel-btn:disabled,
+.submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.timeline-loading,
+.timeline-empty {
+  padding: var(--spacing-xl);
+  text-align: center;
+  color: var(--fg-muted);
+  font-size: 14px;
+}
+
+.timeline-list {
+  padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.timeline-item {
+  display: flex;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.02);
+  border: var(--glass-border);
+  transition: all 0.2s ease;
+}
+
+.timeline-item:hover {
+  background: rgba(16, 185, 129, 0.03);
+  border-color: rgba(16, 185, 129, 0.2);
+}
+
+.timeline-icon {
+  font-size: 24px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(16, 185, 129, 0.1);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.timeline-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.timeline-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--spacing-md);
+}
+
+.timeline-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--fg);
+}
+
+.visibility-badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.badge-investors {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+}
+
+.badge-all {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+
+.badge-admin {
+  background: rgba(107, 114, 128, 0.15);
+  color: #9ca3af;
+}
+
+.timeline-description {
+  margin: 0;
+  font-size: 14px;
+  color: var(--fg-muted);
+  white-space: pre-wrap;
+}
+
+.timeline-meta {
+  display: flex;
+  gap: var(--spacing-md);
+  font-size: 12px;
+  color: var(--fg-subtle);
+}
+
+.timeline-date {
+  font-weight: 600;
+}
+
+.timeline-type {
+  text-transform: capitalize;
+}
+
+@media (max-width: 768px) {
+  .event-form .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .timeline-item {
+    flex-direction: column;
+  }
+
+  .timeline-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+  }
+}

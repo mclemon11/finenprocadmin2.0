@@ -1,0 +1,94 @@
+.usuarios-page {
+  padding: var(--spacing-xl);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: var(--spacing-xl);
+}
+
+.page-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--fg);
+  margin: 0 0 8px 0;
+}
+
+.page-subtitle {
+  font-size: 14px;
+  color: var(--fg-muted);
+  margin: 0;
+}
+
+.usuarios-filters-section {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+  flex-wrap: wrap;
+}
+
+.filter-group {
+  flex: 1;
+  min-width: 200px;
+}
+
+.filter-input,
+.filter-select {
+  width: 100%;
+  padding: 10px 14px;
+  border: var(--glass-border);
+  border-radius: var(--radius-sm);
+  background: var(--panel);
+  color: var(--fg);
+  font-size: 13px;
+  font-family: inherit;
+}
+
+.filter-input:focus,
+.filter-select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.filter-input::placeholder {
+  color: var(--fg-muted);
+}
+
+.usuarios-card {
+  background: var(--card-bg);
+  border: var(--glass-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.card-header {
+  padding: var(--spacing-lg) var(--spacing-xl);
+  border-bottom: var(--glass-border);
+  background: rgba(16, 185, 129, 0.03);
+}
+
+.card-header h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fg);
+}
+
+@media (max-width: 768px) {
+  .usuarios-page {
+    padding: var(--spacing-lg);
+  }
+
+  .page-title {
+    font-size: 24px;
+  }
+
+  .usuarios-filters-section {
+    flex-direction: column;
+  }
+
+  .filter-group {
+    min-width: auto;
+  }
+}

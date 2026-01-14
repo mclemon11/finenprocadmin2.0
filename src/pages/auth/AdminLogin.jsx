@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-import { auth } from '../../firebase/firebaseConfig';
+import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
+import { auth, db } from '../../firebase/firebaseConfig';
+import { useNavigate } from 'react-router-dom';
 import './AdminLogin.css';
 
 export default function AdminLogin(){
@@ -8,15 +10,44 @@ export default function AdminLogin(){
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const validateUserDocument = async (user) => {
+    const userRef = doc(db, 'users', user.uid);
+    const userDoc = await getDoc(userRef);
+    
+    if (!userDoc.exists()) {
+      await signOut(auth);
+      throw new Error('Perfil de usuario no encontrado en Firestore');
+    }
+    
+    const { role, status } = userDoc.data();
+    
+    if (role !== 'admin') {
+      await signOut(auth);
+      throw new Error('No tienes permisos de administrador');
+    }
+    
+    if (status !== 'active') {
+      await signOut(auth);
+      throw new Error('Tu cuenta no está activa');
+    }
+    
+    // Redirigir al dashboard después del login exitoso
+    navigate('/admin', { replace: true });
+    console.log('✓ Login exitoso:', { uid: user.uid, role, status });
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
     try {
-      await signInWithEmailAndPassword(auth, email.trim(), password);
+      const userCredential = await signInWithEmailAndPassword(auth, email.trim(), password);
+      await validateUserDocument(userCredential.user);
     } catch (err) {
       setError(err.message);
+      console.error('Error en login:', err);
     } finally {
       setLoading(false);
     }
@@ -27,9 +58,11 @@ export default function AdminLogin(){
     setError(null);
     try {
       const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
+      const userCredential = await signInWithPopup(auth, provider);
+      await validateUserDocument(userCredential.user);
     } catch (err) {
       setError(err.message);
+      console.error('Error en login Google:', err);
     } finally {
       setLoading(false);
     }
