@@ -10,6 +10,10 @@ export default function useAdminAuth() {
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (currentUser) => {
+      // Important: re-enter loading state on any auth transition.
+      // Prevents route-guard flicker/redirects while Firestore permissions are validated.
+      setLoading(true);
+
       // If no authenticated user, mark as not admin and finish loading
       if (!currentUser) {
         setUserState(null);
@@ -40,11 +44,11 @@ export default function useAdminAuth() {
 
         setIsAdmin(authorized);
         setUserState({ uid, email: currentUser.email, role, status });
-        setLoading(false);
       } catch (err) {
         console.error('useAdminAuth error', err);
         setIsAdmin(false);
         setUserState(null);
+      } finally {
         setLoading(false);
       }
     });

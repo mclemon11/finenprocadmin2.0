@@ -24,8 +24,6 @@ export default function RecargasPage({ adminData }) {
     if (!selectedTopup) return;
     const success = await approveTopup(
       selectedTopup.id,
-      selectedTopup.userId,
-      selectedTopup.amount,
       adminData.uid,
       adminData.email
     );
@@ -61,7 +59,9 @@ export default function RecargasPage({ adminData }) {
 
   const formatDate = (dateString) => {
     if (!dateString) return '-';
-    return new Date(dateString).toLocaleDateString('es-MX');
+    const date = dateString?.toDate ? dateString.toDate() : new Date(dateString);
+    if (Number.isNaN(date.getTime())) return '-';
+    return date.toLocaleDateString('es-MX');
   };
 
   return (
@@ -113,7 +113,7 @@ export default function RecargasPage({ adminData }) {
               <tbody>
                 {topups.map(topup => (
                   <tr key={topup.id}>
-                    <td className="email-cell">{topup.userEmail || 'Email no disponible'}</td>
+                    <td className="email-cell">{topup.userEmail || topup.userId || 'Email no disponible'}</td>
                     <td className="amount-cell">{formatCurrency(topup.amount)}</td>
                     <td>{topup.method || '-'}</td>
                     <td>

@@ -1,4 +1,4 @@
-import { initializeApp } from 'firebase/app';
+import { getApp, getApps, initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
@@ -12,10 +12,21 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
-const app = initializeApp(firebaseConfig);
+// Initialize once and reuse the existing app instance if present (Vite/HMR-safe)
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
+
+// Secondary auth instance used for provisioning (creating) new users from an admin session
+// without switching the currently signed-in admin.
+const PROVISIONING_APP_NAME = 'provisioning';
+const getProvisioningApp = () => {
+  const existing = getApps().find((a) => a.name === PROVISIONING_APP_NAME);
+  return existing || initializeApp(firebaseConfig, PROVISIONING_APP_NAME);
+};
+
+export const getProvisioningAuth = () => getAuth(getProvisioningApp());
 
 // Debug startup: log essential Firebase project info
 try {

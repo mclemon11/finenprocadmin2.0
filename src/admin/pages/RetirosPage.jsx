@@ -7,9 +7,20 @@ import './RetirosPage.css';
 
 export default function RetirosPage({ adminData }) {
   const [filter, setFilter] = useState('all');
+  const [pageSize, setPageSize] = useState(25);
   const [selectedWithdrawal, setSelectedWithdrawal] = useState(null);
   const [actionModal, setActionModal] = useState({ isOpen: false, type: null });
-  const { withdrawals, loading, refetch } = useAdminWithdrawals({ status: filter });
+  const {
+    withdrawals,
+    loading,
+    refetch,
+    counts,
+    page,
+    hasNextPage,
+    nextPage,
+    prevPage,
+    setPageSize: setHookPageSize,
+  } = useAdminWithdrawals({ status: filter, pageSize });
   const { approve: approveWithdrawal, loading: approveLoading } = useApproveWithdrawal();
   const { reject: rejectWithdrawal, loading: rejectLoading } = useRejectWithdrawal();
 
@@ -61,7 +72,9 @@ export default function RetirosPage({ adminData }) {
 
   const formatDate = (dateString) => {
     if (!dateString) return '-';
-    return new Date(dateString).toLocaleDateString('es-MX');
+    const date = dateString?.toDate ? dateString.toDate() : new Date(dateString);
+    if (Number.isNaN(date.getTime())) return '-';
+    return date.toLocaleDateString('es-MX');
   };
 
   return (
@@ -78,14 +91,47 @@ export default function RetirosPage({ adminData }) {
           <button
             key={f.value}
             className={`filter-btn ${filter === f.value ? 'active' : ''}`}
-            onClick={() => setFilter(f.value)}
+            onClick={() => {
+              setFilter(f.value);
+            }}
           >
             {f.label}
             <span className="filter-count">
-              {f.value === 'all' ? withdrawals.length : withdrawals.filter(w => w.status === f.value).length}
+              {f.value === 'all' ? (counts?.all ?? 0) : (counts?.[f.value] ?? 0)}
             </span>
           </button>
         ))}
+      </div>
+
+      <div className="retiros-controls">
+        <div className="retiros-control">
+          <span className="retiros-control-label">Mostrar</span>
+          <select
+            className="retiros-page-size"
+            value={pageSize}
+            onChange={(e) => {
+              const next = Number(e.target.value);
+              setPageSize(next);
+              setHookPageSize(next);
+            }}
+          >
+            <option value={10}>10</option>
+            <option value={25}>25</option>
+            <option value={50}>50</option>
+            <option value={100}>100</option>
+          </select>
+          <span className="retiros-control-label">por página</span>
+        </div>
+
+        <div className="retiros-pagination">
+          <button className="pagination-btn" onClick={prevPage} disabled={loading || page <= 1}>
+            ← Anterior
+          </button>
+          <span className="pagination-status">Página {page}</span>
+          <button className="pagination-btn" onClick={nextPage} disabled={loading || !hasNextPage}>
+            Siguiente →
+          </button>
+        </div>
       </div>
 
       <div className="retiros-card">
@@ -113,7 +159,7 @@ export default function RetirosPage({ adminData }) {
               <tbody>
                 {withdrawals.map(withdrawal => (
                   <tr key={withdrawal.id}>
-                    <td className="email-cell">{withdrawal.userEmail || 'Email no disponible'}</td>
+                    <td className="email-cell">{withdrawal.userEmail || withdrawal.userId || 'Email no disponible'}</td>
                     <td className="amount-cell">{formatCurrency(withdrawal.amount)}</td>
                     <td>{withdrawal.method || '-'}</td>
                     <td>

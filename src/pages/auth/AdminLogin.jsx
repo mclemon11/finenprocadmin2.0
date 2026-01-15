@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../../firebase/firebaseConfig';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './AdminLogin.css';
 
 export default function AdminLogin(){
@@ -88,7 +88,7 @@ export default function AdminLogin(){
         <div className="auth-divider">o</div>
         <button className="btn btn-secondary" onClick={handleGoogle} disabled={loading}>Continuar con Google</button>
         <div className="auth-links">
-          <a href="/register">¿No tienes cuenta? Regístrate</a>
+          <Link to="/register">¿No tienes cuenta? Regístrate</Link>
         </div>
       </div>
     </div>

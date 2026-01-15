@@ -1,42 +1,69 @@
 import React from 'react';
 import Card from '../../components/Card';
+import useDashboardKPIs from '../../admin/hooks/useDashboardKPIs';
 import './AdminDashboard.css';
 
 export default function AdminDashboard(){
+  const { kpis, loading } = useDashboardKPIs();
+
   const stats = [
-    { 
-      id: 'pending_topups', 
-      label: 'Recargas pendientes', 
-      value: '12',
+    {
+      id: 'pending_topups',
+      label: 'Recargas pendientes',
+      value: String(kpis.pendingTopups ?? 0),
       icon: '⏳',
-      change: '+3 desde ayer',
+      change: null,
       changeType: 'positive'
     },
-    { 
-      id: 'approved_topups', 
-      label: 'Recargas aprobadas', 
-      value: '145',
+    {
+      id: 'approved_topups',
+      label: 'Recargas aprobadas',
+      value: String(kpis.approvedTopups ?? 0),
       icon: '✓',
-      change: '+15 esta semana',
+      change: null,
       changeType: 'positive'
     },
-    { 
-      id: 'rejected_topups', 
-      label: 'Recargas rechazadas', 
-      value: '8',
+    {
+      id: 'rejected_topups',
+      label: 'Recargas rechazadas',
+      value: String(kpis.rejectedTopups ?? 0),
       icon: '✕',
-      change: '-2 desde ayer',
+      change: null,
       changeType: 'negative'
     },
-    { 
-      id: 'total_users', 
-      label: 'Usuarios totales', 
-      value: '1,243',
+    {
+      id: 'total_users',
+      label: 'Usuarios totales',
+      value: String(kpis.totalUsers ?? 0),
       icon: '👥',
-      change: '+25 este mes',
+      change: null,
       changeType: 'positive'
     },
   ];
+
+  const formatCurrency = (amount) => new Intl.NumberFormat('es-MX', {
+    style: 'currency',
+    currency: 'MXN'
+  }).format(amount || 0);
+
+  const formatDateTime = (timestamp) => {
+    if (!timestamp) return '-';
+    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+    return date.toLocaleString('es-MX', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short' });
+  };
+
+  if (loading) {
+    return (
+      <div className="admin-dashboard">
+        <div className="dashboard-header">
+          <div>
+            <h1 className="dashboard-title">Cargando…</h1>
+            <p className="dashboard-subtitle">Obteniendo métricas de Firestore</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="admin-dashboard">
@@ -70,11 +97,36 @@ export default function AdminDashboard(){
       <div className="dashboard-section">
         <h3 className="section-title">Actividad reciente</h3>
         <Card>
-          <div className="empty-state">
-            <div className="empty-state-icon">📊</div>
-            <div className="empty-state-title">Sin actividad reciente</div>
-            <div className="empty-state-text">Las transacciones recientes aparecerán aquí</div>
-          </div>
+          {kpis.recentTransactions?.length ? (
+            <div className="table-wrap">
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>Tipo</th>
+                    <th>Monto</th>
+                    <th>Usuario</th>
+                    <th>Fecha</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {kpis.recentTransactions.slice(0, 10).map((tx) => (
+                    <tr key={tx.id}>
+                      <td>{tx.type || 'transfer'}</td>
+                      <td className="amount-cell">{formatCurrency(tx.amount)}</td>
+                      <td>{tx.userEmail || tx.userId || '—'}</td>
+                      <td className="date-cell">{formatDateTime(tx.createdAt)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="empty-state">
+              <div className="empty-state-icon">📊</div>
+              <div className="empty-state-title">Sin actividad reciente</div>
+              <div className="empty-state-text">No hay transacciones recientes en Firestore</div>
+            </div>
+          )}
         </Card>
       </div>
     </div>

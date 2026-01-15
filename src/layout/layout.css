@@ -2,7 +2,7 @@
 .admin-root {
   display: flex;
   min-height: 100vh;
-  background: var(--bg-gradient);
+  background: transparent;
   color: var(--fg);
 }
 

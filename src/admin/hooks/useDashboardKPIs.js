@@ -8,6 +8,7 @@ export default function useDashboardKPIs() {
     activeUsers: 0,
     pendingTopups: 0,
     approvedTopups: 0,
+    rejectedTopups: 0,
     totalTopups: 0,
     pendingWithdrawals: 0,
     activeInvestments: 0,
@@ -33,6 +34,7 @@ export default function useDashboardKPIs() {
       const topups = topupsSnap.docs.map(d => d.data());
       const pendingTopups = topups.filter(t => t.status === 'pending').length;
       const approvedTopups = topups.filter(t => t.status === 'approved').length;
+      const rejectedTopups = topups.filter(t => t.status === 'rejected').length;
       const totalTopups = topups.length;
 
       // Withdrawals
@@ -66,6 +68,7 @@ export default function useDashboardKPIs() {
         activeUsers,
         pendingTopups,
         approvedTopups,
+        rejectedTopups,
         totalTopups,
         pendingWithdrawals,
         activeInvestments,

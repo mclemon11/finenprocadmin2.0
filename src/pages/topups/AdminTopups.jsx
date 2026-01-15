@@ -2,45 +2,20 @@ import React, { useState } from 'react';
 import Card from '../../components/Card';
 import Badge from '../../components/Badge';
 import Modal from '../../components/Modal';
+import { useAdminTopups } from '../../hooks/useAdminTopups';
 import './AdminTopups.css';
 
 export default function AdminTopups(){
-  const [filter, setFilter] = useState('all');
   const [selectedTopup, setSelectedTopup] = useState(null);
-  
-  // Mock data - will be replaced with real data from useAdminTopups hook
-  const mockTopups = [
-    {
-      id: '1',
-      user: { email: 'user@example.com', displayName: 'Juan Pérez' },
-      amount: 500,
-      status: 'pending',
-      createdAt: new Date(),
-      method: { name: 'Transferencia Bancaria', icon: '🏦' }
-    },
-    {
-      id: '2',
-      user: { email: 'maria@example.com', displayName: 'María García' },
-      amount: 1000,
-      status: 'approved',
-      createdAt: new Date(Date.now() - 86400000),
-      method: { name: 'OXXO', icon: '🏪' }
-    },
-    {
-      id: '3',
-      user: { email: 'carlos@example.com', displayName: 'Carlos López' },
-      amount: 250,
-      status: 'rejected',
-      createdAt: new Date(Date.now() - 172800000),
-      method: { name: 'SPEI', icon: '💳' }
-    },
-  ];
 
-  const filters = [
-    { value: 'all', label: 'Todas', count: mockTopups.length },
-    { value: 'pending', label: 'Pendientes', count: 1 },
-    { value: 'approved', label: 'Aprobadas', count: 1 },
-    { value: 'rejected', label: 'Rechazadas', count: 1 },
+  const { allTopups, topups, filters, setFilters, loading, error } = useAdminTopups();
+  const activeFilter = filters.status ? filters.status : 'all';
+
+  const filterTabs = [
+    { value: 'all', label: 'Todas', count: allTopups.length },
+    { value: 'pending', label: 'Pendientes', count: allTopups.filter(t => t.status === 'pending').length },
+    { value: 'approved', label: 'Aprobadas', count: allTopups.filter(t => t.status === 'approved').length },
+    { value: 'rejected', label: 'Rechazadas', count: allTopups.filter(t => t.status === 'rejected').length },
   ];
 
   const getStatusBadge = (status) => {
@@ -71,8 +46,8 @@ export default function AdminTopups(){
   };
 
   const filteredTopups = filter === 'all' 
-    ? mockTopups 
-    : mockTopups.filter(t => t.status === filter);
+    ? topups
+    : topups;
 
   return (
     <div className="admin-topups">
@@ -84,11 +59,11 @@ export default function AdminTopups(){
       </div>
 
       <div className="topups-filters">
-        {filters.map(f => (
+        {filterTabs.map(f => (
           <button
             key={f.value}
-            className={`filter-btn ${filter === f.value ? 'active' : ''}`}
-            onClick={() => setFilter(f.value)}
+            className={`filter-btn ${activeFilter === f.value ? 'active' : ''}`}
+            onClick={() => setFilters.status(f.value === 'all' ? '' : f.value)}
           >
             {f.label}
             <span className="filter-count">{f.count}</span>
@@ -97,7 +72,19 @@ export default function AdminTopups(){
       </div>
 
       <Card className="topups-table-card">
-        {filteredTopups.length > 0 ? (
+        {loading ? (
+          <div className="empty-state">
+            <div className="empty-state-icon">⏳</div>
+            <div className="empty-state-title">Cargando recargas…</div>
+            <div className="empty-state-text">Obteniendo datos de Firestore</div>
+          </div>
+        ) : error ? (
+          <div className="empty-state">
+            <div className="empty-state-icon">⚠️</div>
+            <div className="empty-state-title">Error al cargar</div>
+            <div className="empty-state-text">{error}</div>
+          </div>
+        ) : filteredTopups.length > 0 ? (
           <div className="table-wrap">
             <table className="table">
               <thead>
@@ -115,22 +102,22 @@ export default function AdminTopups(){
                   <tr key={topup.id}>
                     <td>
                       <div className="user-cell">
-                        <div className="user-avatar">{topup.user.displayName[0]}</div>
+                        <div className="user-avatar">{(topup.user?.displayName || topup.user?.email || 'U')[0]}</div>
                         <div>
-                          <div className="user-name">{topup.user.displayName}</div>
-                          <div className="user-email">{topup.user.email}</div>
+                          <div className="user-name">{topup.user?.displayName || 'Sin nombre'}</div>
+                          <div className="user-email">{topup.user?.email || 'Email no disponible'}</div>
                         </div>
                       </div>
                     </td>
                     <td>
                       <div className="method-cell">
-                        <span className="method-icon">{topup.method.icon}</span>
-                        {topup.method.name}
+                        <span className="method-icon">{topup.method?.icon || '💳'}</span>
+                        {topup.method?.name || 'Método no disponible'}
                       </div>
                     </td>
                     <td className="amount-cell">{formatCurrency(topup.amount)}</td>
                     <td>{getStatusBadge(topup.status)}</td>
-                    <td className="date-cell">{formatDate(topup.createdAt)}</td>
+                    <td className="date-cell">{formatDate(topup.createdAt || new Date())}</td>
                     <td>
                       <button 
                         className="btn-ghost btn-sm"
@@ -168,11 +155,11 @@ export default function AdminTopups(){
             </div>
             <div className="detail-row">
               <span className="detail-label">Usuario</span>
-              <span className="detail-value">{selectedTopup.user.displayName}</span>
+              <span className="detail-value">{selectedTopup.user?.displayName || 'Sin nombre'}</span>
             </div>
             <div className="detail-row">
               <span className="detail-label">Email</span>
-              <span className="detail-value">{selectedTopup.user.email}</span>
+              <span className="detail-value">{selectedTopup.user?.email || 'Email no disponible'}</span>
             </div>
             <div className="detail-row">
               <span className="detail-label">Monto</span>
@@ -180,7 +167,7 @@ export default function AdminTopups(){
             </div>
             <div className="detail-row">
               <span className="detail-label">Método</span>
-              <span className="detail-value">{selectedTopup.method.name}</span>
+              <span className="detail-value">{selectedTopup.method?.name || 'Método no disponible'}</span>
             </div>
             <div className="detail-row">
               <span className="detail-label">Estado</span>
@@ -188,7 +175,7 @@ export default function AdminTopups(){
             </div>
             <div className="detail-row">
               <span className="detail-label">Fecha</span>
-              <span className="detail-value">{formatDate(selectedTopup.createdAt)}</span>
+              <span className="detail-value">{formatDate(selectedTopup.createdAt || new Date())}</span>
             </div>
           </div>
           <div className="modal-footer">

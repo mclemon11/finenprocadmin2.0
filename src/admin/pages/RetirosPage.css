@@ -70,6 +70,61 @@
   overflow: hidden;
 }
 
+.retiros-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+  flex-wrap: wrap;
+}
+
+.retiros-control {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.retiros-control-label {
+  font-size: 13px;
+  color: var(--fg-muted);
+}
+
+.retiros-page-size {
+  padding: 8px 10px;
+  border: var(--glass-border);
+  border-radius: var(--radius-sm);
+  background: var(--panel);
+  color: var(--fg);
+}
+
+.retiros-pagination {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.pagination-btn {
+  padding: 8px 12px;
+  border: var(--glass-border);
+  border-radius: var(--radius-sm);
+  background: var(--panel);
+  color: var(--fg);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-status {
+  font-size: 13px;
+  color: var(--fg-muted);
+}
+
 .card-header {
   padding: var(--spacing-lg) var(--spacing-xl);
   border-bottom: var(--glass-border);
@@ -85,6 +140,9 @@
 
 .table-wrapper {
   overflow-x: auto;
+  /* Keep the card from growing indefinitely and breaking the background fade */
+  max-height: 65vh;
+  overflow-y: auto;
 }
 
 .retiros-table {

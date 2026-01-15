@@ -29,8 +29,6 @@ export default function UsuarioDetailDrawer({
     if (!selectedTopup) return;
     const success = await approveTopup(
       selectedTopup.id,
-      user.uid,
-      selectedTopup.amount,
       adminData.uid,
       adminData.email
     );

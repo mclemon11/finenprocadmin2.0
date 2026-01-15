@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { createUserWithEmailAndPassword, signOut } from 'firebase/auth';
+import { createUserWithEmailAndPassword, deleteUser, signOut } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
-import { auth, db } from '../../firebase/firebaseConfig';
-import { useNavigate } from 'react-router-dom';
+import { db, getProvisioningAuth } from '../../firebase/firebaseConfig';
+import useAdminAuth from '../../auth/useAdminAuth';
+import { Link, useNavigate } from 'react-router-dom';
 import './AdminRegister.css';
 
 export default function AdminRegister(){
@@ -12,52 +13,70 @@ export default function AdminRegister(){
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
+  const { loading: authLoading, isAdmin } = useAdminAuth();
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    if (authLoading) return;
+
+    // Security model (matches your Firestore rules): only an existing admin can create admin users.
+    if (!isAdmin) {
+      setError('Solo un administrador puede crear cuentas de administrador. Inicia sesión como admin y vuelve a intentar.');
+      return;
+    }
+
     setLoading(true);
     setError(null);
     setSuccess(false);
     
     let userCredential = null;
+    const provisioningAuth = getProvisioningAuth();
     
     try {
-      // Paso 1: Crear usuario en Firebase Auth
-      userCredential = await createUserWithEmailAndPassword(auth, email.trim(), password);
+      // Paso 1: Crear usuario en Firebase Auth usando una instancia secundaria
+      // (no cambia la sesión del admin actual)
+      userCredential = await createUserWithEmailAndPassword(provisioningAuth, email.trim(), password);
       const user = userCredential.user;
       
       console.log('✓ Usuario creado en Auth:', user.uid);
       
-      // Paso 2: Crear documento en Firestore (CRÍTICO)
+      // Paso 2: Crear documento en Firestore como el admin actual (permitido por reglas)
       try {
         await setDoc(doc(db, 'users', user.uid), {
+          uid: user.uid,
           email: user.email,
           role: 'admin',
           status: 'active',
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString()
-        });
+        }, { merge: true });
         
         console.log('✓ Documento Firestore creado exitosamente');
         setSuccess(true);
+        // Cerrar la sesión de la instancia secundaria para no dejar una sesión abierta en memoria
+        await signOut(provisioningAuth);
+
         // Redirigir al dashboard después del registro exitoso
         setTimeout(() => navigate('/admin', { replace: true }), 1500);
         
       } catch (firestoreError) {
         // Si Firestore falla, eliminar el usuario de Auth (rollback)
         console.error('✗ Error al crear documento Firestore:', firestoreError);
-        await signOut(auth);
-        throw new Error('Error al crear perfil en Firestore. Usuario eliminado de Auth.');
+        try {
+          await deleteUser(user);
+        } catch (deleteErr) {
+          console.error('✗ Error al eliminar usuario recién creado:', deleteErr);
+        }
+        await signOut(provisioningAuth);
+        throw new Error('Error al crear perfil en Firestore. Revisa permisos/reglas.');
       }
       
     } catch (err) {
       console.error('Error en registro:', err);
       setError(err.message || 'Error desconocido en el registro');
-      
-      // Si hay usuario creado pero Firestore falló, cerrar sesión
-      if (userCredential) {
-        await signOut(auth).catch(e => console.error('Error en signOut:', e));
-      }
+
+      // Best-effort cleanup: ensure the secondary auth isn't left signed in
+      await signOut(provisioningAuth).catch(e => console.error('Error en signOut provisioning:', e));
     } finally {
       setLoading(false);
     }
@@ -86,7 +105,7 @@ export default function AdminRegister(){
           <button className="btn btn-primary" type="submit" disabled={loading}>{loading ? 'Registrando…' : 'Registrar'}</button>
         </form>
         <div className="auth-links">
-          <a href="/login">¿Ya tienes cuenta? Inicia sesión</a>
+          <Link to="/login">¿Ya tienes cuenta? Inicia sesión</Link>
         </div>
       </div>
     </div>
