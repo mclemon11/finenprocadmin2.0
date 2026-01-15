@@ -8,12 +8,14 @@ service cloud.firestore {
 
     function isAdmin() {
       return isSignedIn() &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
         (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin','user_admin']) &&
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.status == 'active';
     }
 
     function isModerator() {
       return isSignedIn() &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'moderator' &&
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.status == 'active';
     }
@@ -45,8 +47,20 @@ service cloud.firestore {
       
 			// WALLETS
       match /wallets/{walletId} {
-        allow read: if isSignedIn() && request.auth.uid == uid;
-        allow write: if isAdmin();
+        // Users can read their own wallet; admins can read any wallet.
+        allow read: if isAdmin() || (isSignedIn() && request.auth.uid == uid && walletId == uid);
+
+        // Allow users to create their own wallet once, with an empty balance.
+        // Balance updates remain admin-only.
+        allow create: if isSignedIn()
+          && request.auth.uid == uid
+          && walletId == uid
+          && request.resource.data.keys().hasOnly(['uid', 'balance', 'createdAt', 'updatedAt', 'currency'])
+          && request.resource.data.uid == uid
+          && request.resource.data.balance is number
+          && request.resource.data.balance == 0;
+
+        allow update, delete: if isAdmin();
       }
 
 			// PAYMENT METHODS

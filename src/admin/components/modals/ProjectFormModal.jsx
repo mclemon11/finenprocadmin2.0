@@ -56,10 +56,48 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
       return;
     }
 
+    const isFixed = form.type === 'fixed';
+    const targetAmountNum = isFixed ? Number(form.targetAmount) : null;
+    const minInvestmentNum = isFixed && form.minInvestment !== '' ? Number(form.minInvestment) : null;
+    const maxInvestmentNum = isFixed && form.maxInvestment !== '' ? Number(form.maxInvestment) : null;
+
+    if (isFixed) {
+      if (!Number.isFinite(targetAmountNum) || targetAmountNum <= 0) {
+        setError('El capital objetivo (targetAmount) es obligatorio y debe ser mayor a 0');
+        return;
+      }
+
+      if (minInvestmentNum !== null) {
+        if (!Number.isFinite(minInvestmentNum) || minInvestmentNum <= 0) {
+          setError('La inversión mínima debe ser un número mayor a 0');
+          return;
+        }
+        if (minInvestmentNum > targetAmountNum) {
+          setError('La inversión mínima no puede ser mayor al capital objetivo');
+          return;
+        }
+      }
+
+      if (maxInvestmentNum !== null) {
+        if (!Number.isFinite(maxInvestmentNum) || maxInvestmentNum <= 0) {
+          setError('La inversión máxima debe ser un número mayor a 0');
+          return;
+        }
+        if (maxInvestmentNum > targetAmountNum) {
+          setError('La inversión máxima no puede ser mayor al capital objetivo');
+          return;
+        }
+      }
+
+      if (minInvestmentNum !== null && maxInvestmentNum !== null && minInvestmentNum > maxInvestmentNum) {
+        setError('La inversión mínima no puede ser mayor que la inversión máxima');
+        return;
+      }
+    }
+
     try {
       setSaving(true);
       setError(null);
-      const isFixed = form.type === 'fixed';
       const payload = {
         name: form.name,
         type: form.type,
@@ -67,11 +105,13 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
         riskLevel: form.riskLevel || 'medium',
         expectedROI: form.expectedROI ? Number(form.expectedROI) : null,
         duration: form.durationMonths ? Number(form.durationMonths) : null,
-        status: statusToSet,
-        targetAmount: isFixed ? (form.targetAmount ? Number(form.targetAmount) : null) : null,
+        status: 'draft',
+        targetAmount: isFixed ? targetAmountNum : null,
+        // Support both field names used in different parts of the app.
         totalInvested: 0,
-        minInvestment: isFixed && form.minInvestment ? Number(form.minInvestment) : null,
-        maxInvestment: isFixed && form.maxInvestment ? Number(form.maxInvestment) : null,
+        totalInvestment: 0,
+        minInvestment: isFixed ? minInvestmentNum : null,
+        maxInvestment: isFixed ? maxInvestmentNum : null,
         autoLockOnTarget: isFixed ? true : null,
         drawdown: !isFixed && form.drawdown ? Number(form.drawdown) : null,
         performance: !isFixed && form.performance ? Number(form.performance) : null,

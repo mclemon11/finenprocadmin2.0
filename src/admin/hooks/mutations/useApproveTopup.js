@@ -1,9 +1,13 @@
 import { useState } from 'react';
 import {
+  getDocs,
+  limit,
   doc,
   collection,
   increment,
+  query,
   runTransaction,
+  where,
   serverTimestamp
 } from 'firebase/firestore';
 import { db } from '../../../firebase/firebaseConfig';
@@ -16,6 +20,21 @@ export default function useApproveTopup() {
     try {
       setLoading(true);
       setError(null);
+
+      // Best-effort: find the existing user-created pending transaction for this topup.
+      // This avoids creating duplicates when user app creates /transactions with a random ID.
+      let existingTransactionId = null;
+      try {
+        const txQ = query(
+          collection(db, 'transactions'),
+          where('topupId', '==', topupId),
+          limit(1)
+        );
+        const txSnap = await getDocs(txQ);
+        existingTransactionId = txSnap.docs?.[0]?.id || null;
+      } catch (e) {
+        // ignore lookup errors and fallback to deterministic id
+      }
 
       await runTransaction(db, async (tx) => {
         const topupRef = doc(db, 'topups', topupId);
@@ -38,6 +57,7 @@ export default function useApproveTopup() {
 
         const userId = topupData?.userId;
         const amount = Number(topupData?.amount);
+        const originalTransactionId = topupData?.transactionId || existingTransactionId || null;
         if (!userId) {
           throw new Error('Topup inválido: falta userId');
         }
@@ -47,6 +67,42 @@ export default function useApproveTopup() {
 
         const walletRef = doc(db, 'users', userId, 'wallets', userId);
         const walletSnap = await tx.get(walletRef);
+
+        const originalTxRef = originalTransactionId
+          ? doc(db, 'transactions', originalTransactionId)
+          : null;
+        const originalTxSnap = originalTxRef ? await tx.get(originalTxRef) : null;
+
+        const originalTx = originalTxSnap?.exists() ? originalTxSnap.data() : null;
+        const createdAtValue = originalTx?.createdAt && typeof originalTx.createdAt !== 'string'
+          ? originalTx.createdAt
+          : topupData?.createdAt && typeof topupData.createdAt !== 'string'
+            ? topupData.createdAt
+            : serverTimestamp();
+        const currency = originalTx?.currency || topupData?.currency || 'USD';
+        const methodId = originalTx?.methodId || topupData?.methodId || null;
+        const methodName = originalTx?.methodName || topupData?.methodName || topupData?.method || null;
+        const methodType = originalTx?.methodType || topupData?.methodType || null;
+        const methodDetailsText = originalTx?.methodDetailsText || topupData?.methodDetailsText || null;
+        const proofUrl = originalTx?.proofUrl || topupData?.proofUrl || null;
+        const proofPath = originalTx?.proofPath || topupData?.proofPath || null;
+        const proofFileName = originalTx?.proofFileName || topupData?.proofFileName || null;
+        const proofContentType = originalTx?.proofContentType || topupData?.proofContentType || null;
+        const proofSize = typeof (originalTx?.proofSize ?? topupData?.proofSize) === 'number'
+          ? (originalTx?.proofSize ?? topupData?.proofSize)
+          : null;
+        const description = originalTx?.description || (topupData?.methodName
+          ? `Recarga aprobada (${topupData.methodName})`
+          : 'Recarga aprobada');
+        const reference = originalTx?.reference || topupId;
+        const topupIdValue = originalTx?.topupId || topupId;
+
+        // Create a NEW transaction record for history (do not update the pending one).
+        const historyTxRef = doc(collection(db, 'transactions'));
+
+        // Read the related transaction doc before any writes (Firestore requirement).
+        // Prefer using a stable ID so the status can be updated without duplicates.
+        // All reads are done above; now perform writes.
 
         if (walletSnap.exists()) {
           tx.update(walletRef, {
@@ -66,6 +122,29 @@ export default function useApproveTopup() {
           status: 'approved',
           approvedAt: serverTimestamp(),
           approvedBy: adminUid
+        });
+
+        tx.set(historyTxRef, {
+          userId,
+          amount,
+          currency,
+          methodId,
+          methodName,
+          methodType,
+          methodDetailsText,
+          proofUrl,
+          proofPath,
+          proofFileName,
+          proofContentType,
+          proofSize,
+          type: 'deposit',
+          status: 'approved',
+          description,
+          reference,
+          topupId: topupIdValue,
+          createdAt: createdAtValue,
+          approvedAt: serverTimestamp(),
+          approvedBy: adminUid,
         });
 
         const auditLogRef = doc(collection(db, 'auditLogs'));

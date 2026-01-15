@@ -2,9 +2,12 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import useAdminInvestments from '../hooks/useAdminInvestments';
 import useAdminProjects from '../hooks/useAdminProjects';
+import useApproveInvestment from '../hooks/mutations/useApproveInvestment';
+import useRejectInvestment from '../hooks/mutations/useRejectInvestment';
+import ActionModal from '../components/modals/ActionModal';
 import './InversionesPage.css';
 
-export default function InversionesPage() {
+export default function InversionesPage({ adminData }) {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const initialProject = searchParams.get('projectId') || '';
@@ -13,11 +16,16 @@ export default function InversionesPage() {
   const [filters, setFilters] = useState({ status: 'all', projectId: initialProject, userId: initialUser, search: '' });
 
   const { projects } = useAdminProjects();
-  const { investments, loading, totalAmount } = useAdminInvestments({
+  const { investments, loading, totalAmount, refetch } = useAdminInvestments({
     status: filters.status,
     projectId: filters.projectId || undefined,
     userId: filters.userId || undefined,
   });
+
+  const [selectedInvestment, setSelectedInvestment] = useState(null);
+  const [actionModal, setActionModal] = useState({ isOpen: false, type: null });
+  const { approve: approveInvestment, loading: approveLoading } = useApproveInvestment();
+  const { reject: rejectInvestment, loading: rejectLoading } = useRejectInvestment();
 
   useEffect(() => {
     // Sincroniza filtros con query params para navegar desde otros módulos.
@@ -70,6 +78,35 @@ export default function InversionesPage() {
   const goToProject = (projectId) => {
     if (!projectId) return;
     navigate(`/admin/proyectos?projectId=${projectId}`);
+  };
+
+  const handleApprove = async () => {
+    if (!selectedInvestment) return;
+    const success = await approveInvestment(
+      selectedInvestment.id,
+      adminData?.uid,
+      adminData?.email
+    );
+    if (success) {
+      setActionModal({ isOpen: false, type: null });
+      setSelectedInvestment(null);
+      refetch?.();
+    }
+  };
+
+  const handleReject = async (reason) => {
+    if (!selectedInvestment) return;
+    const success = await rejectInvestment(
+      selectedInvestment.id,
+      reason,
+      adminData?.uid,
+      adminData?.email
+    );
+    if (success) {
+      setActionModal({ isOpen: false, type: null });
+      setSelectedInvestment(null);
+      refetch?.();
+    }
   };
 
   return (
@@ -187,6 +224,30 @@ export default function InversionesPage() {
                     <td className="actions-cell">
                       <button className="link-btn" onClick={() => goToUser(inv.userId)}>Ver usuario</button>
                       <button className="link-btn" onClick={() => goToProject(inv.projectId)} disabled={!inv.projectId}>Ver proyecto</button>
+                      {inv.status === 'pending' && (
+                        <>
+                          <button
+                            className="link-btn"
+                            onClick={() => {
+                              setSelectedInvestment(inv);
+                              setActionModal({ isOpen: true, type: 'approve' });
+                            }}
+                            disabled={approveLoading || rejectLoading}
+                          >
+                            Aprobar
+                          </button>
+                          <button
+                            className="link-btn"
+                            onClick={() => {
+                              setSelectedInvestment(inv);
+                              setActionModal({ isOpen: true, type: 'reject' });
+                            }}
+                            disabled={approveLoading || rejectLoading}
+                          >
+                            Rechazar
+                          </button>
+                        </>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -195,6 +256,21 @@ export default function InversionesPage() {
           </div>
         )}
       </div>
+
+      <ActionModal
+        isOpen={actionModal.isOpen}
+        title={actionModal.type === 'approve' ? 'Aprobar Inversión' : 'Rechazar Inversión'}
+        message={`¿${actionModal.type === 'approve' ? 'Aprobar' : 'Rechazar'} inversión de ${selectedInvestment ? formatCurrency(selectedInvestment.amount) : ''} del usuario ${selectedInvestment?.userEmail || selectedInvestment?.userId}? ${actionModal.type === 'approve' ? 'Se descontará del saldo.' : ''}`}
+        actionLabel={actionModal.type === 'approve' ? 'Aprobar' : 'Rechazar'}
+        showReasonInput={actionModal.type === 'reject'}
+        reasonPlaceholder="Razón del rechazo..."
+        loading={approveLoading || rejectLoading}
+        onConfirm={actionModal.type === 'approve' ? handleApprove : handleReject}
+        onCancel={() => {
+          setActionModal({ isOpen: false, type: null });
+          setSelectedInvestment(null);
+        }}
+      />
     </div>
   );
 }
