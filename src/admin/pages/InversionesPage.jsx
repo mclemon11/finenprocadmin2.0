@@ -35,9 +35,11 @@ export default function InversionesPage() {
     { value: 'cancelled', label: 'Canceladas' },
   ];
 
-  const formatCurrency = (amount) => new Intl.NumberFormat('es-MX', {
+  const formatCurrency = (amount) => new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: 'MXN'
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
   }).format(amount || 0);
 
   const formatDate = (dateString) => {

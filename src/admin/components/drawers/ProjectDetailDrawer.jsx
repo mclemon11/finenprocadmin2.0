@@ -1,30 +1,45 @@
 import React, { useState, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import useAdminInvestments from '../../hooks/useAdminInvestments';
 import useProjectTimeline from '../../hooks/useProjectTimeline';
 import ProjectEditModal from '../modals/ProjectEditModal';
 import ProjectTimeline from '../project/ProjectTimeline';
+import InvestmentDetailDrawer from './InvestmentDetailDrawer';
 import './ProjectDetailDrawer.css';
 
-export default function ProjectDetailDrawer({ project, isOpen, onClose, onRefresh, adminData }) {
-  const [activeTab, setActiveTab] = useState('overview');
+export default function ProjectDetailDrawer({ 
+  project, 
+  isOpen, 
+  onClose, 
+  onRefresh, 
+  adminData,
+  activeTab: externalActiveTab = 'overview',
+  onTabChange = null 
+}) {
+  const [internalActiveTab, setInternalActiveTab] = useState('overview');
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [selectedInvestmentId, setSelectedInvestmentId] = useState(null);
+
+  // Usar activeTab controlado externamente si se proporciona
+  const activeTab = onTabChange ? externalActiveTab : internalActiveTab;
+  const setActiveTab = onTabChange || setInternalActiveTab;
 
   const { investments, loading: invLoading } = useAdminInvestments({ projectId: project?.id });
   const { events, addEvent, refetch: refetchTimeline } = useProjectTimeline(project?.id);
 
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('es-MX', {
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'MXN',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
+      currency: 'USD',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
     }).format(amount || 0);
   };
 
   const formatDate = (timestamp) => {
     if (!timestamp) return '—';
     const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-    return date.toLocaleDateString('es-MX', { 
+    return date.toLocaleDateString('en-US', { 
       year: 'numeric', 
       month: 'short', 
       day: 'numeric' 
@@ -34,7 +49,7 @@ export default function ProjectDetailDrawer({ project, isOpen, onClose, onRefres
   const formatDateTime = (timestamp) => {
     if (!timestamp) return '—';
     const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-    return date.toLocaleString('es-MX', {
+    return date.toLocaleString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
@@ -66,9 +81,9 @@ export default function ProjectDetailDrawer({ project, isOpen, onClose, onRefres
     return { total, active, totalAmount };
   }, [investments]);
 
-  if (!project) return null;
+  if (!project || !isOpen) return null;
 
-  return (
+  const drawerContent = (
     <>
       <div className={`drawer-overlay ${isOpen ? 'open' : ''}`} onClick={onClose}></div>
       <div className={`project-drawer ${isOpen ? 'open' : ''}`}>
@@ -80,10 +95,10 @@ export default function ProjectDetailDrawer({ project, isOpen, onClose, onRefres
             </button>
             <div className="drawer-actions">
               <button className="action-btn secondary" onClick={() => setIsEditOpen(true)}>
-                Editar
+                ✏️ Editar
               </button>
               <button className="action-btn primary" onClick={() => setActiveTab('timeline')}>
-                Publicar evento
+                📢 Publicar evento
               </button>
             </div>
           </div>
@@ -93,19 +108,19 @@ export default function ProjectDetailDrawer({ project, isOpen, onClose, onRefres
               <h1 className="drawer-title">{project.name}</h1>
               <div className="drawer-badges">
                 <span className={`badge type-badge type-${project.type}`}>
-                  {project.type === 'variable' ? 'Variable' : 'Fijo'}
+                  {project.type === 'variable' ? '📊 Variable' : '🎯 Fijo'}
                 </span>
                 <span className={`badge risk-badge risk-${project.riskLevel}`}>
-                  {project.riskLevel === 'low' && 'Riesgo Bajo'}
-                  {project.riskLevel === 'medium' && 'Riesgo Medio'}
-                  {project.riskLevel === 'high' && 'Riesgo Alto'}
+                  {project.riskLevel === 'low' && '🟢 Riesgo Bajo'}
+                  {project.riskLevel === 'medium' && '🟡 Riesgo Medio'}
+                  {project.riskLevel === 'high' && '🔴 Riesgo Alto'}
                 </span>
                 <span className={`badge status-badge status-${project.computedStatus}`}>
-                  {project.computedStatus === 'funded' && 'Funded'}
-                  {project.computedStatus === 'active' && 'Activo'}
-                  {project.computedStatus === 'paused' && 'Pausado'}
-                  {project.computedStatus === 'closed' && 'Cerrado'}
-                  {project.computedStatus === 'draft' && 'Borrador'}
+                  {project.computedStatus === 'funded' && '✅ Funded'}
+                  {project.computedStatus === 'active' && '🟢 Activo'}
+                  {project.computedStatus === 'paused' && '⏸️ Pausado'}
+                  {project.computedStatus === 'closed' && '🔒 Cerrado'}
+                  {project.computedStatus === 'draft' && '📝 Borrador'}
                 </span>
               </div>
               {project.category && (
@@ -115,16 +130,25 @@ export default function ProjectDetailDrawer({ project, isOpen, onClose, onRefres
 
             {project.type === 'fixed' && project.targetAmount && (
               <div className="header-progress">
-                <div className="progress-label">
-                  <span>Capital: {formatCurrency(project.totalInvested)}</span>
+                <div className="progress-header-row">
+                  <span className="progress-label-text">💰 Capital Recaudado</span>
                   <span className="progress-percent">{project.progress || 0}%</span>
-                  <span>Meta: {formatCurrency(project.targetAmount)}</span>
                 </div>
                 <div className="progress-bar-header">
                   <div 
                     className="progress-fill-header" 
                     style={{ width: `${project.progress || 0}%` }}
                   ></div>
+                </div>
+                <div className="progress-stats-row">
+                  <div className="progress-stat">
+                    <span className="stat-label">Recaudado</span>
+                    <span className="stat-value">{formatCurrency(project.totalInvested)}</span>
+                  </div>
+                  <div className="progress-stat">
+                    <span className="stat-label">Meta</span>
+                    <span className="stat-value">{formatCurrency(project.targetAmount)}</span>
+                  </div>
                 </div>
               </div>
             )}
@@ -136,25 +160,25 @@ export default function ProjectDetailDrawer({ project, isOpen, onClose, onRefres
               className={`drawer-tab ${activeTab === 'overview' ? 'active' : ''}`}
               onClick={() => setActiveTab('overview')}
             >
-              Resumen
+              📊 Resumen
             </button>
             <button
               className={`drawer-tab ${activeTab === 'investments' ? 'active' : ''}`}
               onClick={() => setActiveTab('investments')}
             >
-              Inversiones ({investmentStats.total})
+              💼 Inversiones ({investmentStats.total})
             </button>
             <button
               className={`drawer-tab ${activeTab === 'timeline' ? 'active' : ''}`}
               onClick={() => setActiveTab('timeline')}
             >
-              Timeline ({events.length})
+              📅 Timeline ({events.length})
             </button>
             <button
               className={`drawer-tab ${activeTab === 'activity' ? 'active' : ''}`}
               onClick={() => setActiveTab('activity')}
             >
-              Actividad ({activityEvents.length})
+              ⚙️ Actividad ({activityEvents.length})
             </button>
           </div>
         </div>
@@ -199,7 +223,7 @@ export default function ProjectDetailDrawer({ project, isOpen, onClose, onRefres
               {/* Información detallada */}
               <div className="info-sections">
                 <div className="info-section">
-                  <h3 className="section-title">Información General</h3>
+                  <h3 className="section-title">📋 Información General</h3>
                   <div className="info-grid">
                     <div className="info-item">
                       <span className="info-key">Fecha de creación</span>
@@ -210,9 +234,13 @@ export default function ProjectDetailDrawer({ project, isOpen, onClose, onRefres
                       <span className="info-val">{formatDate(project.updatedAt)}</span>
                     </div>
                     <div className="info-item">
-                      <span className="info-key">Estado</span>
+                      <span className="info-key">Moneda base</span>
+                      <span className="info-val">USD 🇺🇸</span>
+                    </div>
+                    <div className="info-item">
+                      <span className="info-key">Estado de inversión</span>
                       <span className="info-val">
-                        {project.investable ? '✅ Abierto a inversiones' : '🔒 Cerrado'}
+                        {project.investable ? '✅ Abierto' : '🔒 Cerrado'}
                       </span>
                     </div>
                   </div>
@@ -220,7 +248,7 @@ export default function ProjectDetailDrawer({ project, isOpen, onClose, onRefres
 
                 {project.type === 'fixed' && (
                   <div className="info-section">
-                    <h3 className="section-title">Configuración Fija</h3>
+                    <h3 className="section-title">⚙️ Configuración Fija</h3>
                     <div className="info-grid">
                       <div className="info-item">
                         <span className="info-key">Capital objetivo</span>
@@ -238,7 +266,11 @@ export default function ProjectDetailDrawer({ project, isOpen, onClose, onRefres
                       )}
                       <div className="info-item">
                         <span className="info-key">Auto-lock al alcanzar meta</span>
-                        <span className="info-val">{project.autoLockOnTarget ? 'Sí' : 'No'}</span>
+                        <span className="info-val">
+                          <span className={`pill ${project.autoLockOnTarget ? 'pill-on' : 'pill-off'}`}>
+                            {project.autoLockOnTarget ? '✓ Activado' : '✗ Desactivado'}
+                          </span>
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -246,17 +278,19 @@ export default function ProjectDetailDrawer({ project, isOpen, onClose, onRefres
 
                 {project.type === 'variable' && (
                   <div className="info-section">
-                    <h3 className="section-title">Métricas Variables</h3>
+                    <h3 className="section-title">📊 Métricas Variables</h3>
                     <div className="metrics-cards">
                       <div className="metric-card performance">
+                        <div className="metric-icon">📈</div>
                         <div className="metric-label">Performance</div>
-                        <div className="metric-value">
+                        <div className="metric-value positive">
                           {project.performance !== undefined ? `${project.performance}%` : '—'}
                         </div>
                       </div>
                       <div className="metric-card drawdown">
+                        <div className="metric-icon">📉</div>
                         <div className="metric-label">Drawdown</div>
-                        <div className="metric-value">
+                        <div className="metric-value negative">
                           {project.drawdown !== undefined ? `${project.drawdown}%` : '—'}
                         </div>
                       </div>
@@ -273,7 +307,7 @@ export default function ProjectDetailDrawer({ project, isOpen, onClose, onRefres
                 <div className="loading-state">Cargando inversiones...</div>
               ) : investments.length === 0 ? (
                 <div className="empty-state">
-                  <div className="empty-icon">📊</div>
+                  <div className="empty-icon">�</div>
                   <div className="empty-title">Sin inversiones</div>
                   <div className="empty-subtitle">Este proyecto aún no tiene inversionistas</div>
                 </div>
@@ -291,7 +325,7 @@ export default function ProjectDetailDrawer({ project, isOpen, onClose, onRefres
                     </thead>
                     <tbody>
                       {investments.map((inv) => (
-                        <tr key={inv.id}>
+                        <tr key={inv.id} onClick={() => setSelectedInvestmentId(inv.id)} className="clickable-row">
                           <td>
                             <div className="investor-cell">
                               <div className="investor-name">{inv.userName || 'Usuario'}</div>
@@ -306,9 +340,9 @@ export default function ProjectDetailDrawer({ project, isOpen, onClose, onRefres
                           </td>
                           <td>
                             <span className={`badge status-badge status-${inv.status}`}>
-                              {inv.status === 'active' && 'Activa'}
-                              {inv.status === 'completed' && 'Completada'}
-                              {inv.status === 'cancelled' && 'Cancelada'}
+                              {inv.status === 'active' && '🟢 Activa'}
+                              {inv.status === 'completed' && '✅ Completada'}
+                              {inv.status === 'cancelled' && '❌ Cancelada'}
                             </span>
                           </td>
                           <td className="date-cell">{formatDate(inv.createdAt)}</td>
@@ -374,6 +408,18 @@ export default function ProjectDetailDrawer({ project, isOpen, onClose, onRefres
         onSuccess={handleEditSuccess}
         onTimelineEvent={handleTimelineEvent}
       />
+
+      <InvestmentDetailDrawer
+        investmentId={selectedInvestmentId}
+        isOpen={!!selectedInvestmentId}
+        onClose={() => setSelectedInvestmentId(null)}
+        onUpdate={() => {
+          onRefresh();
+          const refetch = investments.length > 0 ? () => {} : null;
+        }}
+      />
     </>
   );
+
+  return createPortal(drawerContent, document.body);
 }

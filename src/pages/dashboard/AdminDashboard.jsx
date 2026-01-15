@@ -41,15 +41,17 @@ export default function AdminDashboard(){
     },
   ];
 
-  const formatCurrency = (amount) => new Intl.NumberFormat('es-MX', {
+  const formatCurrency = (amount) => new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: 'MXN'
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
   }).format(amount || 0);
 
   const formatDateTime = (timestamp) => {
     if (!timestamp) return '-';
     const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-    return date.toLocaleString('es-MX', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short' });
+    return date.toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short' });
   };
 
   if (loading) {

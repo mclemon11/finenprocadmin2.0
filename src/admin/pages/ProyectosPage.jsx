@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { updateDoc, doc, serverTimestamp } from 'firebase/firestore';
 import useAdminProjects from '../hooks/useAdminProjects';
@@ -16,6 +16,7 @@ export default function ProyectosPage({ adminData }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
+  const [activeDrawerTab, setActiveDrawerTab] = useState('overview');
   const [filters, setFilters] = useState({
     type: 'all',
     category: 'all',
@@ -23,6 +24,22 @@ export default function ProyectosPage({ adminData }) {
     risk: 'all',
   });
   const [actionLoading, setActionLoading] = useState(null);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    perPage: 20,
+  });
+  const [actionMenuOpen, setActionMenuOpen] = useState(null);
+
+  // Limpiar estado al cerrar drawer y prevenir scroll del body
+  useEffect(() => {
+    if (!isDrawerOpen) {
+      setSelectedProject(null);
+      setActiveDrawerTab('overview');
+      document.body.style.overflow = '';
+    } else {
+      document.body.style.overflow = 'hidden';
+    }
+  }, [isDrawerOpen]);
 
   const handleModalSuccess = () => {
     refetch();
@@ -51,12 +68,12 @@ export default function ProyectosPage({ adminData }) {
 
   const openDetail = (project) => {
     setSelectedProject(project);
+    setActiveDrawerTab('overview');
     setIsDrawerOpen(true);
   };
 
   const closeDrawer = () => {
     setIsDrawerOpen(false);
-    setSelectedProject(null);
   };
 
   const categories = useMemo(() => {
@@ -75,6 +92,23 @@ export default function ProyectosPage({ adminData }) {
     });
   }, [projects, filters]);
 
+  const paginatedProjects = useMemo(() => {
+    const start = (pagination.page - 1) * pagination.perPage;
+    const end = start + pagination.perPage;
+    return filteredProjects.slice(start, end);
+  }, [filteredProjects, pagination]);
+
+  const totalPages = Math.ceil(filteredProjects.length / pagination.perPage);
+
+  const handlePageChange = (newPage) => {
+    setPagination({ ...pagination, page: newPage });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handlePerPageChange = (newPerPage) => {
+    setPagination({ page: 1, perPage: newPerPage });
+  };
+
   const kpis = useMemo(() => {
     const total = projects.length;
     const active = projects.filter((p) => p.computedStatus === 'active').length;
@@ -86,9 +120,11 @@ export default function ProyectosPage({ adminData }) {
   }, [projects]);
 
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('es-MX', {
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'MXN'
+      currency: 'USD',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
     }).format(amount || 0);
   };
 
@@ -123,64 +159,95 @@ export default function ProyectosPage({ adminData }) {
         </div>
       </div>
 
-      <div className="filters-section">
-        <select
-          className="filter-select"
-          value={filters.type}
-          onChange={(e) => setFilters({ ...filters, type: e.target.value })}
-        >
-          <option value="all">Todos los tipos</option>
-          <option value="fixed">Fijos</option>
-          <option value="variable">Variables</option>
-        </select>
+      <div className="filters-bar">
+        <div className="filters-row">
+          <div className="filter-group">
+            <label className="filter-label">Tipo</label>
+            <select
+              className="filter-select"
+              value={filters.type}
+              onChange={(e) => setFilters({ ...filters, type: e.target.value })}
+            >
+              <option value="all">Todos</option>
+              <option value="fixed">Fijos</option>
+              <option value="variable">Variables</option>
+            </select>
+          </div>
 
-        <select
-          className="filter-select"
-          value={filters.category}
-          onChange={(e) => setFilters({ ...filters, category: e.target.value })}
-        >
-          <option value="all">Todas las categorías</option>
-          {categories.filter((c) => c !== 'all').map((cat) => (
-            <option key={cat} value={cat}>{cat}</option>
-          ))}
-        </select>
+          <div className="filter-group">
+            <label className="filter-label">Categoría</label>
+            <select
+              className="filter-select"
+              value={filters.category}
+              onChange={(e) => setFilters({ ...filters, category: e.target.value })}
+            >
+              <option value="all">Todas</option>
+              {categories.filter((c) => c !== 'all').map((cat) => (
+                <option key={cat} value={cat}>{cat}</option>
+              ))}
+            </select>
+          </div>
 
-        <select
-          className="filter-select"
-          value={filters.status}
-          onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-        >
-          <option value="all">Todos los estados</option>
-          <option value="draft">Borrador</option>
-          <option value="active">Activo</option>
-          <option value="paused">Pausado</option>
-          <option value="funded">Funded</option>
-          <option value="closed">Cerrado</option>
-        </select>
+          <div className="filter-group">
+            <label className="filter-label">Estado</label>
+            <select
+              className="filter-select"
+              value={filters.status}
+              onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+            >
+              <option value="all">Todos</option>
+              <option value="draft">Borrador</option>
+              <option value="active">Activo</option>
+              <option value="paused">Pausado</option>
+              <option value="funded">Funded</option>
+              <option value="closed">Cerrado</option>
+            </select>
+          </div>
 
-        <select
-          className="filter-select"
-          value={filters.risk}
-          onChange={(e) => setFilters({ ...filters, risk: e.target.value })}
-        >
-          <option value="all">Todos los riesgos</option>
-          <option value="low">Bajo</option>
-          <option value="medium">Medio</option>
-          <option value="high">Alto</option>
-        </select>
+          <div className="filter-group">
+            <label className="filter-label">Riesgo</label>
+            <select
+              className="filter-select"
+              value={filters.risk}
+              onChange={(e) => setFilters({ ...filters, risk: e.target.value })}
+            >
+              <option value="all">Todos</option>
+              <option value="low">Bajo</option>
+              <option value="medium">Medio</option>
+              <option value="high">Alto</option>
+            </select>
+          </div>
+        </div>
       </div>
 
       <div className="proyectos-card">
         <div className="card-header">
-          <h3>{filteredProjects.length} proyectos</h3>
+          <div className="card-header-left">
+            <h3>{filteredProjects.length} proyectos encontrados</h3>
+          </div>
+          <div className="card-header-right">
+            <label className="per-page-label">
+              Mostrar:
+              <select
+                className="per-page-select"
+                value={pagination.perPage}
+                onChange={(e) => handlePerPageChange(Number(e.target.value))}
+              >
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+                <option value={50}>50</option>
+              </select>
+            </label>
+          </div>
         </div>
         {loading ? (
           <div className="loading-state">Cargando proyectos...</div>
         ) : filteredProjects.length === 0 ? (
           <div className="empty-state">No hay proyectos con estos filtros</div>
         ) : (
-          <div className="table-wrapper">
-            <table className="proyectos-table">
+          <>
+            <div className="table-wrapper">
+              <table className="proyectos-table">
                 <thead>
                   <tr>
                     <th>Proyecto</th>
@@ -188,11 +255,11 @@ export default function ProyectosPage({ adminData }) {
                     <th>Riesgo</th>
                     <th>Estado</th>
                     <th>Capital / Métricas</th>
-                    <th>Acciones</th>
+                    <th className="actions-header">Acciones</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredProjects.map((p) => (
+                  {paginatedProjects.map((p) => (
                     <tr key={p.id} className={p.id === preselectProject ? 'highlight' : ''}>
                       <td>
                         <div className="cell-title">{p.name || 'Proyecto sin nombre'}</div>
@@ -222,7 +289,7 @@ export default function ProyectosPage({ adminData }) {
                       <td>
                         {p.type === 'fixed' ? (
                           <div className="progress-col">
-                            <div className="progress-top">{p.totalInvested ? `MXN ${p.totalInvested}` : 'Sin inversiones'}</div>
+                            <div className="progress-top">{p.totalInvested ? `$${p.totalInvested} USD` : 'Sin inversiones'}</div>
                             {p.targetAmount ? (
                               <div className="progress-bar">
                                 <div className="progress-fill" style={{ width: `${p.progress || 0}%` }}></div>
@@ -231,7 +298,7 @@ export default function ProyectosPage({ adminData }) {
                               <div className="cell-subtle">Sin target definido</div>
                             )}
                             {p.targetAmount && (
-                              <div className="progress-foot">{p.progress || 0}% de MXN {p.targetAmount}</div>
+                              <div className="progress-foot">{p.progress || 0}% de ${p.targetAmount} USD</div>
                             )}
                           </div>
                         ) : (
@@ -242,44 +309,129 @@ export default function ProyectosPage({ adminData }) {
                         )}
                       </td>
                       <td className="actions-cell">
-                        <button className="link-btn primary-link" onClick={() => openDetail(p)}>Ver detalle</button>
-                        <button className="link-btn" onClick={() => goToInvestments(p.id)}>Ver inversiones</button>
-                        {!p.investable && <span className="cell-subtle">Bloqueado para nuevas inversiones</span>}
-                        {p.computedStatus === 'draft' && (
-                          <button className="link-btn" disabled={!!actionLoading} onClick={() => handleStatusChange(p.id, 'active')}>
-                            Activar
+                        <div className="actions-wrapper">
+                          <button
+                            className="action-btn-icon"
+                            onClick={() => openDetail(p)}
+                            title="Ver detalle"
+                          >
+                            👁️
                           </button>
-                        )}
-                        {p.computedStatus === 'active' && (
-                          <>
-                            <button className="link-btn" disabled={!!actionLoading} onClick={() => handleStatusChange(p.id, 'paused')}>
-                              Pausar
+                          <div className="action-menu-wrapper">
+                            <button
+                              className="action-menu-btn"
+                              onClick={() => setActionMenuOpen(actionMenuOpen === p.id ? null : p.id)}
+                              title="Más acciones"
+                            >
+                              ⋮
                             </button>
-                            <button className="link-btn" disabled={!!actionLoading} onClick={() => handleStatusChange(p.id, 'closed')}>
-                              Cerrar
-                            </button>
-                          </>
-                        )}
-                        {p.computedStatus === 'paused' && (
-                          <button className="link-btn" disabled={!!actionLoading} onClick={() => handleStatusChange(p.id, 'active')}>
-                            Reanudar
-                          </button>
-                        )}
-                        {p.computedStatus === 'funded' && (
-                          <button className="link-btn" disabled={!!actionLoading} onClick={() => handleStatusChange(p.id, 'closed')}>
-                            Cerrar
-                          </button>
-                        )}
-                        {p.computedStatus === 'closed' && <span className="cell-subtle">Cerrado</span>}
+                            {actionMenuOpen === p.id && (
+                              <div className="action-menu">
+                                <button
+                                  className="action-menu-item"
+                                  onClick={() => {
+                                    goToInvestments(p.id);
+                                    setActionMenuOpen(null);
+                                  }}
+                                >
+                                  Ver inversiones
+                                </button>
+                                {p.computedStatus === 'draft' && (
+                                  <button
+                                    className="action-menu-item"
+                                    disabled={!!actionLoading}
+                                    onClick={() => {
+                                      handleStatusChange(p.id, 'active');
+                                      setActionMenuOpen(null);
+                                    }}
+                                  >
+                                    ✓ Activar
+                                  </button>
+                                )}
+                                {p.computedStatus === 'active' && (
+                                  <>
+                                    <button
+                                      className="action-menu-item"
+                                      disabled={!!actionLoading}
+                                      onClick={() => {
+                                        handleStatusChange(p.id, 'paused');
+                                        setActionMenuOpen(null);
+                                      }}
+                                    >
+                                      ⏸ Pausar
+                                    </button>
+                                    <button
+                                      className="action-menu-item danger"
+                                      disabled={!!actionLoading}
+                                      onClick={() => {
+                                        handleStatusChange(p.id, 'closed');
+                                        setActionMenuOpen(null);
+                                      }}
+                                    >
+                                      🔒 Cerrar
+                                    </button>
+                                  </>
+                                )}
+                                {p.computedStatus === 'paused' && (
+                                  <button
+                                    className="action-menu-item"
+                                    disabled={!!actionLoading}
+                                    onClick={() => {
+                                      handleStatusChange(p.id, 'active');
+                                      setActionMenuOpen(null);
+                                    }}
+                                  >
+                                    ▶ Reanudar
+                                  </button>
+                                )}
+                                {p.computedStatus === 'funded' && (
+                                  <button
+                                    className="action-menu-item danger"
+                                    disabled={!!actionLoading}
+                                    onClick={() => {
+                                      handleStatusChange(p.id, 'closed');
+                                      setActionMenuOpen(null);
+                                    }}
+                                  >
+                                    🔒 Cerrar
+                                  </button>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        </div>
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-          )}
-      </div>
 
+            {/* Paginación */}
+            {totalPages > 1 && (
+              <div className="pagination">
+                <button
+                  className="pagination-btn"
+                  onClick={() => handlePageChange(pagination.page - 1)}
+                  disabled={pagination.page === 1}
+                >
+                  ← Anterior
+                </button>
+                <div className="pagination-info">
+                  Página {pagination.page} de {totalPages}
+                </div>
+                <button
+                  className="pagination-btn"
+                  onClick={() => handlePageChange(pagination.page + 1)}
+                  disabled={pagination.page === totalPages}
+                >
+                  Siguiente →
+                </button>
+              </div>
+            )}
+          </>
+        )}
+      </div>
 
       <ProjectDetailDrawer
         project={selectedProject}
@@ -287,6 +439,8 @@ export default function ProyectosPage({ adminData }) {
         onClose={closeDrawer}
         onRefresh={refetch}
         adminData={adminData}
+        activeTab={activeDrawerTab}
+        onTabChange={setActiveDrawerTab}
       />
       <ProjectFormModal
         isOpen={isModalOpen}

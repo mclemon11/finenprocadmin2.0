@@ -35,7 +35,7 @@ export default function ProjectTimeline({ projectId, adminData }) {
   const formatDate = (timestamp) => {
     if (!timestamp) return '—';
     const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-    return date.toLocaleDateString('es-MX', {
+    return date.toLocaleDateString('en-US', {
       day: '2-digit',
       month: 'short',
       year: 'numeric',

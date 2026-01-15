@@ -92,91 +92,172 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSuccess, 
   return (
     <div className="edit-modal-overlay" onClick={handleClose}>
       <div className="edit-modal" onClick={(e) => e.stopPropagation()}>
+        {/* Header */}
         <div className="modal-header">
-          <h2>Editar Proyecto</h2>
-          <button className="close-btn" onClick={handleClose}>✕</button>
+          <div className="modal-header-content">
+            <h2>✏️ Editar Proyecto</h2>
+            <p className="modal-subtitle">Actualiza la información del proyecto</p>
+          </div>
+          <button className="close-btn" onClick={handleClose} aria-label="Cerrar">✕</button>
         </div>
 
+        {/* Form */}
         <form className="modal-form" onSubmit={handleSubmit}>
-          <label>
-            Nombre del proyecto
-            <input
-              type="text"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-              required
-            />
-          </label>
-
-          <label>
-            Categoría
-            <input
-              type="text"
-              value={form.category}
-              onChange={(e) => setForm({ ...form, category: e.target.value })}
-              placeholder="Energía, Trading, Crypto"
-            />
-          </label>
-
-          <div className="form-row-2">
-            <label>
-              ROI esperado (%)
+          {/* Información General */}
+          <div className="form-section">
+            <h3 className="section-title">📋 Información General</h3>
+            
+            <div className="form-field">
+              <label htmlFor="project-name">
+                Nombre del proyecto <span className="required">*</span>
+              </label>
               <input
-                type="number"
-                step="0.01"
-                value={form.expectedROI}
-                onChange={(e) => setForm({ ...form, expectedROI: e.target.value })}
+                id="project-name"
+                type="text"
+                className="form-input"
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                placeholder="Ej: Proyecto Solar Valle Verde"
+                required
               />
-            </label>
-            <label>
-              Duración (meses)
+            </div>
+
+            <div className="form-field">
+              <label htmlFor="project-category">Categoría</label>
               <input
-                type="number"
-                value={form.duration}
-                onChange={(e) => setForm({ ...form, duration: e.target.value })}
+                id="project-category"
+                type="text"
+                className="form-input"
+                value={form.category}
+                onChange={(e) => setForm({ ...form, category: e.target.value })}
+                placeholder="Ej: Energía Renovable, Trading, Crypto"
               />
-            </label>
+            </div>
           </div>
 
+          {/* Métricas Financieras */}
+          <div className="form-section">
+            <h3 className="section-title">💰 Métricas Financieras</h3>
+            
+            <div className="form-row-2">
+              <div className="form-field">
+                <label htmlFor="project-roi">ROI esperado (%)</label>
+                <div className="input-with-icon">
+                  <input
+                    id="project-roi"
+                    type="number"
+                    className="form-input"
+                    step="0.01"
+                    value={form.expectedROI}
+                    onChange={(e) => setForm({ ...form, expectedROI: e.target.value })}
+                    placeholder="0.00"
+                  />
+                  <span className="input-icon">%</span>
+                </div>
+              </div>
+              
+              <div className="form-field">
+                <label htmlFor="project-duration">Duración (meses)</label>
+                <div className="input-with-icon">
+                  <input
+                    id="project-duration"
+                    type="number"
+                    className="form-input"
+                    value={form.duration}
+                    onChange={(e) => setForm({ ...form, duration: e.target.value })}
+                    placeholder="12"
+                  />
+                  <span className="input-icon">meses</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Métricas Variables (solo para tipo variable) */}
           {project.type === 'variable' && (
-            <div className="form-section">
-              <h3>Métricas Variables</h3>
+            <div className="form-section variable-section">
+              <h3 className="section-title">📊 Métricas Variables</h3>
+              
               <div className="form-row-2">
-                <label>
-                  Drawdown (%)
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={form.drawdown}
-                    onChange={(e) => setForm({ ...form, drawdown: e.target.value })}
-                  />
-                </label>
-                <label>
-                  Performance (%)
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={form.performance}
-                    onChange={(e) => setForm({ ...form, performance: e.target.value })}
-                  />
-                </label>
+                <div className="form-field">
+                  <label htmlFor="project-drawdown">Drawdown (%)</label>
+                  <div className="input-with-icon">
+                    <input
+                      id="project-drawdown"
+                      type="number"
+                      className="form-input"
+                      step="0.01"
+                      value={form.drawdown}
+                      onChange={(e) => setForm({ ...form, drawdown: e.target.value })}
+                      placeholder="0.00"
+                    />
+                    <span className="input-icon negative">%</span>
+                  </div>
+                </div>
+                
+                <div className="form-field">
+                  <label htmlFor="project-performance">Performance (%)</label>
+                  <div className="input-with-icon">
+                    <input
+                      id="project-performance"
+                      type="number"
+                      className="form-input"
+                      step="0.01"
+                      value={form.performance}
+                      onChange={(e) => setForm({ ...form, performance: e.target.value })}
+                      placeholder="0.00"
+                    />
+                    <span className="input-icon positive">%</span>
+                  </div>
+                </div>
               </div>
             </div>
           )}
 
+          {/* Info Box */}
           <div className="info-box">
-            <strong>Campos no editables:</strong> Tipo, Riesgo, Target, Estado.
-            Para cambios críticos, contacta al administrador del sistema.
+            <div className="info-icon">ℹ️</div>
+            <div className="info-content">
+              <strong>Campos no editables:</strong>
+              <p>Tipo de proyecto, Nivel de riesgo, Capital objetivo y Estado computado.</p>
+              <p className="info-note">Para cambios críticos en estos campos, contacta al administrador del sistema.</p>
+            </div>
           </div>
 
-          {error && <div className="form-error">{error}</div>}
+          {/* Error Message */}
+          {error && (
+            <div className="form-error">
+              <span className="error-icon">⚠️</span>
+              <span>{error}</span>
+            </div>
+          )}
 
+          {/* Actions */}
           <div className="modal-actions">
-            <button type="button" className="cancel-btn" onClick={handleClose} disabled={saving}>
+            <button 
+              type="button" 
+              className="cancel-btn" 
+              onClick={handleClose} 
+              disabled={saving}
+            >
               Cancelar
             </button>
-            <button type="submit" className="submit-btn" disabled={saving}>
-              {saving ? 'Guardando...' : 'Guardar cambios'}
+            <button 
+              type="submit" 
+              className="submit-btn" 
+              disabled={saving}
+            >
+              {saving ? (
+                <>
+                  <span className="spinner"></span>
+                  Guardando...
+                </>
+              ) : (
+                <>
+                  <span>💾</span>
+                  Guardar cambios
+                </>
+              )}
             </button>
           </div>
         </form>

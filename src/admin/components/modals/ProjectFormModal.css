@@ -25,8 +25,12 @@
   border-radius: var(--radius);
   max-width: 700px;
   width: 100%;
-  max-height: 90vh;
-  overflow-y: auto;
+  max-height: 92vh;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
   animation: slideUp 0.3s ease;
 }
 
@@ -47,7 +51,11 @@
   align-items: center;
   padding: var(--spacing-lg) var(--spacing-xl);
   border-bottom: var(--glass-border);
-  background: rgba(16, 185, 129, 0.05);
+  background: linear-gradient(180deg, rgba(16, 185, 129, 0.08), rgba(16, 185, 129, 0.02));
+  position: sticky;
+  top: 0;
+  backdrop-filter: blur(10px);
+  z-index: 1;
 }
 
 .modal-header h2 {
@@ -79,10 +87,22 @@
 }
 
 .modal-form {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.modal-body {
+  flex: 1;
+  overflow-y: auto;
   padding: var(--spacing-xl);
   display: flex;
   flex-direction: column;
   gap: var(--spacing-lg);
+  background: radial-gradient(circle at 20% 20%, rgba(16, 185, 129, 0.06), transparent 35%),
+    radial-gradient(circle at 80% 0%, rgba(59, 130, 246, 0.04), transparent 30%),
+    rgba(14, 24, 36, 0.7);
 }
 
 .form-row {
@@ -110,17 +130,24 @@
 .form-row input,
 .form-row select {
   padding: 10px 12px;
-  border: var(--glass-border);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--radius-sm);
-  background: var(--panel);
-  color: var(--fg);
+  background: rgba(0, 0, 0, 0.3);
+  color: rgba(255, 255, 255, 0.95);
   font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.form-row input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
 }
 
 .form-row input:focus,
 .form-row select:focus {
   outline: none;
   border-color: var(--accent);
+  background: rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
 }
 
 .form-section {
@@ -131,6 +158,211 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-md);
+}
+
+.form-section-financial {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(16, 185, 129, 0.02) 100%);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.05);
+}
+
+.form-section-header {
+  margin-bottom: 8px;
+}
+
+.form-section-header h3 {
+  margin: 0 0 4px 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.form-section-header p {
+  margin: 0;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 400;
+}
+
+.label-with-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.label-badge {
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  line-height: 1;
+}
+
+.field-hint {
+  display: block;
+  margin-top: 6px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.category-select {
+  position: relative;
+}
+
+.category-control {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.3);
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.category-control:hover {
+  border-color: var(--accent);
+  background: rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.category-value {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 14px;
+}
+
+.category-caret {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.category-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background: rgba(8, 13, 20, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 18px 38px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(12px);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  z-index: 5;
+}
+
+.dropdown-search input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.dropdown-search input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.dropdown-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dropdown-item {
+  text-align: left;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.02);
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.dropdown-item:hover {
+  border-color: var(--accent);
+  background: rgba(16, 185, 129, 0.08);
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.dropdown-item.selected {
+  border-color: var(--accent);
+  background: rgba(16, 185, 129, 0.12);
+  color: #d1fae5;
+}
+
+.create-section {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 6px;
+}
+
+.create-item {
+  border-style: dashed;
+  background: rgba(59, 130, 246, 0.08);
+  color: #c7d7ff;
+}
+
+.create-item:hover {
+  background: rgba(59, 130, 246, 0.12);
+  border-color: rgba(59, 130, 246, 0.5);
+  color: #e5ebff;
+}
+
+.inline-create {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+}
+
+.inline-create label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.inline-create input {
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.35);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.inline-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.draft-btn.ghost {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: rgba(255, 255, 255, 0.75);
+  padding: 8px 12px;
+}
+
+.submit-btn.compact {
+  padding: 10px 14px;
 }
 
 .form-section h3 {
@@ -164,15 +396,23 @@
   border-radius: var(--radius-sm);
 }
 
-.modal-actions {
+.project-modal .modal-actions {
   display: flex;
   gap: var(--spacing-md);
   justify-content: flex-end;
-  padding-top: var(--spacing-md);
-  border-top: var(--glass-border);
+  padding: var(--spacing-md) var(--spacing-xl);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(180deg, rgba(10, 14, 24, 0.92), rgba(6, 10, 18, 0.98));
+  backdrop-filter: blur(14px);
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.45);
+  isolation: isolate;
 }
 
 .cancel-btn,
+.draft-btn,
 .submit-btn {
   padding: 12px 24px;
   border-radius: var(--radius-sm);
@@ -182,14 +422,43 @@
   transition: all 0.2s ease;
 }
 
+.form-section-advanced {
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.02);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+}
+
+.placeholder-box {
+  padding: var(--spacing-md);
+  border-radius: var(--radius-sm);
+  border: 1px dashed rgba(59, 130, 246, 0.35);
+  background: rgba(59, 130, 246, 0.08);
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
 .cancel-btn {
-  background: var(--panel);
-  border: var(--glass-border);
-  color: var(--fg);
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .cancel-btn:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.draft-btn {
+  background: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  color: #3b82f6;
+}
+
+.draft-btn:hover {
+  background: rgba(59, 130, 246, 0.25);
+  border-color: rgba(59, 130, 246, 0.5);
 }
 
 .submit-btn {
@@ -200,12 +469,16 @@
 
 .submit-btn:hover {
   background: #0ea472;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
 .cancel-btn:disabled,
+.draft-btn:disabled,
 .submit-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+  transform: none;
 }
 
 @media (max-width: 768px) {
@@ -220,11 +493,12 @@
     border-radius: 0;
   }
 
-  .modal-actions {
+  .project-modal .modal-actions {
     flex-direction: column;
   }
 
   .cancel-btn,
+  .draft-btn,
   .submit-btn {
     width: 100%;
   }

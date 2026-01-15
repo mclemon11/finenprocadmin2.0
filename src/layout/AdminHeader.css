@@ -1,3 +1,9 @@
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .header-left h1 {
   display: flex;
   align-items: center;

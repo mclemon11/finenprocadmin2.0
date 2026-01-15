@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { auth } from '../firebase/firebaseConfig';
 import './AdminHeader.css';
 
-export default function AdminHeader({ admin }) {
+export default function AdminHeader({ admin, onToggleSidebar }) {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -19,6 +19,14 @@ export default function AdminHeader({ admin }) {
   return (
     <header className="admin-header">
       <div className="header-left">
+        <button
+          className="menu-button"
+          type="button"
+          aria-label="Abrir menú"
+          onClick={onToggleSidebar}
+        >
+          ☰
+        </button>
         <h1>
           <span className="header-title-main">FINENPROC</span>
           <span className="header-title-badge">ADMIN</span>
