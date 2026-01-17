@@ -75,6 +75,31 @@
   background: rgba(16, 185, 129, 0.03);
 }
 
+.card-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+}
+
+.btn-methods {
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  border: var(--glass-border);
+  background: var(--panel);
+  color: var(--fg);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-methods:hover {
+  background: rgba(16, 185, 129, 0.08);
+  border-color: rgba(16, 185, 129, 0.25);
+}
+
 .card-header h3 {
   margin: 0;
   font-size: 14px;
@@ -184,6 +209,45 @@
 .btn-reject:hover {
   background: #ef4444;
   color: var(--bg);
+}
+
+.btn-proof {
+  background: rgba(245, 158, 11, 0.2);
+  color: #f59e0b;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-proof:hover {
+  background: #f59e0b;
+  color: var(--bg);
+}
+
+.btn-icon {
+  display: block;
+}
+
+.proof-viewer-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xl);
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(8px);
+  cursor: zoom-out;
+}
+
+.proof-viewer-image {
+  max-width: min(900px, 92vw);
+  max-height: 82vh;
+  object-fit: contain;
+  border-radius: var(--radius);
+  border: var(--glass-border);
+  background: rgba(0, 0, 0, 0.15);
 }
 
 .loading-state,

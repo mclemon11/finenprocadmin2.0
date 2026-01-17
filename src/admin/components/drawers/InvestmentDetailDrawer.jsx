@@ -105,7 +105,7 @@ export default function InvestmentDetailDrawer({ investmentId, isOpen, onClose, 
 
   return (
     <>
-      <div className="drawer-overlay" onClick={onClose}></div>
+      <div className="investment-drawer-overlay" onClick={onClose}></div>
       <div className="investment-drawer">
         {/* Header */}
         <div className="investment-drawer-header">

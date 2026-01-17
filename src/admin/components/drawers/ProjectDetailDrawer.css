@@ -25,23 +25,25 @@
 /* Drawer Principal */
 .project-drawer {
   position: fixed;
-  top: 0;
-  right: 0;
-  width: 85vw;
-  max-width: 1400px;
-  height: 100vh;
+  top: 50%;
+  left: 50%;
+  width: min(1200px, 94vw);
+  height: 92vh;
   background: linear-gradient(135deg, #0F141A 0%, #0a0e13 100%);
   z-index: 9999;
-  transform: translateX(100%);
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translate(-50%, -50%) scale(0.98);
+  transition: transform 0.22s ease, opacity 0.22s ease;
   display: flex;
   flex-direction: column;
   box-shadow: -8px 0 32px rgba(0, 0, 0, 0.6);
   overflow: hidden;
+  border-radius: 1rem;
+  opacity: 0;
 }
 
 .project-drawer.open {
-  transform: translateX(0);
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
 }
 
 /* ========== HEADER FIJO ========== */
@@ -50,14 +52,24 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   flex-shrink: 0;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.drawer-header > .drawer-header-top,
+.drawer-header > .drawer-header-content,
+.drawer-header > .drawer-tabs {
+  width: 100%;
 }
 
 .drawer-header-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.25rem 2rem;
+  padding: 1rem 1.5rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  flex-wrap: nowrap;
 }
 
 .close-drawer-btn {
@@ -120,27 +132,41 @@
 }
 
 .drawer-header-content {
-  padding: 1.75rem 2rem;
+  padding: 1.25rem 1.5rem;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1rem;
+  align-items: start;
+  justify-items: start;
 }
 
 .project-title-section {
-  margin-bottom: 1.25rem;
+  margin-bottom: 0;
+  justify-self: start;
+  align-self: start;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
 }
 
 .drawer-title {
-  font-size: 2rem;
+  font-size: 1.6rem;
   font-weight: 700;
   color: #ffffff;
-  margin: 0 0 1rem 0;
+  margin: 0 0 0.6rem 0;
   letter-spacing: -0.02em;
   line-height: 1.2;
+  text-align: left;
 }
 
 .drawer-badges {
   display: flex;
   gap: 0.65rem;
   flex-wrap: wrap;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
+  justify-content: flex-start;
 }
 
 .badge {
@@ -219,12 +245,13 @@
 
 /* ========== PROGRESS EN HEADER ========== */
 .header-progress {
-  margin-top: 1.25rem;
-  padding: 1.5rem;
+  margin-top: 0;
+  padding: 1rem;
   background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(16, 185, 129, 0.04));
   border-radius: 0.75rem;
   border: 1px solid rgba(16, 185, 129, 0.25);
   backdrop-filter: blur(10px);
+  width: min(360px, 42vw);
 }
 
 .progress-header-row {
@@ -293,15 +320,47 @@
 /* ========== TABS - STICKY ========== */
 .drawer-tabs {
   display: flex;
-  padding: 0 2rem;
+  padding: 0 1.5rem;
   gap: 0.5rem;
   border-bottom: 2px solid rgba(255, 255, 255, 0.08);
-  position: sticky;
-  top: 0;
+  position: relative;
   background: linear-gradient(135deg, #141A21, #0F141A);
   z-index: 10;
   flex-shrink: 0;
   box-shadow: 0 1px 8px rgba(0, 0, 0, 0.2);
+  justify-content: center;
+  overflow-x: auto;
+}
+
+.drawer-tabs::-webkit-scrollbar {
+  height: 6px;
+}
+
+.drawer-tabs::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.drawer-tabs::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+}
+
+.drawer-tabs::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+@media (max-width: 860px) {
+  .project-drawer {
+    height: 94vh;
+  }
+
+  .drawer-header-content {
+    grid-template-columns: 1fr;
+  }
+
+  .header-progress {
+    width: 100%;
+  }
 }
 
 .drawer-tab {
@@ -472,21 +531,42 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
 }
 
+/* Stronger, drawer-scoped styling to avoid generic `.info-item` collisions
+   that can make these look like white inputs. */
+.project-drawer .info-item {
+  padding: 0.95rem 1rem;
+  border-bottom: none;
+  border-radius: 0.65rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 10px 24px rgba(0, 0, 0, 0.35);
+}
+
 .info-item:last-child {
   border-bottom: none;
 }
 
 .info-key {
   font-size: 0.9rem;
-  color: #9ca3af;
+  color: rgba(255, 255, 255, 0.85);
   font-weight: 500;
+}
+
+.project-drawer .info-key {
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .info-val {
   font-size: 0.95rem;
-  color: #e5e7eb;
+  color: #ffffff;
   font-weight: 600;
   text-align: right;
+}
+
+.project-drawer .info-val {
+  color: #ffffff;
 }
 
 .info-val.bold {

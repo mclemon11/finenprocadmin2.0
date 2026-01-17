@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { collection, query, where, getDocs, orderBy, getDoc, doc } from 'firebase/firestore';
+import { collection, query, where, getDocs, getDoc, doc } from 'firebase/firestore';
 import { db } from '../../firebase/firebaseConfig';
 
 export default function useAdminInvestments(filters = {}) {
@@ -14,25 +14,22 @@ export default function useAdminInvestments(filters = {}) {
       setLoading(true);
       setError(null);
 
-      let constraints = [];
+      // Evitar índices compuestos: aplicamos como máximo 1 filtro en Firestore,
+      // y el resto lo filtramos en cliente.
+      const shouldFilterStatus = filters.status && filters.status !== 'all';
+      const shouldFilterProjectId = !!filters.projectId;
+      const shouldFilterUserId = !!filters.userId;
 
-      if (filters.status && filters.status !== 'all') {
+      const constraints = [];
+      if (shouldFilterProjectId) {
+        constraints.push(where('projectId', '==', filters.projectId));
+      } else if (shouldFilterUserId) {
+        constraints.push(where('userId', '==', filters.userId));
+      } else if (shouldFilterStatus) {
         constraints.push(where('status', '==', filters.status));
       }
 
-      if (filters.projectId) {
-        constraints.push(where('projectId', '==', filters.projectId));
-      }
-
-      if (filters.userId) {
-        constraints.push(where('userId', '==', filters.userId));
-      }
-
-      const q = query(
-        collection(db, 'investments'),
-        ...constraints,
-        orderBy('createdAt', 'desc')
-      );
+      const q = query(collection(db, 'investments'), ...constraints);
 
       const snapshot = await getDocs(q);
       const investmentsData = snapshot.docs.map((docSnap) => ({
@@ -40,9 +37,24 @@ export default function useAdminInvestments(filters = {}) {
         ...docSnap.data()
       }));
 
+      // Filtros restantes en cliente
+      const filtered = investmentsData.filter((inv) => {
+        if (shouldFilterProjectId && inv.projectId !== filters.projectId) return false;
+        if (shouldFilterUserId && inv.userId !== filters.userId) return false;
+        if (shouldFilterStatus && inv.status !== filters.status) return false;
+        return true;
+      });
+
+      // Ordenar en cliente para evitar índices compuestos (p.ej. projectId + createdAt)
+      filtered.sort((a, b) => {
+        const aMs = a?.createdAt?.toMillis ? a.createdAt.toMillis() : (a?.createdAt ? new Date(a.createdAt).getTime() : 0);
+        const bMs = b?.createdAt?.toMillis ? b.createdAt.toMillis() : (b?.createdAt ? new Date(b.createdAt).getTime() : 0);
+        return bMs - aMs;
+      });
+
       // Carga contexto de usuarios y proyectos para eliminar IDs crudos.
-      const userIds = [...new Set(investmentsData.map((inv) => inv.userId).filter(Boolean))];
-      const projectIds = [...new Set(investmentsData.map((inv) => inv.projectId).filter(Boolean))];
+      const userIds = [...new Set(filtered.map((inv) => inv.userId).filter(Boolean))];
+      const projectIds = [...new Set(filtered.map((inv) => inv.projectId).filter(Boolean))];
 
       const [userEntries, projectEntries] = await Promise.all([
         Promise.all(userIds.map(async (uid) => {
@@ -63,7 +75,7 @@ export default function useAdminInvestments(filters = {}) {
         return Number(((target - amount) / amount * 100).toFixed(2));
       };
 
-      const withContext = investmentsData.map((inv) => {
+      const withContext = filtered.map((inv) => {
         const user = usersMap[inv.userId] || {};
         const project = projectsMap[inv.projectId] || {};
         return {

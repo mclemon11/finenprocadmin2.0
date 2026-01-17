@@ -68,20 +68,29 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSuccess, 
 
       // Registrar en timeline si hay cambios relevantes
       if (changes.length > 0 && onTimelineEvent) {
-        await onTimelineEvent({
-          type: 'system',
-          title: 'Proyecto actualizado',
-          description: `Se editaron los siguientes campos:\n${changes.join('\n')}`,
-          visibility: 'admin',
-          metadata: { changes },
-        });
+        try {
+          await onTimelineEvent({
+            type: 'system',
+            title: 'Proyecto actualizado',
+            description: `Se editaron los siguientes campos:\n${changes.join('\n')}`,
+            visibility: 'admin',
+            metadata: { changes },
+          });
+        } catch (timelineErr) {
+          // No bloquear el guardado del proyecto si el timeline falla por reglas.
+          console.warn('No se pudo registrar evento en timeline:', timelineErr);
+        }
       }
 
       onSuccess?.();
       handleClose();
     } catch (err) {
       console.error('Error actualizando proyecto:', err);
-      setError('No se pudo actualizar el proyecto');
+      if (err?.code === 'permission-denied') {
+        setError('Permisos insuficientes para actualizar el proyecto');
+      } else {
+        setError('No se pudo actualizar el proyecto');
+      }
     } finally {
       setSaving(false);
     }

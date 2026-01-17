@@ -47,7 +47,6 @@ service cloud.firestore {
       
 			// WALLETS
       match /wallets/{walletId} {
-        // Users can read their own wallet; admins can read any wallet.
         allow read: if isAdmin() || (isSignedIn() && request.auth.uid == uid && walletId == uid);
 
         // Allow users to create their own wallet once, with an empty balance.
@@ -71,20 +70,57 @@ service cloud.firestore {
 
     // PROJECTS
     match /projects/{projectId} {
-      allow read: if true;
-      allow write: if isAdmin();
+      // Necesario para listar proyectos en admin (useAdminProjects)
+      allow read: if true; // o usar isSignedIn() si quieres restringirlo
+      allow create, update, delete: if isAdmin();
+
+      // Subcolección: timeline del proyecto
+      match /timeline/{eventId} {
+        allow read: if isSignedIn();
+        allow create, update, delete: if isAdmin();
+      }
     }
 
     // INVESTMENTS
     match /investments/{investmentId} {
       allow read: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
-      allow create: if isAdmin() || (isSignedIn() && request.resource.data.userId == request.auth.uid);
+      allow create: if isAdmin() || (
+        isSignedIn()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.amount is number
+        && request.resource.data.amount > 0
+        && request.resource.data.projectId is string
+        // No permitir invertir en proyectos cerrados
+        && exists(/databases/$(database)/documents/projects/$(request.resource.data.projectId))
+        && get(/databases/$(database)/documents/projects/$(request.resource.data.projectId)).data.status != 'closed'
+        // No permitir invertir más que el saldo disponible
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid)/wallets/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)/wallets/$(request.auth.uid)).data.balance is number
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)/wallets/$(request.auth.uid)).data.balance >= request.resource.data.amount
+      );
       allow update, delete: if isAdmin();
     }
 
     // TRANSACTIONS
     match /transactions/{txId} {
-      allow create: if isAdmin() || (isSignedIn() && request.resource.data.userId == request.auth.uid);
+      allow create: if isAdmin() || (
+        isSignedIn()
+        && request.resource.data.userId == request.auth.uid
+        // Si es una transacción de inversión creada por el usuario, aplicar mismas restricciones.
+        && (
+          request.resource.data.type != 'investment'
+          || (
+            request.resource.data.amount is number
+            && request.resource.data.amount > 0
+            && request.resource.data.projectId is string
+            && exists(/databases/$(database)/documents/projects/$(request.resource.data.projectId))
+            && get(/databases/$(database)/documents/projects/$(request.resource.data.projectId)).data.status != 'closed'
+            && exists(/databases/$(database)/documents/users/$(request.auth.uid)/wallets/$(request.auth.uid))
+            && get(/databases/$(database)/documents/users/$(request.auth.uid)/wallets/$(request.auth.uid)).data.balance is number
+            && get(/databases/$(database)/documents/users/$(request.auth.uid)/wallets/$(request.auth.uid)).data.balance >= request.resource.data.amount
+          )
+        )
+      );
       allow read: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
       allow update, delete: if isAdmin();
     }
@@ -111,7 +147,7 @@ service cloud.firestore {
 
     // RECHARGE METHODS
     match /rechargeMethods/{methodId} {
-      allow read: if isSignedIn();          // USERS Y ADMINS PUEDEN VER
+      allow read: if isSignedIn();                // USERS Y ADMINS PUEDEN VER
       allow create, update, delete: if isAdmin(); // SOLO ADMINS MODIFICAN
     }
 

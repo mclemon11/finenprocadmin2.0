@@ -3,12 +3,15 @@ import useAdminTopups from '../hooks/useAdminTopups';
 import useApproveTopup from '../hooks/mutations/useApproveTopup';
 import useRejectTopup from '../hooks/mutations/useRejectTopup';
 import ActionModal from '../components/modals/ActionModal';
+import RechargeMethodsModal from '../components/modals/RechargeMethodsModal';
 import './RecargasPage.css';
 
 export default function RecargasPage({ adminData }) {
   const [filter, setFilter] = useState('all');
   const [selectedTopup, setSelectedTopup] = useState(null);
   const [actionModal, setActionModal] = useState({ isOpen: false, type: null });
+  const [proofViewer, setProofViewer] = useState({ isOpen: false, url: null });
+  const [methodsModalOpen, setMethodsModalOpen] = useState(false);
   const { topups, loading, refetch } = useAdminTopups({ status: filter });
   const { approve: approveTopup, loading: approveLoading } = useApproveTopup();
   const { reject: rejectTopup, loading: rejectLoading } = useRejectTopup();
@@ -66,6 +69,8 @@ export default function RecargasPage({ adminData }) {
     return date.toLocaleDateString('es-MX');
   };
 
+  const getProofUrl = (topup) => topup?.proofUrl || topup?.receiptUrl || null;
+
   return (
     <div className="recargas-page">
       <div className="page-header">
@@ -92,7 +97,16 @@ export default function RecargasPage({ adminData }) {
 
       <div className="recargas-card">
         <div className="card-header">
-          <h3>Total de recargas: {topups.length}</h3>
+          <div className="card-header-row">
+            <h3>Total de recargas: {topups.length}</h3>
+            <button
+              className="btn-methods"
+              onClick={() => setMethodsModalOpen(true)}
+              type="button"
+            >
+              Metodos de Recargas
+            </button>
+          </div>
         </div>
 
         {loading ? (
@@ -127,30 +141,67 @@ export default function RecargasPage({ adminData }) {
                     </td>
                     <td>{formatDate(topup.createdAt)}</td>
                     <td>
-                      {topup.status === 'pending' && (
-                        <div className="action-buttons">
+                      <div className="action-buttons">
+                        {getProofUrl(topup) && (
                           <button
-                            className="btn-action btn-approve"
+                            className="btn-action btn-proof"
                             onClick={() => {
-                              setSelectedTopup(topup);
-                              setActionModal({ isOpen: true, type: 'approve' });
+                              setProofViewer({ isOpen: true, url: getProofUrl(topup) });
                             }}
-                            title="Aprobar"
+                            title="Ver comprobante"
                           >
-                            ✓
+                            <svg
+                              className="btn-icon"
+                              viewBox="0 0 24 24"
+                              width="16"
+                              height="16"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                              aria-hidden="true"
+                            >
+                              <path
+                                d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                              <path
+                                d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
                           </button>
-                          <button
-                            className="btn-action btn-reject"
-                            onClick={() => {
-                              setSelectedTopup(topup);
-                              setActionModal({ isOpen: true, type: 'reject' });
-                            }}
-                            title="Rechazar"
-                          >
-                            ✕
-                          </button>
-                        </div>
-                      )}
+                        )}
+
+                        {topup.status === 'pending' && (
+                          <>
+                            <button
+                              className="btn-action btn-approve"
+                              onClick={() => {
+                                setSelectedTopup(topup);
+                                setActionModal({ isOpen: true, type: 'approve' });
+                              }}
+                              title="Aprobar"
+                            >
+                              ✓
+                            </button>
+                            <button
+                              className="btn-action btn-reject"
+                              onClick={() => {
+                                setSelectedTopup(topup);
+                                setActionModal({ isOpen: true, type: 'reject' });
+                              }}
+                              title="Rechazar"
+                            >
+                              ✕
+                            </button>
+                          </>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -159,6 +210,22 @@ export default function RecargasPage({ adminData }) {
           </div>
         )}
       </div>
+
+      {proofViewer.isOpen && (
+        <div
+          className="proof-viewer-overlay"
+          onClick={() => setProofViewer({ isOpen: false, url: null })}
+          role="button"
+          tabIndex={0}
+          aria-label="Cerrar comprobante"
+        >
+          <img
+            className="proof-viewer-image"
+            src={proofViewer.url}
+            alt="Comprobante"
+          />
+        </div>
+      )}
 
       <ActionModal
         isOpen={actionModal.isOpen}
@@ -173,6 +240,11 @@ export default function RecargasPage({ adminData }) {
           setActionModal({ isOpen: false, type: null });
           setSelectedTopup(null);
         }}
+      />
+
+      <RechargeMethodsModal
+        isOpen={methodsModalOpen}
+        onClose={() => setMethodsModalOpen(false)}
       />
     </div>
   );

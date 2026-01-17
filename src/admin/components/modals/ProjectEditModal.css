@@ -14,7 +14,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 11000;
   padding: 1rem;
   animation: fadeIn 0.2s ease;
 }
@@ -298,12 +298,18 @@
 }
 
 /* ========== ACTIONS ========== */
-.modal-actions {
+.edit-modal .modal-actions {
   display: flex;
   gap: 1rem;
   justify-content: flex-end;
-  padding-top: 1rem;
+  padding: 1rem 0 0 0;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(180deg, rgba(15, 20, 26, 0.92), rgba(15, 20, 26, 0.98));
+  backdrop-filter: blur(14px);
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  box-shadow: 0 -10px 26px rgba(0, 0, 0, 0.45);
 }
 
 .cancel-btn,
@@ -391,7 +397,7 @@
     grid-template-columns: 1fr;
   }
 
-  .modal-actions {
+  .edit-modal .modal-actions {
     flex-direction: column-reverse;
   }
 

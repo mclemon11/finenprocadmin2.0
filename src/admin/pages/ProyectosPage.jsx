@@ -41,6 +41,15 @@ export default function ProyectosPage({ adminData }) {
     }
   }, [isDrawerOpen]);
 
+  // Sincronizar el proyecto seleccionado cuando se refresca la lista
+  useEffect(() => {
+    if (!isDrawerOpen || !selectedProject?.id) return;
+    const updated = projects.find((p) => p.id === selectedProject.id);
+    if (updated && updated !== selectedProject) {
+      setSelectedProject(updated);
+    }
+  }, [projects, isDrawerOpen, selectedProject?.id]);
+
   const handleModalSuccess = () => {
     refetch();
   };
