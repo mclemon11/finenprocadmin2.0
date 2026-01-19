@@ -4,11 +4,13 @@ import { doc, setDoc } from 'firebase/firestore';
 import { db, getProvisioningAuth } from '../../firebase/firebaseConfig';
 import useAdminAuth from '../../auth/useAdminAuth';
 import { Link, useNavigate } from 'react-router-dom';
+import logo from '../../assets/Logo.png';
 import './AdminRegister.css';
 
 export default function AdminRegister(){
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -18,6 +20,17 @@ export default function AdminRegister(){
   const handleRegister = async (e) => {
     e.preventDefault();
     if (authLoading) return;
+
+    // Validar que las contraseñas coincidan
+    if (password !== confirmPassword) {
+      setError('Las contraseñas no coinciden');
+      return;
+    }
+
+    if (password.length < 6) {
+      setError('La contraseña debe tener al menos 6 caracteres');
+      return;
+    }
 
     // Security model (matches your Firestore rules): only an existing admin can create admin users.
     if (!isAdmin) {
@@ -84,28 +97,100 @@ export default function AdminRegister(){
 
   return (
     <div className="auth-wrap">
-      <div className="auth-card">
-        <h1 className="auth-title">Registrar Cuenta (Admin)</h1>
-        <p className="auth-subtitle">Crea una cuenta con rol de administrador</p>
-        {success && (
-          <div className="auth-success">
-            ¡Usuario admin registrado exitosamente! Serás redirigido...
+      <div className="auth-container">
+        <div className="auth-card">
+          <div className="auth-header">
+            <img src={logo} alt="Logo" className="auth-logo" />
+            <h1 className="auth-title">Crear Cuenta Admin</h1>
+            <p className="auth-subtitle">Registra un nuevo administrador</p>
           </div>
-        )}
-        <form onSubmit={handleRegister} className="auth-form">
-          <label>
-            <span>Email</span>
-            <input type="email" value={email} onChange={(e)=>setEmail(e.target.value)} required />
-          </label>
-          <label>
-            <span>Contraseña</span>
-            <input type="password" value={password} onChange={(e)=>setPassword(e.target.value)} required />
-          </label>
-          {error && <div className="auth-error">{error}</div>}
-          <button className="btn btn-primary" type="submit" disabled={loading}>{loading ? 'Registrando…' : 'Registrar'}</button>
-        </form>
-        <div className="auth-links">
-          <Link to="/login">¿Ya tienes cuenta? Inicia sesión</Link>
+
+          {success && (
+            <div className="auth-success">
+              <svg className="success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              ¡Usuario admin registrado exitosamente! Serás redirigido...
+            </div>
+          )}
+
+          <form onSubmit={handleRegister} className="auth-form">
+            <div className="form-group">
+              <label htmlFor="email">
+                <span>Email</span>
+              </label>
+              <input 
+                id="email"
+                type="email" 
+                value={email} 
+                onChange={(e)=>setEmail(e.target.value)} 
+                placeholder="admin@tuempresa.com"
+                required 
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="password">
+                <span>Contraseña</span>
+              </label>
+              <input 
+                id="password"
+                type="password" 
+                value={password} 
+                onChange={(e)=>setPassword(e.target.value)} 
+                placeholder="••••••••"
+                required 
+              />
+              <span className="password-hint">Mínimo 6 caracteres</span>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="confirmPassword">
+                <span>Confirmar Contraseña</span>
+              </label>
+              <input 
+                id="confirmPassword"
+                type="password" 
+                value={confirmPassword} 
+                onChange={(e)=>setConfirmPassword(e.target.value)} 
+                placeholder="••••••••"
+                required 
+              />
+            </div>
+
+            {error && <div className="auth-error">
+              <svg className="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+              {error}
+            </div>}
+
+            <button 
+              className="btn btn-primary btn-large" 
+              type="submit" 
+              disabled={loading || authLoading}
+            >
+              {loading ? (
+                <>
+                  <span className="spinner"></span>
+                  Registrando…
+                </>
+              ) : (
+                'Crear Cuenta'
+              )}
+            </button>
+          </form>
+
+          <div className="auth-links">
+            <p>¿Ya tienes cuenta? <Link to="/login">Inicia sesión aquí</Link></p>
+          </div>
+        </div>
+
+        <div className="auth-background">
+          <div className="gradient-blob"></div>
+          <div className="gradient-blob"></div>
         </div>
       </div>
     </div>

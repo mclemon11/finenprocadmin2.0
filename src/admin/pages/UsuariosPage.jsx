@@ -18,6 +18,12 @@ export default function UsuariosPage({ adminData }) {
     refetchDetail();
   };
 
+  // Calculate KPI metrics
+  const totalUsers = users.length;
+  const activeUsers = users.filter(u => u.status === 'active').length;
+  const inactiveUsers = users.filter(u => u.status === 'inactive').length;
+  const investorUsers = users.filter(u => u.role === 'investor' || !u.role).length;
+
   useEffect(() => {
     const uid = searchParams.get('uid');
     if (uid) {
@@ -28,38 +34,70 @@ export default function UsuariosPage({ adminData }) {
   return (
     <div className="usuarios-page">
       <div className="page-header">
-        <div>
-          <h1 className="page-title">Gestión de Usuarios</h1>
-          <p className="page-subtitle">Administra todos los usuarios del sistema</p>
+        <h1 className="page-title">Gestión de Usuarios</h1>
+        <p className="page-subtitle">Administra todos los usuarios del sistema</p>
+        <div className="page-divider"></div>
+      </div>
+
+      {/* KPI Row */}
+      <div className="kpi-row">
+        <div className="kpi-card">
+          <div className="kpi-icon">👥</div>
+          <div className="kpi-content">
+            <div className="kpi-label">Total de Usuarios</div>
+            <div className="kpi-value">{totalUsers}</div>
+          </div>
+        </div>
+        <div className="kpi-card">
+          <div className="kpi-icon">✓</div>
+          <div className="kpi-content">
+            <div className="kpi-label">Activos</div>
+            <div className="kpi-value">{activeUsers}</div>
+          </div>
+        </div>
+        <div className="kpi-card">
+          <div className="kpi-icon">○</div>
+          <div className="kpi-content">
+            <div className="kpi-label">Inactivos</div>
+            <div className="kpi-value">{inactiveUsers}</div>
+          </div>
+        </div>
+        <div className="kpi-card">
+          <div className="kpi-icon">💰</div>
+          <div className="kpi-content">
+            <div className="kpi-label">Inversores</div>
+            <div className="kpi-value">{investorUsers}</div>
+          </div>
         </div>
       </div>
 
-      <div className="usuarios-filters-section">
-        <div className="filter-group">
+      {/* Filters Toolbar */}
+      <div className="filters-toolbar">
+        <div className="search-input-wrapper">
+          <span className="search-icon">🔍</span>
           <input
             type="text"
             placeholder="Buscar por email o nombre..."
-            className="filter-input"
+            className="search-input"
             value={filters.search}
             onChange={(e) => setFilters({ ...filters, search: e.target.value })}
           />
         </div>
-        <div className="filter-group">
-          <select
-            className="filter-select"
-            value={filters.status}
-            onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-          >
-            <option value="all">Todos los estados</option>
-            <option value="active">Activos</option>
-            <option value="inactive">Inactivos</option>
-          </select>
-        </div>
+        <select
+          className="filter-select"
+          value={filters.status}
+          onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+        >
+          <option value="all">Todos los estados</option>
+          <option value="active">Activos</option>
+          <option value="inactive">Inactivos</option>
+        </select>
       </div>
 
+      {/* Users Table Card */}
       <div className="usuarios-card">
         <div className="card-header">
-          <h3>Total de usuarios: {users.length}</h3>
+          <h3>Usuarios ({users.length})</h3>
         </div>
         <UsuariosTable
           users={users}

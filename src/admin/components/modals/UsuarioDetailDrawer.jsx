@@ -74,8 +74,17 @@ export default function UsuarioDetailDrawer({
       <div className="usuario-detail-overlay" onClick={onClose} />
       <div className="usuario-detail-drawer">
         <div className="drawer-header">
-          <h2>Detalle de Usuario</h2>
-          <button className="btn-close" onClick={onClose}>✕</button>
+          <div className="header-content">
+            <h2 className="drawer-title">{user?.displayName || user?.email || 'Usuario'}</h2>
+            <p className="drawer-email">{user?.email}</p>
+            <div className="header-badges">
+              <span className={`status-badge status-${user?.status}`}>
+                {user?.status === 'active' ? '● Activo' : '○ Inactivo'}
+              </span>
+              <span className="role-badge">{user?.role || 'Investor'}</span>
+            </div>
+          </div>
+          <button className="btn-close" onClick={onClose} aria-label="Cerrar">✕</button>
         </div>
 
         {loading ? (
@@ -83,47 +92,82 @@ export default function UsuarioDetailDrawer({
         ) : (
           <>
             <div className="drawer-tabs">
-              {['perfil', 'wallet', 'inversiones', 'recargas', 'retiros', 'transacciones'].map(tab => (
-                <button
-                  key={tab}
-                  className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
-                  onClick={() => setActiveTab(tab)}
-                >
-                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                </button>
-              ))}
+              <button
+                className={`tab-btn ${activeTab === 'perfil' ? 'active' : ''}`}
+                onClick={() => setActiveTab('perfil')}
+              >
+                📊 Resumen
+              </button>
+              <button
+                className={`tab-btn ${activeTab === 'wallet' ? 'active' : ''}`}
+                onClick={() => setActiveTab('wallet')}
+              >
+                💰 Wallet
+              </button>
+              <button
+                className={`tab-btn ${activeTab === 'inversiones' ? 'active' : ''}`}
+                onClick={() => setActiveTab('inversiones')}
+              >
+                📈 Inversiones
+              </button>
+              <button
+                className={`tab-btn ${activeTab === 'recargas' ? 'active' : ''}`}
+                onClick={() => setActiveTab('recargas')}
+              >
+                🔄 Recargas
+              </button>
+              <button
+                className={`tab-btn ${activeTab === 'retiros' ? 'active' : ''}`}
+                onClick={() => setActiveTab('retiros')}
+              >
+                💸 Retiros
+              </button>
+              <button
+                className={`tab-btn ${activeTab === 'transacciones' ? 'active' : ''}`}
+                onClick={() => setActiveTab('transacciones')}
+              >
+                📋 Transacciones
+              </button>
             </div>
 
             <div className="drawer-content">
-              {/* PERFIL */}
+              {/* PERFIL / RESUMEN */}
               {activeTab === 'perfil' && user && (
                 <div className="tab-pane">
-                  <div className="info-group">
-                    <div className="info-row">
-                      <span className="info-label">Email:</span>
-                      <span className="info-value">{user.email}</span>
+                  {/* Summary Cards - 2x2 Grid */}
+                  <div className="summary-cards">
+                    <div className="summary-card">
+                      <div className="card-label">Email</div>
+                      <div className="card-value accent">{user.email}</div>
                     </div>
-                    <div className="info-row">
-                      <span className="info-label">Nombre:</span>
-                      <span className="info-value">{user.displayName || '-'}</span>
+                    <div className="summary-card">
+                      <div className="card-label">Nombre</div>
+                      <div className="card-value">{user.displayName || '—'}</div>
                     </div>
-                    <div className="info-row">
-                      <span className="info-label">Estado:</span>
-                      <span className={`status-badge status-${user.status}`}>
-                        {user.status === 'active' ? 'Activo' : 'Inactivo'}
-                      </span>
+                    <div className="summary-card">
+                      <div className="card-label">Estado</div>
+                      <div>
+                        <span className={`status-badge status-${user.status}`}>
+                          {user.status === 'active' ? 'Activo' : 'Inactivo'}
+                        </span>
+                      </div>
                     </div>
-                    <div className="info-row">
-                      <span className="info-label">Rol:</span>
-                      <span className="info-value">{user.role || 'investor'}</span>
+                    <div className="summary-card">
+                      <div className="card-label">Fecha Registro</div>
+                      <div className="card-value">{formatDate(user.createdAt)}</div>
                     </div>
-                    <div className="info-row">
-                      <span className="info-label">Fecha de Registro:</span>
-                      <span className="info-value">{formatDate(user.createdAt)}</span>
+                  </div>
+
+                  {/* Technical Info Section */}
+                  <div className="technical-section">
+                    <div className="section-title">Información Técnica</div>
+                    <div className="tech-info-row">
+                      <span className="tech-label">ID de Usuario</span>
+                      <span className="tech-value">{user.uid}</span>
                     </div>
-                    <div className="info-row">
-                      <span className="info-label">UID:</span>
-                      <span className="info-value uid-value">{user.uid}</span>
+                    <div className="tech-info-row">
+                      <span className="tech-label">Rol</span>
+                      <span className="tech-value">{user.role || 'investor'}</span>
                     </div>
                   </div>
                 </div>
@@ -137,14 +181,23 @@ export default function UsuarioDetailDrawer({
                       <div className="wallet-card">
                         <div className="wallet-label">Balance Actual</div>
                         <div className="wallet-amount">{formatCurrency(wallet.balance)}</div>
-                      </div>
-                      <div className="info-row">
-                        <span className="info-label">Última Actualización:</span>
-                        <span className="info-value">{formatDate(wallet.updatedAt)}</span>
+                        <div className="wallet-meta">
+                          <div className="wallet-meta-item">
+                            <div className="wallet-meta-label">Actualizado</div>
+                            <div className="wallet-meta-value">{formatDate(wallet.updatedAt)}</div>
+                          </div>
+                          <div className="wallet-meta-item">
+                            <div className="wallet-meta-label">Moneda</div>
+                            <div className="wallet-meta-value">USD</div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   ) : (
-                    <div className="empty-state">Sin información de wallet</div>
+                    <div className="empty-state">
+                      <div className="empty-state-icon">💰</div>
+                      <div className="empty-state-message">Sin información de wallet</div>
+                    </div>
                   )}
                 </div>
               )}
@@ -176,7 +229,10 @@ export default function UsuarioDetailDrawer({
                       </table>
                     </div>
                   ) : (
-                    <div className="empty-state">Sin inversiones</div>
+                    <div className="empty-state">
+                      <div className="empty-state-icon">📈</div>
+                      <div className="empty-state-message">Sin inversiones</div>
+                    </div>
                   )}
                 </div>
               )}
@@ -231,7 +287,10 @@ export default function UsuarioDetailDrawer({
                       </table>
                     </div>
                   ) : (
-                    <div className="empty-state">Sin recargas</div>
+                    <div className="empty-state">
+                      <div className="empty-state-icon">🔄</div>
+                      <div className="empty-state-message">Sin recargas</div>
+                    </div>
                   )}
                 </div>
               )}
@@ -261,7 +320,10 @@ export default function UsuarioDetailDrawer({
                       </table>
                     </div>
                   ) : (
-                    <div className="empty-state">Sin retiros</div>
+                    <div className="empty-state">
+                      <div className="empty-state-icon">💸</div>
+                      <div className="empty-state-message">Sin retiros</div>
+                    </div>
                   )}
                 </div>
               )}
@@ -291,7 +353,10 @@ export default function UsuarioDetailDrawer({
                       </table>
                     </div>
                   ) : (
-                    <div className="empty-state">Sin transacciones</div>
+                    <div className="empty-state">
+                      <div className="empty-state-icon">📋</div>
+                      <div className="empty-state-message">Sin transacciones</div>
+                    </div>
                   )}
                 </div>
               )}
