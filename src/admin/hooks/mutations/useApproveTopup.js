@@ -11,6 +11,7 @@ import {
   serverTimestamp
 } from 'firebase/firestore';
 import { db } from '../../../firebase/firebaseConfig';
+import { formatMoney } from '../../../utils/formatMoney';
 
 export default function useApproveTopup() {
   const [loading, setLoading] = useState(false);
@@ -160,6 +161,19 @@ export default function useApproveTopup() {
             topupId
           },
           timestamp: serverTimestamp()
+        });
+
+        const notificationRef = doc(collection(db, 'users', userId, 'notifications'));
+        tx.set(notificationRef, {
+          userId,
+          type: 'transaction',
+          title: 'Recarga aprobada',
+          message: `Tu recarga de ${formatMoney(amount)} ${currency} fue aprobada.`,
+          topupId: topupIdValue,
+          amount,
+          currency,
+          read: false,
+          createdAt: serverTimestamp(),
         });
       });
 

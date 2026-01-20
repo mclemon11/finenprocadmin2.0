@@ -11,6 +11,7 @@ import {
   where
 } from 'firebase/firestore';
 import { db } from '../../../firebase/firebaseConfig';
+import { formatMoney } from '../../../utils/formatMoney';
 
 export default function useApproveInvestment() {
   const [loading, setLoading] = useState(false);
@@ -90,7 +91,7 @@ export default function useApproveInvestment() {
             throw new Error('Este proyecto ya alcanzó su meta de inversión');
           }
           if (amount > remaining) {
-            throw new Error(`La inversión excede el cupo del proyecto. Disponible: ${remaining}`);
+            throw new Error(`La inversión excede el cupo del proyecto. Disponible: ${formatMoney(remaining)}`);
           }
         }
 
@@ -177,6 +178,21 @@ export default function useApproveInvestment() {
             projectId: inv?.projectId || null
           },
           timestamp: serverTimestamp()
+        });
+
+        const projectName = project?.name || project?.title || project?.projectName || 'el proyecto';
+        const notificationRef = doc(collection(db, 'users', userId, 'notifications'));
+        tx.set(notificationRef, {
+          userId,
+          type: 'transaction',
+          title: 'Inversión aprobada',
+          message: `Tu inversión de ${formatMoney(amount)} ${currency} en ${projectName} fue aprobada.`,
+          investmentId: investmentIdValue,
+          projectId,
+          amount,
+          currency,
+          read: false,
+          createdAt: serverTimestamp(),
         });
       });
 

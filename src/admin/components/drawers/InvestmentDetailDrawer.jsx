@@ -206,7 +206,7 @@ export default function InvestmentDetailDrawer({ investmentId, isOpen, onClose, 
           ) : activeTab === 'project' ? (
             <ProjectTab projectEvents={projectEvents} formatDateTime={formatDateTime} />
           ) : activeTab === 'audit' ? (
-            <AuditTab auditLog={auditLog} formatDateTime={formatDateTime} />
+            <AuditTab auditLog={auditLog} formatDateTime={formatDateTime} formatCurrency={formatCurrency} />
           ) : null}
         </div>
 
@@ -468,7 +468,7 @@ function ProjectTab({ projectEvents, formatDateTime }) {
   );
 }
 
-function AuditTab({ auditLog, formatDateTime }) {
+function AuditTab({ auditLog, formatDateTime, formatCurrency }) {
   return (
     <div className="tab-content audit-tab">
       {auditLog.length === 0 ? (
@@ -504,7 +504,7 @@ function AuditTab({ auditLog, formatDateTime }) {
               {entry.action === 'return_update' && (
                 <div className="audit-details">
                   <span>
-                    Retorno actualizado a <strong>${entry.newValue}</strong>
+                    Retorno actualizado a <strong>{formatCurrency(Number(entry.newValue) || 0)}</strong>
                   </span>
                   {entry.notes && <span className="notes">Notas: {entry.notes}</span>}
                 </div>

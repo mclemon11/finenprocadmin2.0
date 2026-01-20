@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { collection, query, orderBy, getDocs, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, query, orderBy, getDocs, addDoc, serverTimestamp, doc, getDoc } from 'firebase/firestore';
 import { db } from '../../firebase/firebaseConfig';
 
 export default function useProjectTimeline(projectId) {
@@ -72,6 +72,16 @@ export default function useProjectTimeline(projectId) {
 
   const createInvestorNotifications = async (projectId, eventId, eventData) => {
     try {
+      // Best-effort: include project name to disambiguate notifications.
+      let projectName = null;
+      try {
+        const projectSnap = await getDoc(doc(db, 'projects', projectId));
+        const project = projectSnap.exists() ? projectSnap.data() : null;
+        projectName = project?.name || project?.title || project?.projectName || null;
+      } catch (e) {
+        // ignore
+      }
+
       // Obtener inversiones activas del proyecto
       const investmentsRef = collection(db, 'investments');
       const investmentsQuery = query(
@@ -90,11 +100,11 @@ export default function useProjectTimeline(projectId) {
       });
 
       // Crear notificaciones para cada inversionista
-      const notificationsRef = collection(db, 'notifications');
       const promises = Array.from(investors).map((userId) =>
-        addDoc(notificationsRef, {
+        addDoc(collection(db, 'users', userId, 'notifications'), {
           userId,
           projectId,
+          projectName,
           eventId,
           type: 'project_update',
           title: eventData.title,

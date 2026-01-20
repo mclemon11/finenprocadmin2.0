@@ -44,6 +44,26 @@ service cloud.firestore {
         )
       );
       allow delete: if isAdmin();
+
+      // USER NOTIFICATIONS (per-user state: read/delete only affects that user)
+      match /notifications/{notificationId} {
+        allow read: if isAdmin() || (isSignedIn() && request.auth.uid == uid);
+
+        // Allow user to create only their own notifications (used for legacy migration)
+        allow create: if isAdmin() || (
+          isSignedIn()
+          && request.auth.uid == uid
+          && request.resource.data.userId == uid
+        );
+
+        // Allow user to mark read / delete only their own notifications.
+        // Keep userId immutable.
+        allow update, delete: if isAdmin() || (
+          isSignedIn()
+          && request.auth.uid == uid
+          && request.resource.data.userId == resource.data.userId
+        );
+      }
       
 			// WALLETS
       match /wallets/{walletId} {
@@ -70,13 +90,25 @@ service cloud.firestore {
 
     // PROJECTS
     match /projects/{projectId} {
+      // Optional image fields (set by admin):
+      // - imageUrl: string (download URL)
+      // - imagePath: string (storage path under /projects/{projectId}/images/...)
+      // - imageUpdatedAt: timestamp
+      // Text fields:
+      // - description: subtitle (short description shown on cards)
+      // - body: long description (shown on project detail)
       // Necesario para listar proyectos en admin (useAdminProjects)
-      allow read: if true; // o usar isSignedIn() si quieres restringirlo
+      // Usuarios NO pueden ver proyectos cerrados; solo admins.
+      allow read: if isAdmin() || (isSignedIn() && resource.data.status != 'closed');
       allow create, update, delete: if isAdmin();
 
       // Subcolección: timeline del proyecto
       match /timeline/{eventId} {
-        allow read: if isSignedIn();
+        allow read: if isAdmin() || (
+          isSignedIn()
+          && exists(/databases/$(database)/documents/projects/$(projectId))
+          && get(/databases/$(database)/documents/projects/$(projectId)).data.status != 'closed'
+        );
         allow create, update, delete: if isAdmin();
       }
     }

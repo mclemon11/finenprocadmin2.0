@@ -13,6 +13,11 @@ service firebase.storage {
         firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.status == "active";
     }
 
+    function projectIsVisible(projectId) {
+      return firestore.exists(/databases/(default)/documents/projects/$(projectId))
+        && firestore.get(/databases/(default)/documents/projects/$(projectId)).data.status != "closed";
+    }
+
     // TOPUPS (COMPROBANTES DE RECARGA) - RUTA LEGACY
     match /topups/{uid}/{allPaths=**} {
       allow read: if isAdmin() || (isSignedIn() && request.auth.uid == uid);
@@ -33,10 +38,12 @@ service firebase.storage {
         );
     }
 
-    //  PROJECT IMAGES
-    match /projects/{projectId}/images/{file} {
-      allow read: if true;
-      allow write: if isAdmin();
+    //  PROJECT IMAGES 
+    match /projects/{projectId}/images/{allPaths=**} {
+      allow read: if isAdmin() || (isSignedIn() && projectIsVisible(projectId));
+      allow write: if isAdmin()
+        && request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
     }
 
     // INVESTMENT PROOFS
@@ -68,7 +75,7 @@ service firebase.storage {
       allow write: if request.auth.uid == uid;
     }
 
-    //  FALLBACK GENERAL USER FILES (opcional pero seguro)
+    //  FALLBACK GENERAL USER FILES 
     match /users/{uid}/{allPaths=**} {
       allow read: if isSignedIn() && request.auth.uid == uid;
       allow write: if isSignedIn() && request.auth.uid == uid;

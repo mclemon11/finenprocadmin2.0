@@ -6,6 +6,8 @@ import './ProjectFormModal.css';
 export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
   const [form, setForm] = useState({
     name: '',
+    description: '',
+    body: '',
     type: 'fixed',
     category: '',
     riskLevel: 'medium',
@@ -29,6 +31,8 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
   const resetForm = () => {
     setForm({
       name: '',
+      description: '',
+      body: '',
       type: 'fixed',
       category: '',
       riskLevel: 'medium',
@@ -100,6 +104,10 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
       setError(null);
       const payload = {
         name: form.name,
+        // Subtitle (short description shown on cards)
+        description: form.description?.trim() ? form.description.trim() : null,
+        // Long description (shown only on project detail)
+        body: form.body?.trim() ? form.body.trim() : null,
         type: form.type,
         category: form.category || null,
         riskLevel: form.riskLevel || 'medium',
@@ -159,6 +167,30 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
                   placeholder="Fondo Deuda USD 12%"
                   required
+                />
+              </label>
+            </div>
+
+            <div className="form-row">
+              <label>
+                Subtítulo (descripción breve)
+                <input
+                  type="text"
+                  value={form.description}
+                  onChange={(e) => setForm({ ...form, description: e.target.value })}
+                  placeholder="Ej: Inversión a 12 meses con retorno estimado"
+                />
+              </label>
+            </div>
+
+            <div className="form-row">
+              <label>
+                Descripción extensa (se muestra solo en detalles)
+                <textarea
+                  value={form.body}
+                  onChange={(e) => setForm({ ...form, body: e.target.value })}
+                  placeholder="Describe el proyecto con más detalle..."
+                  rows={5}
                 />
               </label>
             </div>

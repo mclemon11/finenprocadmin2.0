@@ -5,6 +5,7 @@ import useAdminProjects from '../hooks/useAdminProjects';
 import ProjectFormModal from '../components/modals/ProjectFormModal';
 import ProjectDetailDrawer from '../components/drawers/ProjectDetailDrawer';
 import { db } from '../../firebase/firebaseConfig';
+import { formatMoney } from '../../utils/formatMoney';
 import './ProyectosPage.css';
 
 export default function ProyectosPage({ adminData }) {
@@ -298,7 +299,7 @@ export default function ProyectosPage({ adminData }) {
                       <td>
                         {p.type === 'fixed' ? (
                           <div className="progress-col">
-                            <div className="progress-top">{p.totalInvested ? `$${p.totalInvested} USD` : 'Sin inversiones'}</div>
+                            <div className="progress-top">{p.totalInvested ? `$${formatMoney(p.totalInvested)} USD` : 'Sin inversiones'}</div>
                             {p.targetAmount ? (
                               <div className="progress-bar">
                                 <div className="progress-fill" style={{ width: `${p.progress || 0}%` }}></div>
@@ -307,7 +308,7 @@ export default function ProyectosPage({ adminData }) {
                               <div className="cell-subtle">Sin target definido</div>
                             )}
                             {p.targetAmount && (
-                              <div className="progress-foot">{p.progress || 0}% de ${p.targetAmount} USD</div>
+                              <div className="progress-foot">{p.progress || 0}% de ${formatMoney(p.targetAmount)} USD</div>
                             )}
                           </div>
                         ) : (
