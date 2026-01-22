@@ -1,6 +1,11 @@
-import React, { useState } from 'react';
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
-import { db } from '../../../firebase/firebaseConfig';
+import React, { useEffect, useState } from 'react';
+import { addDoc, collection, serverTimestamp, updateDoc } from 'firebase/firestore';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { db, storage } from '../../../firebase/firebaseConfig';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { FreeMode } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/free-mode';
 import './ProjectFormModal.css';
 
 export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
@@ -25,6 +30,7 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const [showCreateInline, setShowCreateInline] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
+  const [imageItems, setImageItems] = useState([]);
 
   const sampleCategories = ['Energía', 'Trading', 'Crypto', 'Inmobiliario'];
 
@@ -46,6 +52,60 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
       manualControl: true,
     });
     setError(null);
+    setImageItems((prev) => {
+      for (const item of prev) {
+        try {
+          if (item?.previewUrl) URL.revokeObjectURL(item.previewUrl);
+        } catch {
+          // ignore
+        }
+      }
+      return [];
+    });
+  };
+
+  useEffect(() => {
+    if (!isOpen) return;
+    return () => {
+      setImageItems((prev) => {
+        for (const item of prev) {
+          try {
+            if (item?.previewUrl) URL.revokeObjectURL(item.previewUrl);
+          } catch {
+            // ignore
+          }
+        }
+        return prev;
+      });
+    };
+  }, [isOpen]);
+
+  const addImagesFromFiles = (files) => {
+    const maxBytes = 5 * 1024 * 1024;
+    const next = [];
+
+    for (const file of Array.from(files || [])) {
+      if (!String(file?.type || '').startsWith('image/')) continue;
+      if (file.size > maxBytes) continue;
+      const previewUrl = URL.createObjectURL(file);
+      next.push({ file, previewUrl });
+    }
+
+    if (next.length > 0) {
+      setImageItems((prev) => [...prev, ...next]);
+    }
+  };
+
+  const removeImageAt = (index) => {
+    setImageItems((prev) => {
+      const item = prev[index];
+      try {
+        if (item?.previewUrl) URL.revokeObjectURL(item.previewUrl);
+      } catch {
+        // ignore
+      }
+      return prev.filter((_, i) => i !== index);
+    });
   };
 
   const handleClose = () => {
@@ -129,7 +189,40 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
         updatedAt: serverTimestamp(),
       };
 
-      await addDoc(collection(db, 'projects'), payload);
+      const docRef = await addDoc(collection(db, 'projects'), payload);
+
+      if (imageItems.length > 0) {
+        const uploads = [];
+        for (const item of imageItems) {
+          const file = item?.file;
+          if (!file) continue;
+
+          const safeName = String(file.name || 'image')
+            .replace(/[^a-zA-Z0-9._-]/g, '_')
+            .slice(0, 80);
+          const storagePath = `projects/${docRef.id}/images/${Date.now()}_${safeName}`;
+          const storageRef = ref(storage, storagePath);
+
+          await uploadBytes(storageRef, file, {
+            contentType: file.type || 'image/*',
+          });
+          const url = await getDownloadURL(storageRef);
+          uploads.push({ url, path: storagePath });
+        }
+
+        const urls = uploads.map((u) => u.url).filter(Boolean);
+        const paths = uploads.map((u) => u.path).filter(Boolean);
+
+        await updateDoc(docRef, {
+          images: urls,
+          imagePaths: paths,
+          imageUrl: urls[0] || null,
+          imagePath: paths[0] || null,
+          imageUpdatedAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        });
+      }
+
       resetForm();
       onSuccess?.();
       onClose();
@@ -156,6 +249,57 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
             <div className="form-section-header">
               <h3>Información General</h3>
               <p>Datos básicos del proyecto financiero</p>
+            </div>
+
+            <div className="form-section">
+              <div className="form-section-header">
+                <h3>🖼️ Imágenes</h3>
+                <p>Puedes agregar varias imágenes (y eliminarlas antes de guardar)</p>
+              </div>
+
+              <div className="form-row">
+                <label>
+                  Agregar imágenes
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={(e) => {
+                      addImagesFromFiles(e.target.files);
+                      e.target.value = '';
+                    }}
+                  />
+                  <span className="field-hint">Formato recomendado 16:9. Máx. 5MB por imagen.</span>
+                </label>
+              </div>
+
+              {imageItems.length > 0 && (
+                <div className="project-images-carousel" aria-label="Previsualización de imágenes">
+                  <Swiper
+                    modules={[FreeMode]}
+                    freeMode
+                    slidesPerView="auto"
+                    spaceBetween={12}
+                    className="project-images-swiper"
+                  >
+                    {imageItems.map((item, idx) => (
+                      <SwiperSlide key={`new-img-${idx}`} className="project-images-slide">
+                        <div className="project-images-thumb">
+                          <img src={item.previewUrl} alt={`Imagen ${idx + 1}`} loading="lazy" />
+                          <button
+                            type="button"
+                            className="project-images-remove"
+                            onClick={() => removeImageAt(idx)}
+                            aria-label="Eliminar imagen"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      </SwiperSlide>
+                    ))}
+                  </Swiper>
+                </div>
+              )}
             </div>
 
             <div className="form-row">

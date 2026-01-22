@@ -193,6 +193,59 @@
   font-weight: 400;
 }
 
+/* ========== PROJECT IMAGES (MULTI) ========== */
+.project-images-carousel {
+  width: 100%;
+}
+
+.project-images-swiper {
+  width: 100%;
+}
+
+.project-images-slide {
+  width: 160px;
+}
+
+.project-images-thumb {
+  position: relative;
+  width: 160px;
+  height: 90px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.project-images-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.project-images-remove {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(0, 0, 0, 0.55);
+  color: rgba(255, 255, 255, 0.95);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.project-images-remove:hover {
+  background: rgba(239, 68, 68, 0.25);
+  border-color: rgba(239, 68, 68, 0.35);
+  color: #ef4444;
+}
+
 .label-with-badge {
   display: inline-flex;
   align-items: center;

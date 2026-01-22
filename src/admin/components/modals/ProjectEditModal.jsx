@@ -2,6 +2,10 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { getDownloadURL, ref, uploadBytes, deleteObject } from 'firebase/storage';
 import { db, storage } from '../../../firebase/firebaseConfig';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { FreeMode } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/free-mode';
 import './ProjectEditModal.css';
 
 export default function ProjectEditModal({ project, isOpen, onClose, onSuccess, onTimelineEvent }) {
@@ -15,8 +19,9 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSuccess, 
     drawdown: project?.drawdown || '',
     performance: project?.performance || '',
   });
-  const [imageFile, setImageFile] = useState(null);
-  const [localPreviewUrl, setLocalPreviewUrl] = useState(null);
+  const [existingImages, setExistingImages] = useState([]);
+  const [newImageItems, setNewImageItems] = useState([]);
+  const [deletedImagePaths, setDeletedImagePaths] = useState([]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
 
@@ -32,27 +37,70 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSuccess, 
         drawdown: project.drawdown || '',
         performance: project.performance || '',
       });
-      setImageFile(null);
-      setLocalPreviewUrl(null);
+      const urls = Array.isArray(project.images)
+        ? project.images.filter((u) => typeof u === 'string' && u.trim())
+        : (project.imageUrl ? [project.imageUrl] : []);
+
+      const paths = Array.isArray(project.imagePaths)
+        ? project.imagePaths.filter((p) => typeof p === 'string' && p.trim())
+        : (project.imagePath ? [project.imagePath] : []);
+
+      setExistingImages(urls.map((url, idx) => ({ url, path: paths[idx] || null })));
+      setDeletedImagePaths([]);
+      setNewImageItems((prev) => {
+        for (const item of prev) {
+          try {
+            if (item?.previewUrl) URL.revokeObjectURL(item.previewUrl);
+          } catch {
+            // ignore
+          }
+        }
+        return [];
+      });
     }
   }, [project]);
 
-  useEffect(() => {
-    if (!imageFile) {
-      setLocalPreviewUrl(null);
-      return;
+  const addImagesFromFiles = (files) => {
+    const maxBytes = 5 * 1024 * 1024;
+    const next = [];
+    for (const file of Array.from(files || [])) {
+      if (!String(file?.type || '').startsWith('image/')) continue;
+      if (file.size > maxBytes) continue;
+      const previewUrl = URL.createObjectURL(file);
+      next.push({ file, previewUrl });
     }
+    if (next.length > 0) {
+      setNewImageItems((prev) => [...prev, ...next]);
+    }
+  };
 
-    const url = URL.createObjectURL(imageFile);
-    setLocalPreviewUrl(url);
-    return () => {
-      URL.revokeObjectURL(url);
-    };
-  }, [imageFile]);
+  const removeExistingAt = (index) => {
+    setExistingImages((prev) => {
+      const item = prev[index];
+      if (item?.path) {
+        setDeletedImagePaths((p) => [...p, item.path]);
+      }
+      return prev.filter((_, i) => i !== index);
+    });
+  };
+
+  const removeNewAt = (index) => {
+    setNewImageItems((prev) => {
+      const item = prev[index];
+      try {
+        if (item?.previewUrl) URL.revokeObjectURL(item.previewUrl);
+      } catch {
+        // ignore
+      }
+      return prev.filter((_, i) => i !== index);
+    });
+  };
 
   const previewUrl = useMemo(() => {
-    return localPreviewUrl || project?.imageUrl || null;
-  }, [localPreviewUrl, project?.imageUrl]);
+    const firstExisting = existingImages?.[0]?.url;
+    const firstNew = newImageItems?.[0]?.previewUrl;
+    return firstNew || firstExisting || project?.imageUrl || null;
+  }, [existingImages, newImageItems, project?.imageUrl]);
 
   const handleClose = () => {
     setError(null);
@@ -96,46 +144,58 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSuccess, 
         payload.performance = form.performance ? Number(form.performance) : null;
       }
 
-      // Optional: upload a new project image and store it in Firestore
-      if (imageFile) {
-        const maxBytes = 5 * 1024 * 1024;
-        if (!String(imageFile.type || '').startsWith('image/')) {
-          throw new Error('La imagen debe ser un archivo de tipo imagen (image/*)');
-        }
-        if (imageFile.size > maxBytes) {
-          throw new Error('La imagen excede el tamaño máximo permitido (5MB)');
-        }
-
-        const safeName = String(imageFile.name || 'image')
-          .replace(/[^a-zA-Z0-9._-]/g, '_')
-          .slice(0, 80);
-        const storagePath = `projects/${project.id}/images/${Date.now()}_${safeName}`;
-        const storageRef = ref(storage, storagePath);
-
-        await uploadBytes(storageRef, imageFile, {
-          contentType: imageFile.type || 'image/*',
-        });
-        const imageUrl = await getDownloadURL(storageRef);
-
-        payload.imageUrl = imageUrl;
-        payload.imagePath = storagePath;
-        payload.imageUpdatedAt = serverTimestamp();
-
-        if (!project.imageUrl) {
-          changes.push('Imagen: agregada');
-        } else {
-          changes.push('Imagen: actualizada');
-        }
-
-        // Best-effort cleanup of previous image
-        if (project.imagePath && project.imagePath !== storagePath) {
+      // Handle image deletions (best-effort)
+      if (deletedImagePaths.length > 0) {
+        for (const path of deletedImagePaths) {
           try {
-            await deleteObject(ref(storage, project.imagePath));
-          } catch (cleanupErr) {
+            await deleteObject(ref(storage, path));
+          } catch {
             // ignore
           }
         }
+        changes.push(`Imágenes: eliminadas (${deletedImagePaths.length})`);
       }
+
+      // Upload new images
+      const uploaded = [];
+      if (newImageItems.length > 0) {
+        for (const item of newImageItems) {
+          const file = item?.file;
+          if (!file) continue;
+
+          const safeName = String(file.name || 'image')
+            .replace(/[^a-zA-Z0-9._-]/g, '_')
+            .slice(0, 80);
+          const storagePath = `projects/${project.id}/images/${Date.now()}_${safeName}`;
+          const storageRef = ref(storage, storagePath);
+
+          await uploadBytes(storageRef, file, {
+            contentType: file.type || 'image/*',
+          });
+          const url = await getDownloadURL(storageRef);
+          uploaded.push({ url, path: storagePath });
+        }
+
+        if (uploaded.length > 0) {
+          changes.push(`Imágenes: agregadas (${uploaded.length})`);
+        }
+      }
+
+      const finalImages = [
+        ...existingImages.map((x) => x.url).filter(Boolean),
+        ...uploaded.map((x) => x.url).filter(Boolean),
+      ];
+      const finalPaths = [
+        ...existingImages.map((x) => x.path).filter(Boolean),
+        ...uploaded.map((x) => x.path).filter(Boolean),
+      ];
+
+      // Keep both new and legacy fields for compatibility
+      payload.images = finalImages;
+      payload.imagePaths = finalPaths;
+      payload.imageUrl = finalImages[0] || null;
+      payload.imagePath = finalPaths[0] || null;
+      payload.imageUpdatedAt = serverTimestamp();
 
       await updateDoc(doc(db, 'projects', project.id), payload);
 
@@ -185,6 +245,71 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSuccess, 
 
         {/* Form */}
         <form className="modal-form" onSubmit={handleSubmit}>
+          {/* Imágenes */}
+          <div className="form-section">
+            <h3 className="section-title">🖼️ Imágenes</h3>
+
+            <div className="form-field">
+              <label htmlFor="project-images">Agregar imágenes</label>
+              <input
+                id="project-images"
+                type="file"
+                className="form-input"
+                accept="image/*"
+                multiple
+                onChange={(e) => {
+                  addImagesFromFiles(e.target.files);
+                  e.target.value = '';
+                }}
+              />
+              <div className="edit-modal-hint">Máx. 5MB por imagen. Puedes eliminar imágenes antes de guardar.</div>
+            </div>
+
+            {(existingImages.length > 0 || newImageItems.length > 0) && (
+              <div className="edit-modal-images" aria-label="Carrusel de imágenes">
+                <Swiper
+                  modules={[FreeMode]}
+                  freeMode
+                  slidesPerView="auto"
+                  spaceBetween={12}
+                  className="edit-modal-images-swiper"
+                >
+                  {existingImages.map((img, idx) => (
+                    <SwiperSlide key={`existing-${idx}`} className="edit-modal-images-slide">
+                      <div className="edit-modal-thumb">
+                        <img src={img.url} alt={`Imagen existente ${idx + 1}`} loading="lazy" />
+                        <button
+                          type="button"
+                          className="edit-modal-thumb-remove"
+                          onClick={() => removeExistingAt(idx)}
+                          aria-label="Eliminar imagen"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    </SwiperSlide>
+                  ))}
+
+                  {newImageItems.map((item, idx) => (
+                    <SwiperSlide key={`new-${idx}`} className="edit-modal-images-slide">
+                      <div className="edit-modal-thumb">
+                        <img src={item.previewUrl} alt={`Nueva imagen ${idx + 1}`} loading="lazy" />
+                        <button
+                          type="button"
+                          className="edit-modal-thumb-remove"
+                          onClick={() => removeNewAt(idx)}
+                          aria-label="Eliminar imagen"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    </SwiperSlide>
+                  ))}
+                </Swiper>
+              </div>
+            )}
+          </div>
+
           {/* Información General */}
           <div className="form-section">
             <h3 className="section-title">📋 Información General</h3>
@@ -327,40 +452,6 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSuccess, 
               <strong>Campos no editables:</strong>
               <p>Tipo de proyecto, Nivel de riesgo, Capital objetivo y Estado computado.</p>
               <p className="info-note">Para cambios críticos en estos campos, contacta al administrador del sistema.</p>
-            </div>
-          </div>
-
-          {/* Imagen del proyecto */}
-          <div className="form-section">
-            <h3 className="section-title">🖼️ Imagen del Proyecto</h3>
-            {previewUrl && (
-              <div style={{ marginBottom: '0.75rem' }}>
-                <img
-                  src={previewUrl}
-                  alt="Imagen del proyecto"
-                  style={{
-                    width: '100%',
-                    maxHeight: '240px',
-                    objectFit: 'cover',
-                    borderRadius: '0.7rem',
-                    border: '1px solid var(--border-color)'
-                  }}
-                />
-              </div>
-            )}
-            <div className="form-field">
-              <label htmlFor="project-image">Seleccionar imagen</label>
-              <input
-                id="project-image"
-                type="file"
-                className="form-input"
-                accept="image/*"
-                onChange={(e) => {
-                  const file = e.target.files?.[0] || null;
-                  setImageFile(file);
-                }}
-              />
-              <p className="info-note">Recomendado: imagen horizontal. Máximo 5MB.</p>
             </div>
           </div>
 

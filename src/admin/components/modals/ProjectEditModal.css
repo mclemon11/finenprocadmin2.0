@@ -46,6 +46,9 @@
   overflow-y: auto;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
   animation: slideUp 0.3s ease;
+  position: relative;
+  z-index: 1;
+  isolation: isolate;
 }
 
 /* Custom Scrollbar */
@@ -74,6 +77,9 @@
   padding: 2rem 2rem 1.5rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(16, 185, 129, 0.03));
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .modal-header-content {
@@ -200,6 +206,66 @@
   border-color: var(--accent, #10b981);
   background: rgba(255, 255, 255, 0.05);
   box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+/* ========== IMAGES (MULTI) ========== */
+.edit-modal-hint {
+  margin-top: 0.4rem;
+  font-size: 0.8rem;
+  color: #9ca3af;
+  font-weight: 500;
+}
+
+.edit-modal-images {
+  width: 100%;
+  position: relative;
+  z-index: 1;
+  isolation: isolate;
+}
+
+.edit-modal-images-slide {
+  width: 160px;
+}
+
+.edit-modal-thumb {
+  position: relative;
+  width: 160px;
+  height: 90px;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+  z-index: 1;
+}
+
+.edit-modal-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.edit-modal-thumb-remove {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(0, 0, 0, 0.55);
+  color: rgba(255, 255, 255, 0.95);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.edit-modal-thumb-remove:hover {
+  background: rgba(239, 68, 68, 0.25);
+  border-color: rgba(239, 68, 68, 0.35);
+  color: #ef4444;
 }
 
 /* Input with Icon */
