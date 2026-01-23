@@ -4,6 +4,7 @@ import { getDownloadURL, ref, uploadBytes, deleteObject } from 'firebase/storage
 import { db, storage } from '../../../firebase/firebaseConfig';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { FreeMode } from 'swiper/modules';
+import Swal from 'sweetalert2';
 import 'swiper/css';
 import 'swiper/css/free-mode';
 import './ProjectEditModal.css';
@@ -215,15 +216,41 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSuccess, 
         }
       }
 
+      // Success alert
+      await Swal.fire({
+        title: '¡Guardado!',
+        text: 'Los cambios se han guardado correctamente.',
+        icon: 'success',
+        confirmButtonColor: '#10b981',
+        background: '#1a1f2e',
+        color: '#ffffff',
+        timer: 2000,
+        timerProgressBar: true,
+        customClass: {
+          popup: 'swal-dark-popup',
+          container: 'swal-above-modal',
+        }
+      });
+
       onSuccess?.();
       handleClose();
     } catch (err) {
       console.error('Error actualizando proyecto:', err);
-      if (err?.code === 'permission-denied') {
-        setError('Permisos insuficientes para actualizar el proyecto');
-      } else {
-        setError('No se pudo actualizar el proyecto');
-      }
+      
+      await Swal.fire({
+        title: 'Error',
+        text: err?.code === 'permission-denied' 
+          ? 'Permisos insuficientes para actualizar el proyecto'
+          : 'No se pudo actualizar el proyecto',
+        icon: 'error',
+        confirmButtonColor: '#ef4444',
+        background: '#1a1f2e',
+        color: '#ffffff',
+        customClass: {
+          popup: 'swal-dark-popup',
+          container: 'swal-above-modal',
+        }
+      });
     } finally {
       setSaving(false);
     }

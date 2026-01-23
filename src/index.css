@@ -72,6 +72,18 @@ button:disabled {
   cursor: not-allowed;
 }
 
+/* Native dropdowns (best-effort across browsers/OS) */
+select {
+  background-color: var(--bg);
+  color: var(--fg);
+}
+
+select option,
+select optgroup {
+  background-color: var(--bg);
+  color: var(--fg);
+}
+
 /* Scrollbar Styling */
 ::-webkit-scrollbar {
   width: 8px;

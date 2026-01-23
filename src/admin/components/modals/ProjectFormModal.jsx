@@ -4,6 +4,7 @@ import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { db, storage } from '../../../firebase/firebaseConfig';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { FreeMode } from 'swiper/modules';
+import Swal from 'sweetalert2';
 import 'swiper/css';
 import 'swiper/css/free-mode';
 import './ProjectFormModal.css';
@@ -223,12 +224,40 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
         });
       }
 
+      // Success alert
+      await Swal.fire({
+        title: '¡Proyecto creado!',
+        text: `El proyecto "${form.name}" se ha creado correctamente.`,
+        icon: 'success',
+        confirmButtonColor: '#10b981',
+        background: '#1a1f2e',
+        color: '#ffffff',
+        timer: 2500,
+        timerProgressBar: true,
+        customClass: {
+          popup: 'swal-dark-popup',
+          container: 'swal-above-modal',
+        }
+      });
+
       resetForm();
       onSuccess?.();
       onClose();
     } catch (err) {
       console.error('Error creando proyecto', err);
-      setError('No se pudo crear el proyecto');
+      
+      await Swal.fire({
+        title: 'Error',
+        text: 'No se pudo crear el proyecto. Inténtalo de nuevo.',
+        icon: 'error',
+        confirmButtonColor: '#ef4444',
+        background: '#1a1f2e',
+        color: '#ffffff',
+        customClass: {
+          popup: 'swal-dark-popup',
+          container: 'swal-above-modal',
+        }
+      });
     } finally {
       setSaving(false);
     }

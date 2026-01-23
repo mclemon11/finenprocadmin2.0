@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import useAdminInvestments from '../../hooks/useAdminInvestments';
 import useProjectTimeline from '../../hooks/useProjectTimeline';
 import ProjectEditModal from '../modals/ProjectEditModal';
+import FixedProjectEditModal from '../modals/FixedProjectEditModal';
 import ProjectTimeline from '../project/ProjectTimeline';
 import InvestmentDetailDrawer from './InvestmentDetailDrawer';
 import './ProjectDetailDrawer.css';
@@ -401,13 +402,24 @@ export default function ProjectDetailDrawer({
         </div>
       </div>
 
-      <ProjectEditModal
-        project={project}
-        isOpen={isEditOpen}
-        onClose={() => setIsEditOpen(false)}
-        onSuccess={handleEditSuccess}
-        onTimelineEvent={handleTimelineEvent}
-      />
+      {/* Modal de edición según tipo de proyecto */}
+      {project.type === 'fixed' ? (
+        <FixedProjectEditModal
+          project={project}
+          isOpen={isEditOpen}
+          onClose={() => setIsEditOpen(false)}
+          onSuccess={handleEditSuccess}
+          onTimelineEvent={handleTimelineEvent}
+        />
+      ) : (
+        <ProjectEditModal
+          project={project}
+          isOpen={isEditOpen}
+          onClose={() => setIsEditOpen(false)}
+          onSuccess={handleEditSuccess}
+          onTimelineEvent={handleTimelineEvent}
+        />
+      )}
 
       <InvestmentDetailDrawer
         investmentId={selectedInvestmentId}

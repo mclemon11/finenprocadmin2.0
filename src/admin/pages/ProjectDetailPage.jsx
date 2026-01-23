@@ -4,6 +4,7 @@ import useAdminProjects from '../hooks/useAdminProjects';
 import useAdminInvestments from '../hooks/useAdminInvestments';
 import useProjectTimeline from '../hooks/useProjectTimeline';
 import ProjectEditModal from '../components/modals/ProjectEditModal';
+import FixedProjectEditModal from '../components/modals/FixedProjectEditModal';
 import ProjectTimeline from '../components/project/ProjectTimeline';
 import './ProjectDetailPage.css';
 
@@ -349,13 +350,24 @@ export default function ProjectDetailPage({ adminData }) {
         )}
       </div>
 
-      <ProjectEditModal
-        project={project}
-        isOpen={isEditOpen}
-        onClose={() => setIsEditOpen(false)}
-        onSuccess={handleEditSuccess}
-        onTimelineEvent={handleTimelineEvent}
-      />
+      {/* Modal de edición según tipo de proyecto */}
+      {project.type === 'fixed' ? (
+        <FixedProjectEditModal
+          project={project}
+          isOpen={isEditOpen}
+          onClose={() => setIsEditOpen(false)}
+          onSuccess={handleEditSuccess}
+          onTimelineEvent={handleTimelineEvent}
+        />
+      ) : (
+        <ProjectEditModal
+          project={project}
+          isOpen={isEditOpen}
+          onClose={() => setIsEditOpen(false)}
+          onSuccess={handleEditSuccess}
+          onTimelineEvent={handleTimelineEvent}
+        />
+      )}
     </div>
   );
 }

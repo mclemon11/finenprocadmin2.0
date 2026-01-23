@@ -1,0 +1,62 @@
+/* SweetAlert2 dark theme + z-index above modal */
+
+.swal-dark-popup {
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 1rem !important;
+}
+
+.swal-dark-title {
+  color: #ffffff !important;
+}
+
+.swal-dark-content {
+  color: #9ca3af !important;
+}
+
+.swal2-popup.swal-dark-popup .swal2-icon {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.swal2-popup.swal-dark-popup .swal2-icon.swal2-warning {
+  border-color: #f59e0b !important;
+  color: #f59e0b !important;
+}
+
+.swal2-popup.swal-dark-popup .swal2-icon.swal2-success {
+  border-color: #10b981 !important;
+  color: #10b981 !important;
+}
+
+.swal2-popup.swal-dark-popup .swal2-icon.swal2-success .swal2-success-ring {
+  border-color: rgba(16, 185, 129, 0.3) !important;
+}
+
+.swal2-popup.swal-dark-popup .swal2-icon.swal2-success [class^=swal2-success-line] {
+  background-color: #10b981 !important;
+}
+
+.swal2-popup.swal-dark-popup .swal2-icon.swal2-error {
+  border-color: #ef4444 !important;
+  color: #ef4444 !important;
+}
+
+.swal2-popup.swal-dark-popup .swal2-icon.swal2-error [class^=swal2-x-mark-line] {
+  background-color: #ef4444 !important;
+}
+
+.swal2-popup.swal-dark-popup .swal2-timer-progress-bar {
+  background: rgba(16, 185, 129, 0.5) !important;
+}
+
+.swal2-popup.swal-dark-popup .swal2-styled.swal2-confirm {
+  font-weight: 600 !important;
+}
+
+.swal2-popup.swal-dark-popup .swal2-styled.swal2-cancel {
+  font-weight: 600 !important;
+}
+
+/* Z-index para mostrar SweetAlert2 encima del modal */
+.swal-above-modal {
+  z-index: 99999 !important;
+}
