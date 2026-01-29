@@ -5,6 +5,7 @@ import useAdminProjects from '../hooks/useAdminProjects';
 import useApproveInvestment from '../hooks/mutations/useApproveInvestment';
 import useRejectInvestment from '../hooks/mutations/useRejectInvestment';
 import ActionModal from '../components/modals/ActionModal';
+import { useLanguage } from '../../context/LanguageContext';
 import './InversionesPage.css';
 
 export default function InversionesPage({ adminData }) {
@@ -12,6 +13,7 @@ export default function InversionesPage({ adminData }) {
   const [searchParams] = useSearchParams();
   const initialProject = searchParams.get('projectId') || '';
   const initialUser = searchParams.get('userId') || '';
+  const { t } = useLanguage();
 
   const [filters, setFilters] = useState({ status: 'all', projectId: initialProject, userId: initialUser, search: '' });
 
@@ -37,10 +39,10 @@ export default function InversionesPage({ adminData }) {
   }, [initialProject, initialUser]);
 
   const statusFilters = [
-    { value: 'all', label: 'Todas' },
-    { value: 'active', label: 'Activas' },
-    { value: 'completed', label: 'Completadas' },
-    { value: 'cancelled', label: 'Canceladas' },
+    { value: 'all', label: t('investments.allStatuses') },
+    { value: 'active', label: t('investments.activePlural') },
+    { value: 'completed', label: t('investments.completedPlural') },
+    { value: 'cancelled', label: t('investments.cancelledPlural') },
   ];
 
   const formatCurrency = (amount) => new Intl.NumberFormat('en-US', {
@@ -109,26 +111,35 @@ export default function InversionesPage({ adminData }) {
     }
   };
 
+  const getStatusLabel = (status) => {
+    switch (status) {
+      case 'active': return t('investments.active');
+      case 'completed': return t('investments.completed');
+      case 'cancelled': return t('investments.cancelled');
+      default: return status;
+    }
+  };
+
   return (
     <div className="inversiones-page">
       <div className="page-header">
         <div>
-          <h1 className="page-title">Gestión de Inversiones</h1>
-          <p className="page-subtitle">Contexto completo: usuario, proyecto y ROI real vs esperado</p>
+          <h1 className="page-title">{t('investments.title')}</h1>
+          <p className="page-subtitle">{t('investments.subtitle')}</p>
         </div>
       </div>
 
       <div className="inversiones-summary">
         <div className="summary-card">
-          <div className="summary-label">Total Invertido</div>
+          <div className="summary-label">{t('investments.totalInvested')}</div>
           <div className="summary-value">{formatCurrency(totalAmount)}</div>
         </div>
         <div className="summary-card">
-          <div className="summary-label">Inversiones Activas</div>
+          <div className="summary-label">{t('investments.activeInvestments')}</div>
           <div className="summary-value">{investments.filter(i => i.status === 'active').length}</div>
         </div>
         <div className="summary-card">
-          <div className="summary-label">Total de Inversiones</div>
+          <div className="summary-label">{t('investments.totalInvestments')}</div>
           <div className="summary-value">{investments.length}</div>
         </div>
       </div>
@@ -152,16 +163,16 @@ export default function InversionesPage({ adminData }) {
           value={filters.projectId}
           onChange={(e) => setFilters({ ...filters, projectId: e.target.value })}
         >
-          <option value="">Todos los proyectos</option>
+          <option value="">{t('investments.allProjects')}</option>
           {projects.map((p) => (
-            <option key={p.id} value={p.id}>{p.name || 'Proyecto sin nombre'}</option>
+            <option key={p.id} value={p.id}>{p.name || t('investments.projectNoName')}</option>
           ))}
         </select>
 
         <input
           type="text"
           className="filter-input"
-          placeholder="Buscar usuario (email/nombre)"
+          placeholder={t('investments.searchUserPlaceholder')}
           value={filters.search}
           onChange={(e) => setFilters({ ...filters, search: e.target.value })}
         />
@@ -169,38 +180,38 @@ export default function InversionesPage({ adminData }) {
 
       <div className="inversiones-card">
         <div className="card-header">
-          <h3>Inversiones</h3>
+          <h3>{t('nav.investments')}</h3>
         </div>
 
         {loading ? (
-          <div className="loading-state">Cargando inversiones...</div>
+          <div className="loading-state">{t('investments.loadingInvestments')}</div>
         ) : filteredInvestments.length === 0 ? (
-          <div className="empty-state">No hay inversiones con estos filtros</div>
+          <div className="empty-state">{t('investments.noInvestments')}</div>
         ) : (
           <div className="table-wrapper">
             <table className="inversiones-table">
               <thead>
                 <tr>
-                  <th>Usuario</th>
-                  <th>Proyecto</th>
-                  <th>Monto</th>
-                  <th>ROI Esperado</th>
-                  <th>ROI Real</th>
-                  <th>Estado</th>
-                  <th>Fecha</th>
-                  <th>Acciones</th>
+                  <th>{t('investments.user')}</th>
+                  <th>{t('investments.project')}</th>
+                  <th>{t('investments.amount')}</th>
+                  <th>{t('investments.expectedROI')}</th>
+                  <th>{t('investments.actualROI')}</th>
+                  <th>{t('investments.status')}</th>
+                  <th>{t('investments.date')}</th>
+                  <th>{t('investments.actions')}</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredInvestments.map(inv => (
                   <tr key={inv.id}>
                     <td>
-                      <div className="cell-title">{inv.userName || 'Usuario sin datos'}</div>
-                      <div className="cell-subtle">{inv.userEmail || 'Email no disponible'}</div>
+                      <div className="cell-title">{inv.userName || t('investments.userNoData')}</div>
+                      <div className="cell-subtle">{inv.userEmail || t('common.emailNotAvailable')}</div>
                     </td>
                     <td>
-                      <div className="cell-title">{inv.projectName || 'Proyecto sin nombre'}</div>
-                      <div className="cell-subtle">{inv.expectedReturn ? 'Con retorno esperado' : 'Retorno no definido'}</div>
+                      <div className="cell-title">{inv.projectName || t('investments.projectNoName')}</div>
+                      <div className="cell-subtle">{inv.expectedReturn ? t('investments.withExpectedReturn') : t('investments.noExpectedReturn')}</div>
                     </td>
                     <td className="amount-cell">{formatCurrency(inv.amount)}</td>
                     <td>
@@ -215,15 +226,13 @@ export default function InversionesPage({ adminData }) {
                     </td>
                     <td>
                       <span className={`status-badge status-${inv.status}`}>
-                        {inv.status === 'active' && 'Activa'}
-                        {inv.status === 'completed' && 'Completada'}
-                        {inv.status === 'cancelled' && 'Cancelada'}
+                        {getStatusLabel(inv.status)}
                       </span>
                     </td>
                     <td>{formatDate(inv.createdAt)}</td>
                     <td className="actions-cell">
-                      <button className="link-btn" onClick={() => goToUser(inv.userId)}>Ver usuario</button>
-                      <button className="link-btn" onClick={() => goToProject(inv.projectId)} disabled={!inv.projectId}>Ver proyecto</button>
+                      <button className="link-btn" onClick={() => goToUser(inv.userId)}>{t('investments.viewUser')}</button>
+                      <button className="link-btn" onClick={() => goToProject(inv.projectId)} disabled={!inv.projectId}>{t('investments.viewProject')}</button>
                       {inv.status === 'pending' && (
                         <>
                           <button
@@ -234,7 +243,7 @@ export default function InversionesPage({ adminData }) {
                             }}
                             disabled={approveLoading || rejectLoading}
                           >
-                            Aprobar
+                            {t('common.approve')}
                           </button>
                           <button
                             className="link-btn"
@@ -244,7 +253,7 @@ export default function InversionesPage({ adminData }) {
                             }}
                             disabled={approveLoading || rejectLoading}
                           >
-                            Rechazar
+                            {t('common.reject')}
                           </button>
                         </>
                       )}
@@ -259,11 +268,11 @@ export default function InversionesPage({ adminData }) {
 
       <ActionModal
         isOpen={actionModal.isOpen}
-        title={actionModal.type === 'approve' ? 'Aprobar Inversión' : 'Rechazar Inversión'}
-        message={`¿${actionModal.type === 'approve' ? 'Aprobar' : 'Rechazar'} inversión de ${selectedInvestment ? formatCurrency(selectedInvestment.amount) : ''} del usuario ${selectedInvestment?.userEmail || selectedInvestment?.userId}? ${actionModal.type === 'approve' ? 'Se descontará del saldo.' : ''}`}
-        actionLabel={actionModal.type === 'approve' ? 'Aprobar' : 'Rechazar'}
+        title={actionModal.type === 'approve' ? t('investments.approveTitle') : t('investments.rejectTitle')}
+        message={`${actionModal.type === 'approve' ? t('investments.approveMessage') : t('investments.rejectMessage')} ${selectedInvestment ? formatCurrency(selectedInvestment.amount) : ''} ${t('topups.ofUser')} ${selectedInvestment?.userEmail || selectedInvestment?.userId}? ${actionModal.type === 'approve' ? t('investments.willDeductBalance') : ''}`}
+        actionLabel={actionModal.type === 'approve' ? t('common.approve') : t('common.reject')}
         showReasonInput={actionModal.type === 'reject'}
-        reasonPlaceholder="Razón del rechazo..."
+        reasonPlaceholder={t('common.rejectReason')}
         loading={approveLoading || rejectLoading}
         onConfirm={actionModal.type === 'approve' ? handleApprove : handleReject}
         onCancel={() => {

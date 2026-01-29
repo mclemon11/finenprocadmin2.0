@@ -1,8 +1,11 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
+import { useLanguage } from '../context/LanguageContext';
 import './AdminSidebar.css';
 
 export default function AdminSidebar({ isOpen, onClose }) {
+  const { t } = useLanguage();
+
   const Link = ({ to, children, disabled, icon }) => {
     const handleClick = () => {
       if (onClose) onClose();
@@ -29,17 +32,17 @@ export default function AdminSidebar({ isOpen, onClose }) {
     <aside className={`admin-sidebar ${isOpen ? 'open' : ''}`}>
       <div className="brand">FINENPROC</div>
       <nav>
-        <Link to="/admin" icon="📊">Panel</Link>
-        <Link to="/admin/usuarios" icon="👥">Usuarios</Link>
-        <div className="nav-section-title">Operaciones</div>
-        <Link to="/admin/operaciones/recargas" icon="💰">Recargas</Link>
-        <Link to="/admin/operaciones/retiros" icon="🏦">Retiros</Link>
-        <Link to="/admin/operaciones/inversiones" icon="📈">Inversiones</Link>
-        <div className="nav-section-title">Otros</div>
-        <Link to="/admin/proyectos" icon="📁">Proyectos</Link>
-        <Link disabled icon="⚙️">Configuración</Link>
+        <Link to="/admin" icon="📊">{t('nav.dashboard')}</Link>
+        <Link to="/admin/usuarios" icon="👥">{t('nav.users')}</Link>
+        <div className="nav-section-title">{t('nav.operations')}</div>
+        <Link to="/admin/operaciones/recargas" icon="💰">{t('nav.topups')}</Link>
+        <Link to="/admin/operaciones/retiros" icon="🏦">{t('nav.withdrawals')}</Link>
+        <Link to="/admin/operaciones/inversiones" icon="📈">{t('nav.investments')}</Link>
+        <div className="nav-section-title">{t('nav.others')}</div>
+        <Link to="/admin/proyectos" icon="📁">{t('nav.projects')}</Link>
+        <Link disabled icon="⚙️">{t('nav.settings')}</Link>
       </nav>
-      <div className="sidebar-footer">Admin Panel</div>
+      <div className="sidebar-footer">{t('nav.adminPanel')}</div>
     </aside>
   );
 }

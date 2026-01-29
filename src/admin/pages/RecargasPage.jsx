@@ -4,6 +4,7 @@ import useApproveTopup from '../hooks/mutations/useApproveTopup';
 import useRejectTopup from '../hooks/mutations/useRejectTopup';
 import ActionModal from '../components/modals/ActionModal';
 import RechargeMethodsModal from '../components/modals/RechargeMethodsModal';
+import { useLanguage } from '../../context/LanguageContext';
 import './RecargasPage.css';
 
 export default function RecargasPage({ adminData }) {
@@ -15,12 +16,13 @@ export default function RecargasPage({ adminData }) {
   const { topups, loading, refetch } = useAdminTopups({ status: filter });
   const { approve: approveTopup, loading: approveLoading } = useApproveTopup();
   const { reject: rejectTopup, loading: rejectLoading } = useRejectTopup();
+  const { t } = useLanguage();
 
   const filters = [
-    { value: 'all', label: 'Todas' },
-    { value: 'pending', label: 'Pendientes' },
-    { value: 'approved', label: 'Aprobadas' },
-    { value: 'rejected', label: 'Rechazadas' },
+    { value: 'all', label: t('topups.allStatuses') },
+    { value: 'pending', label: t('topups.pendingPlural') },
+    { value: 'approved', label: t('topups.approvedPlural') },
+    { value: 'rejected', label: t('topups.rejectedPlural') },
   ];
 
   const handleApprove = async () => {
@@ -71,12 +73,21 @@ export default function RecargasPage({ adminData }) {
 
   const getProofUrl = (topup) => topup?.proofUrl || topup?.receiptUrl || null;
 
+  const getStatusLabel = (status) => {
+    switch (status) {
+      case 'pending': return t('topups.pending');
+      case 'approved': return t('topups.approved');
+      case 'rejected': return t('topups.rejected');
+      default: return status;
+    }
+  };
+
   return (
     <div className="recargas-page">
       <div className="page-header">
         <div>
-          <h1 className="page-title">Gestión de Recargas</h1>
-          <p className="page-subtitle">Administra todas las solicitudes de recarga de usuarios</p>
+          <h1 className="page-title">{t('topups.title')}</h1>
+          <p className="page-subtitle">{t('topups.subtitle')}</p>
         </div>
       </div>
 
@@ -98,45 +109,43 @@ export default function RecargasPage({ adminData }) {
       <div className="recargas-card">
         <div className="card-header">
           <div className="card-header-row">
-            <h3>Total de recargas: {topups.length}</h3>
+            <h3>{t('topups.totalTopups')}: {topups.length}</h3>
             <button
               className="btn-methods"
               onClick={() => setMethodsModalOpen(true)}
               type="button"
             >
-              Metodos de Recargas
+              {t('topups.rechargeMethods')}
             </button>
           </div>
         </div>
 
         {loading ? (
-          <div className="loading-state">Cargando recargas...</div>
+          <div className="loading-state">{t('topups.loadingTopups')}</div>
         ) : topups.length === 0 ? (
-          <div className="empty-state">No hay recargas en este estado</div>
+          <div className="empty-state">{t('topups.noTopups')}</div>
         ) : (
           <div className="table-wrapper">
             <table className="recargas-table">
               <thead>
                 <tr>
-                  <th>Usuario</th>
-                  <th>Monto</th>
-                  <th>Método</th>
-                  <th>Estado</th>
-                  <th>Fecha</th>
-                  <th>Acción</th>
+                  <th>{t('topups.user')}</th>
+                  <th>{t('topups.amount')}</th>
+                  <th>{t('topups.method')}</th>
+                  <th>{t('topups.status')}</th>
+                  <th>{t('topups.date')}</th>
+                  <th>{t('topups.action')}</th>
                 </tr>
               </thead>
               <tbody>
                 {topups.map(topup => (
                   <tr key={topup.id}>
-                    <td className="email-cell">{topup.userEmail || topup.userId || 'Email no disponible'}</td>
+                    <td className="email-cell">{topup.userEmail || topup.userId || t('common.emailNotAvailable')}</td>
                     <td className="amount-cell">{formatCurrency(topup.amount)}</td>
                     <td>{topup.method || '-'}</td>
                     <td>
                       <span className={`status-badge status-${topup.status}`}>
-                        {topup.status === 'pending' && 'Pendiente'}
-                        {topup.status === 'approved' && 'Aprobada'}
-                        {topup.status === 'rejected' && 'Rechazada'}
+                        {getStatusLabel(topup.status)}
                       </span>
                     </td>
                     <td>{formatDate(topup.createdAt)}</td>
@@ -148,7 +157,7 @@ export default function RecargasPage({ adminData }) {
                             onClick={() => {
                               setProofViewer({ isOpen: true, url: getProofUrl(topup) });
                             }}
-                            title="Ver comprobante"
+                            title={t('topups.viewProof')}
                           >
                             <svg
                               className="btn-icon"
@@ -185,7 +194,7 @@ export default function RecargasPage({ adminData }) {
                                 setSelectedTopup(topup);
                                 setActionModal({ isOpen: true, type: 'approve' });
                               }}
-                              title="Aprobar"
+                              title={t('common.approve')}
                             >
                               ✓
                             </button>
@@ -195,7 +204,7 @@ export default function RecargasPage({ adminData }) {
                                 setSelectedTopup(topup);
                                 setActionModal({ isOpen: true, type: 'reject' });
                               }}
-                              title="Rechazar"
+                              title={t('common.reject')}
                             >
                               ✕
                             </button>
@@ -217,23 +226,23 @@ export default function RecargasPage({ adminData }) {
           onClick={() => setProofViewer({ isOpen: false, url: null })}
           role="button"
           tabIndex={0}
-          aria-label="Cerrar comprobante"
+          aria-label={t('topups.closeProof')}
         >
           <img
             className="proof-viewer-image"
             src={proofViewer.url}
-            alt="Comprobante"
+            alt={t('topups.viewProof')}
           />
         </div>
       )}
 
       <ActionModal
         isOpen={actionModal.isOpen}
-        title={actionModal.type === 'approve' ? 'Aprobar Recarga' : 'Rechazar Recarga'}
-        message={`¿${actionModal.type === 'approve' ? 'Aprobar' : 'Rechazar'} recarga de ${selectedTopup ? formatCurrency(selectedTopup.amount) : ''} del usuario ${selectedTopup?.userEmail || selectedTopup?.userId}?`}
-        actionLabel={actionModal.type === 'approve' ? 'Aprobar' : 'Rechazar'}
+        title={actionModal.type === 'approve' ? t('topups.approveTitle') : t('topups.rejectTitle')}
+        message={`${actionModal.type === 'approve' ? t('topups.approveMessage') : t('topups.rejectMessage')} ${selectedTopup ? formatCurrency(selectedTopup.amount) : ''} ${t('topups.ofUser')} ${selectedTopup?.userEmail || selectedTopup?.userId}?`}
+        actionLabel={actionModal.type === 'approve' ? t('common.approve') : t('common.reject')}
         showReasonInput={actionModal.type === 'reject'}
-        reasonPlaceholder="Razón del rechazo..."
+        reasonPlaceholder={t('common.rejectReason')}
         loading={approveLoading || rejectLoading}
         onConfirm={actionModal.type === 'approve' ? handleApprove : handleReject}
         onCancel={() => {

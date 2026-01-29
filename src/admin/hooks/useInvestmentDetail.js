@@ -9,6 +9,7 @@ import {
   orderBy 
 } from 'firebase/firestore';
 import { db } from '../../firebase/firebaseConfig';
+import { t } from '../../utils/translationHelper';
 
 /**
  * Hook que carga el detalle completo de una inversión:
@@ -42,7 +43,7 @@ export default function useInvestmentDetail(investmentId) {
       const invSnap = await getDoc(invRef);
 
       if (!invSnap.exists()) {
-        throw new Error('Inversión no encontrada');
+        throw new Error(t('errors.investmentNotFound'));
       }
 
       const investmentData = { id: invSnap.id, ...invSnap.data() };

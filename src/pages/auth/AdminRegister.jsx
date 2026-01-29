@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
-import { createUserWithEmailAndPassword, deleteUser, signOut } from 'firebase/auth';
+import {
+  createUserWithEmailAndPassword,
+  deleteUser,
+  signInWithEmailAndPassword,
+} from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
-import { db, getProvisioningAuth } from '../../firebase/firebaseConfig';
-import useAdminAuth from '../../auth/useAdminAuth';
+import { auth, db } from '../../firebase/firebaseConfig';
 import { Link, useNavigate } from 'react-router-dom';
 import logo from '../../assets/Logo.png';
 import './AdminRegister.css';
@@ -15,11 +18,9 @@ export default function AdminRegister(){
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
-  const { loading: authLoading, isAdmin } = useAdminAuth();
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    if (authLoading) return;
 
     // Validar que las contraseñas coincidan
     if (password !== confirmPassword) {
@@ -32,26 +33,50 @@ export default function AdminRegister(){
       return;
     }
 
-    // Security model (matches your Firestore rules): only an existing admin can create admin users.
-    if (!isAdmin) {
-      setError('Solo un administrador puede crear cuentas de administrador. Inicia sesión como admin y vuelve a intentar.');
-      return;
-    }
+    // Para revertir al modelo “solo admins pueden crear admins”, descomenta esto:
+    // if (!isAdmin) { setError('Solo un administrador puede crear cuentas de administrador.'); return; }
 
     setLoading(true);
     setError(null);
     setSuccess(false);
     
     let userCredential = null;
-    const provisioningAuth = getProvisioningAuth();
+    let createdNewAuthUser = false;
     
     try {
       // Paso 1: Crear usuario en Firebase Auth usando una instancia secundaria
-      // (no cambia la sesión del admin actual)
-      userCredential = await createUserWithEmailAndPassword(provisioningAuth, email.trim(), password);
+      // Para testing: usamos la sesión principal para que el usuario quede autenticado
+      // y pueda escribir su propio perfil en Firestore.
+      // Si el email ya existe, en vez de fallar intentamos autenticarlo con la misma contraseña.
+      try {
+        userCredential = await createUserWithEmailAndPassword(
+          auth,
+          email.trim(),
+          password
+        );
+        createdNewAuthUser = true;
+      } catch (authErr) {
+        const code = authErr?.code;
+        if (code === 'auth/email-already-in-use') {
+          userCredential = await signInWithEmailAndPassword(
+            auth,
+            email.trim(),
+            password
+          );
+          createdNewAuthUser = false;
+        } else {
+          throw authErr;
+        }
+      }
+
       const user = userCredential.user;
-      
-      console.log('✓ Usuario creado en Auth:', user.uid);
+
+      console.log(
+        createdNewAuthUser
+          ? '✓ Usuario creado en Auth:'
+          : '✓ Usuario ya existía en Auth (sign-in OK):',
+        user.uid
+      );
       
       // Paso 2: Crear documento en Firestore como el admin actual (permitido por reglas)
       try {
@@ -66,8 +91,6 @@ export default function AdminRegister(){
         
         console.log('✓ Documento Firestore creado exitosamente');
         setSuccess(true);
-        // Cerrar la sesión de la instancia secundaria para no dejar una sesión abierta en memoria
-        await signOut(provisioningAuth);
 
         // Redirigir al dashboard después del registro exitoso
         setTimeout(() => navigate('/admin', { replace: true }), 1500);
@@ -76,20 +99,26 @@ export default function AdminRegister(){
         // Si Firestore falla, eliminar el usuario de Auth (rollback)
         console.error('✗ Error al crear documento Firestore:', firestoreError);
         try {
-          await deleteUser(user);
+          if (createdNewAuthUser) {
+            await deleteUser(user);
+          }
         } catch (deleteErr) {
           console.error('✗ Error al eliminar usuario recién creado:', deleteErr);
         }
-        await signOut(provisioningAuth);
         throw new Error('Error al crear perfil en Firestore. Revisa permisos/reglas.');
       }
       
     } catch (err) {
       console.error('Error en registro:', err);
-      setError(err.message || 'Error desconocido en el registro');
 
-      // Best-effort cleanup: ensure the secondary auth isn't left signed in
-      await signOut(provisioningAuth).catch(e => console.error('Error en signOut provisioning:', e));
+      if (err?.code === 'auth/wrong-password' || err?.code === 'auth/invalid-credential') {
+        setError('El email ya existe, pero la contraseña es incorrecta.');
+      } else if (err?.code === 'auth/user-not-found') {
+        setError('No existe un usuario con ese email.');
+      } else {
+        setError(err.message || 'Error desconocido en el registro');
+      }
+
     } finally {
       setLoading(false);
     }
@@ -170,7 +199,7 @@ export default function AdminRegister(){
             <button 
               className="btn btn-primary btn-large" 
               type="submit" 
-              disabled={loading || authLoading}
+              disabled={loading}
             >
               {loading ? (
                 <>

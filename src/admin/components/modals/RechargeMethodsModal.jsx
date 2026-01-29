@@ -9,6 +9,7 @@ import {
   updateDoc,
 } from 'firebase/firestore';
 import { db } from '../../../firebase/firebaseConfig';
+import { useLanguage } from '../../../context/LanguageContext';
 import './RechargeMethodsModal.css';
 
 const COLLECTION_NAME = 'rechargeMethods';
@@ -35,6 +36,7 @@ const formatDateTime = (value) => {
 };
 
 export default function RechargeMethodsModal({ isOpen, onClose }) {
+  const { t } = useLanguage();
   const [view, setView] = useState('list'); // 'list' | 'edit'
   const [transitionKey, setTransitionKey] = useState(0);
 
@@ -88,14 +90,14 @@ export default function RechargeMethodsModal({ isOpen, onClose }) {
         setMethods(data);
       } catch (e) {
         console.error('Error cargando métodos de recarga:', e);
-        setError('No se pudieron cargar los métodos de recarga');
+        setError(t('rechargeMethods.loadError'));
       } finally {
         setLoading(false);
       }
     };
 
     fetchMethods();
-  }, [isOpen]);
+  }, [isOpen, t]);
 
   const hasChanges = useMemo(() => {
     if (!selected) return false;
@@ -161,7 +163,7 @@ export default function RechargeMethodsModal({ isOpen, onClose }) {
       setSelected(updated);
     } catch (e) {
       console.error('Error guardando método de recarga:', e);
-      setError('No se pudieron guardar los cambios');
+      setError(t('rechargeMethods.saveError'));
     } finally {
       setSaving(false);
     }
@@ -173,8 +175,8 @@ export default function RechargeMethodsModal({ isOpen, onClose }) {
     <div className="recharge-methods-overlay" onClick={onClose}>
       <div className="recharge-methods-modal" onClick={(e) => e.stopPropagation()}>
         <div className="rm-header">
-          <h2 className="rm-title">Métodos de Recargas</h2>
-          <button className="rm-close" onClick={onClose} aria-label="Cerrar">
+          <h2 className="rm-title">{t('rechargeMethods.title')}</h2>
+          <button className="rm-close" onClick={onClose} aria-label={t('common.close')}>
             ✕
           </button>
         </div>
@@ -185,9 +187,9 @@ export default function RechargeMethodsModal({ isOpen, onClose }) {
           {view === 'list' ? (
             <>
               {loading ? (
-                <div className="rm-loading">Cargando métodos...</div>
+                <div className="rm-loading">{t('rechargeMethods.loading')}</div>
               ) : methods.length === 0 ? (
-                <div className="rm-empty">No hay métodos de recarga</div>
+                <div className="rm-empty">{t('rechargeMethods.noMethods')}</div>
               ) : (
                 <div className="rm-list">
                   {methods.map((m) => (
@@ -195,13 +197,13 @@ export default function RechargeMethodsModal({ isOpen, onClose }) {
                       key={m.id}
                       className="rm-list-item"
                       onClick={() => openEdit(m)}
-                      title="Editar método"
+                      title={t('rechargeMethods.editMethod')}
                     >
                       <div className="rm-list-main">
-                        <div className="rm-list-name">{m.name || 'Sin nombre'}</div>
+                        <div className="rm-list-name">{m.name || t('rechargeMethods.noName')}</div>
                         <div className="rm-list-meta">
-                          <span className="rm-pill">{m.type || 'Sin tipo'}</span>
-                          <span className="rm-pill">{m.status || 'Sin estado'}</span>
+                          <span className="rm-pill">{m.type || t('rechargeMethods.noType')}</span>
+                          <span className="rm-pill">{m.status || t('rechargeMethods.noStatus')}</span>
                         </div>
                       </div>
                       <div className="rm-list-date">{formatDateTime(m.createdAt)}</div>
@@ -214,7 +216,7 @@ export default function RechargeMethodsModal({ isOpen, onClose }) {
             <>
               <div className="rm-form">
                 <label className="rm-field">
-                  <span className="rm-label">Nombre</span>
+                  <span className="rm-label">{t('rechargeMethods.name')}</span>
                   <input
                     className="rm-input"
                     value={form.name}
@@ -224,7 +226,7 @@ export default function RechargeMethodsModal({ isOpen, onClose }) {
                 </label>
 
                 <label className="rm-field">
-                  <span className="rm-label">Tipo</span>
+                  <span className="rm-label">{t('rechargeMethods.type')}</span>
                   <input
                     className="rm-input"
                     value={form.type}
@@ -234,20 +236,20 @@ export default function RechargeMethodsModal({ isOpen, onClose }) {
                 </label>
 
                 <label className="rm-field">
-                  <span className="rm-label">Estado</span>
+                  <span className="rm-label">{t('rechargeMethods.status')}</span>
                   <select
                     className="rm-input"
                     value={normalizeStatus(form.status)}
                     onChange={(e) => setForm((f) => ({ ...f, status: normalizeStatus(e.target.value) }))}
                     disabled={saving}
                   >
-                    <option value="active">active</option>
-                    <option value="inactive">inactive</option>
+                    <option value="active">{t('rechargeMethods.statusActive')}</option>
+                    <option value="inactive">{t('rechargeMethods.statusInactive')}</option>
                   </select>
                 </label>
 
                 <label className="rm-field">
-                  <span className="rm-label">Detalles</span>
+                  <span className="rm-label">{t('rechargeMethods.details')}</span>
                   <textarea
                     className="rm-textarea"
                     value={form.detailsText}
@@ -261,7 +263,7 @@ export default function RechargeMethodsModal({ isOpen, onClose }) {
                 </label>
 
                 <label className="rm-field">
-                  <span className="rm-label">Creado</span>
+                  <span className="rm-label">{t('rechargeMethods.created')}</span>
                   <input
                     className="rm-input rm-input-readonly"
                     value={formatDateTime(selected?.createdAt)}
@@ -270,7 +272,7 @@ export default function RechargeMethodsModal({ isOpen, onClose }) {
                 </label>
 
                 <label className="rm-field">
-                  <span className="rm-label">Actualizado</span>
+                  <span className="rm-label">{t('rechargeMethods.updated')}</span>
                   <input
                     className="rm-input rm-input-readonly"
                     value={formatDateTime(selected?.updateAt)}
@@ -285,14 +287,14 @@ export default function RechargeMethodsModal({ isOpen, onClose }) {
                   onClick={backToList}
                   disabled={saving}
                 >
-                  Cancelar
+                  {t('common.cancel')}
                 </button>
                 <button
                   className="rm-btn rm-btn-primary"
                   onClick={handleSave}
                   disabled={saving || !hasChanges}
                 >
-                  {saving ? 'Guardando...' : 'Guardar cambios'}
+                  {saving ? t('rechargeMethods.saving') : t('rechargeMethods.saveChanges')}
                 </button>
               </div>
             </>

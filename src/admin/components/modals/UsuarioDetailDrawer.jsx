@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import useApproveTopup from '../../hooks/mutations/useApproveTopup';
 import useRejectTopup from '../../hooks/mutations/useRejectTopup';
 import ActionModal from './ActionModal';
+import { useLanguage } from '../../../context/LanguageContext';
 import './UsuarioDetailDrawer.css';
 
 export default function UsuarioDetailDrawer({
@@ -22,6 +23,7 @@ export default function UsuarioDetailDrawer({
   const [actionModal, setActionModal] = useState({ isOpen: false, type: null });
   const { approve: approveTopup, loading: approveLoading } = useApproveTopup();
   const { reject: rejectTopup, loading: rejectLoading } = useRejectTopup();
+  const { t } = useLanguage();
 
   if (!isOpen) return null;
 
@@ -75,20 +77,20 @@ export default function UsuarioDetailDrawer({
       <div className="usuario-detail-drawer">
         <div className="drawer-header">
           <div className="header-content">
-            <h2 className="drawer-title">{user?.displayName || user?.email || 'Usuario'}</h2>
+            <h2 className="drawer-title">{user?.displayName || user?.email || t('users.user')}</h2>
             <p className="drawer-email">{user?.email}</p>
             <div className="header-badges">
               <span className={`status-badge status-${user?.status}`}>
-                {user?.status === 'active' ? '● Activo' : '○ Inactivo'}
+                {user?.status === 'active' ? `● ${t('status.active')}` : `○ ${t('status.inactive')}`}
               </span>
               <span className="role-badge">{user?.role || 'Investor'}</span>
             </div>
           </div>
-          <button className="btn-close" onClick={onClose} aria-label="Cerrar">✕</button>
+          <button className="btn-close" onClick={onClose} aria-label={t('common.close')}>✕</button>
         </div>
 
         {loading ? (
-          <div className="drawer-loading">Cargando detalle...</div>
+          <div className="drawer-loading">{t('users.loadingDetail')}</div>
         ) : (
           <>
             <div className="drawer-tabs">
@@ -96,37 +98,37 @@ export default function UsuarioDetailDrawer({
                 className={`tab-btn ${activeTab === 'perfil' ? 'active' : ''}`}
                 onClick={() => setActiveTab('perfil')}
               >
-                📊 Resumen
+                📊 {t('users.tabs.summary')}
               </button>
               <button
                 className={`tab-btn ${activeTab === 'wallet' ? 'active' : ''}`}
                 onClick={() => setActiveTab('wallet')}
               >
-                💰 Wallet
+                💰 {t('users.tabs.wallet')}
               </button>
               <button
                 className={`tab-btn ${activeTab === 'inversiones' ? 'active' : ''}`}
                 onClick={() => setActiveTab('inversiones')}
               >
-                📈 Inversiones
+                📈 {t('users.tabs.investments')}
               </button>
               <button
                 className={`tab-btn ${activeTab === 'recargas' ? 'active' : ''}`}
                 onClick={() => setActiveTab('recargas')}
               >
-                🔄 Recargas
+                🔄 {t('users.tabs.topups')}
               </button>
               <button
                 className={`tab-btn ${activeTab === 'retiros' ? 'active' : ''}`}
                 onClick={() => setActiveTab('retiros')}
               >
-                💸 Retiros
+                💸 {t('users.tabs.withdrawals')}
               </button>
               <button
                 className={`tab-btn ${activeTab === 'transacciones' ? 'active' : ''}`}
                 onClick={() => setActiveTab('transacciones')}
               >
-                📋 Transacciones
+                📋 {t('users.tabs.transactions')}
               </button>
             </div>
 
@@ -137,36 +139,36 @@ export default function UsuarioDetailDrawer({
                   {/* Summary Cards - 2x2 Grid */}
                   <div className="summary-cards">
                     <div className="summary-card">
-                      <div className="card-label">Email</div>
+                      <div className="card-label">{t('users.email')}</div>
                       <div className="card-value accent">{user.email}</div>
                     </div>
                     <div className="summary-card">
-                      <div className="card-label">Nombre</div>
+                      <div className="card-label">{t('users.name')}</div>
                       <div className="card-value">{user.displayName || '—'}</div>
                     </div>
                     <div className="summary-card">
-                      <div className="card-label">Estado</div>
+                      <div className="card-label">{t('users.status')}</div>
                       <div>
                         <span className={`status-badge status-${user.status}`}>
-                          {user.status === 'active' ? 'Activo' : 'Inactivo'}
+                          {user.status === 'active' ? t('status.active') : t('status.inactive')}
                         </span>
                       </div>
                     </div>
                     <div className="summary-card">
-                      <div className="card-label">Fecha Registro</div>
+                      <div className="card-label">{t('users.registrationDate')}</div>
                       <div className="card-value">{formatDate(user.createdAt)}</div>
                     </div>
                   </div>
 
                   {/* Technical Info Section */}
                   <div className="technical-section">
-                    <div className="section-title">Información Técnica</div>
+                    <div className="section-title">{t('users.technicalInfo')}</div>
                     <div className="tech-info-row">
-                      <span className="tech-label">ID de Usuario</span>
+                      <span className="tech-label">{t('users.userId')}</span>
                       <span className="tech-value">{user.uid}</span>
                     </div>
                     <div className="tech-info-row">
-                      <span className="tech-label">Rol</span>
+                      <span className="tech-label">{t('users.role')}</span>
                       <span className="tech-value">{user.role || 'investor'}</span>
                     </div>
                   </div>
@@ -179,15 +181,15 @@ export default function UsuarioDetailDrawer({
                   {wallet ? (
                     <div className="info-group">
                       <div className="wallet-card">
-                        <div className="wallet-label">Balance Actual</div>
+                        <div className="wallet-label">{t('users.currentBalance')}</div>
                         <div className="wallet-amount">{formatCurrency(wallet.balance)}</div>
                         <div className="wallet-meta">
                           <div className="wallet-meta-item">
-                            <div className="wallet-meta-label">Actualizado</div>
+                            <div className="wallet-meta-label">{t('users.updated')}</div>
                             <div className="wallet-meta-value">{formatDate(wallet.updatedAt)}</div>
                           </div>
                           <div className="wallet-meta-item">
-                            <div className="wallet-meta-label">Moneda</div>
+                            <div className="wallet-meta-label">{t('users.currency')}</div>
                             <div className="wallet-meta-value">USD</div>
                           </div>
                         </div>
@@ -196,7 +198,7 @@ export default function UsuarioDetailDrawer({
                   ) : (
                     <div className="empty-state">
                       <div className="empty-state-icon">💰</div>
-                      <div className="empty-state-message">Sin información de wallet</div>
+                      <div className="empty-state-message">{t('users.noWalletInfo')}</div>
                     </div>
                   )}
                 </div>
@@ -211,9 +213,9 @@ export default function UsuarioDetailDrawer({
                         <thead>
                           <tr>
                             <th>ID</th>
-                            <th>Monto</th>
-                            <th>Estado</th>
-                            <th>Fecha</th>
+                            <th>{t('users.amount')}</th>
+                            <th>{t('users.status')}</th>
+                            <th>{t('users.date')}</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -231,7 +233,7 @@ export default function UsuarioDetailDrawer({
                   ) : (
                     <div className="empty-state">
                       <div className="empty-state-icon">📈</div>
-                      <div className="empty-state-message">Sin inversiones</div>
+                      <div className="empty-state-message">{t('users.noInvestments')}</div>
                     </div>
                   )}
                 </div>
@@ -245,10 +247,10 @@ export default function UsuarioDetailDrawer({
                       <table className="mini-table">
                         <thead>
                           <tr>
-                            <th>Monto</th>
-                            <th>Estado</th>
-                            <th>Fecha</th>
-                            <th>Acción</th>
+                            <th>{t('users.amount')}</th>
+                            <th>{t('users.status')}</th>
+                            <th>{t('users.date')}</th>
+                            <th>{t('users.action')}</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -289,7 +291,7 @@ export default function UsuarioDetailDrawer({
                   ) : (
                     <div className="empty-state">
                       <div className="empty-state-icon">🔄</div>
-                      <div className="empty-state-message">Sin recargas</div>
+                      <div className="empty-state-message">{t('users.noTopups')}</div>
                     </div>
                   )}
                 </div>
@@ -303,9 +305,9 @@ export default function UsuarioDetailDrawer({
                       <table className="mini-table">
                         <thead>
                           <tr>
-                            <th>Monto</th>
-                            <th>Estado</th>
-                            <th>Fecha</th>
+                            <th>{t('users.amount')}</th>
+                            <th>{t('users.status')}</th>
+                            <th>{t('users.date')}</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -322,7 +324,7 @@ export default function UsuarioDetailDrawer({
                   ) : (
                     <div className="empty-state">
                       <div className="empty-state-icon">💸</div>
-                      <div className="empty-state-message">Sin retiros</div>
+                      <div className="empty-state-message">{t('users.noWithdrawals')}</div>
                     </div>
                   )}
                 </div>
@@ -336,9 +338,9 @@ export default function UsuarioDetailDrawer({
                       <table className="mini-table">
                         <thead>
                           <tr>
-                            <th>Tipo</th>
-                            <th>Monto</th>
-                            <th>Fecha</th>
+                            <th>{t('users.type')}</th>
+                            <th>{t('users.amount')}</th>
+                            <th>{t('users.date')}</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -355,7 +357,7 @@ export default function UsuarioDetailDrawer({
                   ) : (
                     <div className="empty-state">
                       <div className="empty-state-icon">📋</div>
-                      <div className="empty-state-message">Sin transacciones</div>
+                      <div className="empty-state-message">{t('users.noTransactions')}</div>
                     </div>
                   )}
                 </div>
@@ -367,11 +369,11 @@ export default function UsuarioDetailDrawer({
 
       <ActionModal
         isOpen={actionModal.isOpen}
-        title={actionModal.type === 'approve' ? 'Aprobar Recarga' : 'Rechazar Recarga'}
-        message={`¿${actionModal.type === 'approve' ? 'Aprobar' : 'Rechazar'} recarga de ${selectedTopup ? formatCurrency(selectedTopup.amount) : ''}?`}
-        actionLabel={actionModal.type === 'approve' ? 'Aprobar' : 'Rechazar'}
+        title={actionModal.type === 'approve' ? t('topups.approveTitle') : t('topups.rejectTitle')}
+        message={`${actionModal.type === 'approve' ? t('topups.approveMessage') : t('topups.rejectMessage')} ${selectedTopup ? formatCurrency(selectedTopup.amount) : ''}?`}
+        actionLabel={actionModal.type === 'approve' ? t('common.approve') : t('common.reject')}
         showReasonInput={actionModal.type === 'reject'}
-        reasonPlaceholder="Razón del rechazo..."
+        reasonPlaceholder={t('common.rejectReason')}
         loading={approveLoading || rejectLoading}
         onConfirm={actionModal.type === 'approve' ? handleApproveTopup : handleRejectTopup}
         onCancel={() => {

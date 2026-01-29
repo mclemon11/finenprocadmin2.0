@@ -11,6 +11,7 @@ import {
   where,
 } from 'firebase/firestore';
 import { db } from '../../../firebase/firebaseConfig';
+import { t } from '../../../utils/translationHelper';
 
 export default function useApproveWithdrawal() {
   const [loading, setLoading] = useState(false);
@@ -51,7 +52,7 @@ export default function useApproveWithdrawal() {
         const withdrawalSnap = await tx.get(withdrawalRef);
 
         if (!withdrawalSnap.exists()) {
-          throw new Error('Retiro no encontrado');
+          throw new Error(t('errors.withdrawalNotFound'));
         }
 
         const withdrawalData = withdrawalSnap.data();
@@ -70,16 +71,16 @@ export default function useApproveWithdrawal() {
         const transactionDocId = withdrawalData?.transactionId || existingTransactionId || withdrawalId;
 
         if (!resolvedUserId) {
-          throw new Error('Retiro inválido: falta userId');
+          throw new Error(t('errors.withdrawalInvalidUserId'));
         }
         if (!Number.isFinite(resolvedAmount) || resolvedAmount <= 0) {
-          throw new Error('Retiro inválido: amount debe ser > 0');
+          throw new Error(t('errors.withdrawalInvalidAmount'));
         }
 
         const walletRef = doc(db, 'users', resolvedUserId, 'wallets', resolvedUserId);
         const walletSnap = await tx.get(walletRef);
         if (!walletSnap.exists()) {
-          throw new Error('El usuario no tiene wallet; no se puede descontar saldo');
+          throw new Error(t('errors.userNoWallet'));
         }
 
         tx.update(walletRef, {

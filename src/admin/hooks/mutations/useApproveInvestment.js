@@ -12,6 +12,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '../../../firebase/firebaseConfig';
 import { formatMoney } from '../../../utils/formatMoney';
+import { t } from '../../../utils/translationHelper';
 
 export default function useApproveInvestment() {
   const [loading, setLoading] = useState(false);
@@ -40,7 +41,7 @@ export default function useApproveInvestment() {
         const invSnap = await tx.get(investmentRef);
 
         if (!invSnap.exists()) {
-          throw new Error('Inversión no encontrada');
+          throw new Error(t('errors.investmentNotFound'));
         }
 
         const inv = invSnap.data();
@@ -59,19 +60,19 @@ export default function useApproveInvestment() {
         const originalTransactionId = inv?.transactionId || existingTransactionId || null;
         const projectIdFromInvestment = inv?.projectId || null;
         if (!userId) {
-          throw new Error('Inversión inválida: falta userId');
+          throw new Error(t('errors.investmentInvalidUserId'));
         }
         if (!Number.isFinite(amount) || amount <= 0) {
-          throw new Error('Inversión inválida: amount debe ser > 0');
+          throw new Error(t('errors.investmentInvalidAmount'));
         }
         if (!projectIdFromInvestment) {
-          throw new Error('Inversión inválida: falta projectId');
+          throw new Error(t('errors.investmentInvalidProjectId'));
         }
 
         const projectRef = doc(db, 'projects', projectIdFromInvestment);
         const projectSnap = await tx.get(projectRef);
         if (!projectSnap.exists()) {
-          throw new Error('Proyecto no encontrado');
+          throw new Error(t('errors.projectNotFound'));
         }
 
         const project = projectSnap.data() || {};
@@ -81,14 +82,14 @@ export default function useApproveInvestment() {
         );
 
         if (!Number.isFinite(currentTotalInvestment) || currentTotalInvestment < 0) {
-          throw new Error('Proyecto inválido: totalInvestment no es numérico');
+          throw new Error(t('errors.projectInvalidTotalInvestment'));
         }
 
         const hasTarget = Number.isFinite(targetAmount) && targetAmount > 0;
         if (hasTarget) {
           const remaining = targetAmount - currentTotalInvestment;
           if (remaining <= 0) {
-            throw new Error('Este proyecto ya alcanzó su meta de inversión');
+            throw new Error(t('errors.projectGoalReached'));
           }
           if (amount > remaining) {
             throw new Error(`La inversión excede el cupo del proyecto. Disponible: ${formatMoney(remaining)}`);
@@ -98,7 +99,7 @@ export default function useApproveInvestment() {
         const walletRef = doc(db, 'users', userId, 'wallets', userId);
         const walletSnap = await tx.get(walletRef);
         if (!walletSnap.exists()) {
-          throw new Error('El usuario no tiene wallet; no se puede descontar saldo');
+          throw new Error(t('errors.userNoWallet'));
         }
 
         const originalTxRef = originalTransactionId
@@ -124,10 +125,10 @@ export default function useApproveInvestment() {
         const wallet = walletSnap.data() || {};
         const balance = Number(wallet.balance || 0);
         if (!Number.isFinite(balance)) {
-          throw new Error('Wallet inválida: balance no es numérico');
+          throw new Error(t('errors.walletInvalidBalance'));
         }
         if (balance < amount) {
-          throw new Error('Saldo insuficiente para aprobar esta inversión');
+          throw new Error(t('errors.insufficientBalance'));
         }
 
         tx.update(walletRef, {

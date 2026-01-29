@@ -1,11 +1,15 @@
 {
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
   "hosting": {
     "site": "finenprocag-admin",
     "public": "dist",
     "ignore": [
       "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
+      "*/.",
+      "*/node_modules/*"
     ],
     "rewrites": [
       { "source": "**", "destination": "/index.html" }

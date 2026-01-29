@@ -10,6 +10,7 @@ import {
   where,
 } from 'firebase/firestore';
 import { db } from '../../../firebase/firebaseConfig';
+import { t } from '../../../utils/translationHelper';
 
 export default function useRejectInvestment() {
   const [loading, setLoading] = useState(false);
@@ -38,7 +39,7 @@ export default function useRejectInvestment() {
         const invSnap = await tx.get(investmentRef);
 
         if (!invSnap.exists()) {
-          throw new Error('Inversión no encontrada');
+          throw new Error(t('errors.investmentNotFound'));
         }
 
         const inv = invSnap.data();
@@ -57,7 +58,7 @@ export default function useRejectInvestment() {
         const originalTransactionId = inv?.transactionId || existingTransactionId || null;
 
         if (!userId) {
-          throw new Error('Inversión inválida: falta userId');
+          throw new Error(t('errors.investmentInvalidUserId'));
         }
 
         const originalTxRef = originalTransactionId

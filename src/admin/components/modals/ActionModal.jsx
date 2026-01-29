@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useLanguage } from '../../../context/LanguageContext';
 import './ActionModal.css';
 
 export default function ActionModal({
@@ -13,10 +14,11 @@ export default function ActionModal({
   reasonPlaceholder
 }) {
   const [reason, setReason] = useState('');
+  const { t } = useLanguage();
 
   const handleConfirm = () => {
     if (showReasonInput && !reason.trim()) {
-      alert('Por favor ingresa una razón');
+      alert(t('common.enterReason'));
       return;
     }
     onConfirm(reason);
@@ -34,7 +36,7 @@ export default function ActionModal({
         {showReasonInput && (
           <textarea
             className="action-modal-textarea"
-            placeholder={reasonPlaceholder || 'Ingresa una razón...'}
+            placeholder={reasonPlaceholder || t('common.enterReasonPlaceholder')}
             value={reason}
             onChange={(e) => setReason(e.target.value)}
             disabled={loading}
@@ -47,14 +49,14 @@ export default function ActionModal({
             onClick={onCancel}
             disabled={loading}
           >
-            Cancelar
+            {t('common.cancel')}
           </button>
           <button
             className="btn-confirm"
             onClick={handleConfirm}
             disabled={loading}
           >
-            {loading ? 'Procesando...' : actionLabel}
+            {loading ? t('common.processing') : actionLabel}
           </button>
         </div>
       </div>

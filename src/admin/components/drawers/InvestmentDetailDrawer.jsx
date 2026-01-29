@@ -5,9 +5,11 @@ import {
   useRecordInvestmentSystemEvent,
   useUpdateInvestmentReturn,
 } from '../../hooks/mutations/useInvestmentMutations';
+import { useLanguage } from '../../../context/LanguageContext';
 import './InvestmentDetailDrawer.css';
 
 export default function InvestmentDetailDrawer({ investmentId, isOpen, onClose, onUpdate }) {
+  const { t } = useLanguage();
   const { investment, user, project, projectEvents, auditLog, loading, error, refetch } =
     useInvestmentDetail(investmentId);
 
@@ -55,7 +57,7 @@ export default function InvestmentDetailDrawer({ investmentId, isOpen, onClose, 
       setIsActionLoading(true);
       setActionError(null);
       await useChangeInvestmentStatus(investmentId, newStatus, reason);
-      setSuccessMessage(`Inversión actualizada a ${newStatus}`);
+      setSuccessMessage(`${t('investments.investmentUpdatedTo')} ${newStatus}`);
       await refetch();
       onUpdate?.();
       setIsStatusModalOpen(false);
@@ -72,7 +74,7 @@ export default function InvestmentDetailDrawer({ investmentId, isOpen, onClose, 
       setIsActionLoading(true);
       setActionError(null);
       await useRecordInvestmentSystemEvent(investmentId, eventTitle, eventDescription, metadata);
-      setSuccessMessage('Evento registrado');
+      setSuccessMessage(t('investments.eventRecorded'));
       await refetch();
       onUpdate?.();
       setIsEventModalOpen(false);
@@ -89,7 +91,7 @@ export default function InvestmentDetailDrawer({ investmentId, isOpen, onClose, 
       setIsActionLoading(true);
       setActionError(null);
       await useUpdateInvestmentReturn(investmentId, realizedReturn, notes);
-      setSuccessMessage('Retorno actualizado');
+      setSuccessMessage(t('investments.returnUpdated'));
       await refetch();
       onUpdate?.();
       setIsReturnModalOpen(false);
@@ -111,13 +113,13 @@ export default function InvestmentDetailDrawer({ investmentId, isOpen, onClose, 
         <div className="investment-drawer-header">
           <div className="header-top">
             <button className="close-btn" onClick={onClose}>
-              ← Volver
+              ← {t('investments.back')}
             </button>
-            <h2 className="header-title">Detalle de Inversión</h2>
+            <h2 className="header-title">{t('investments.investmentDetail')}</h2>
           </div>
 
           {loading ? (
-            <div className="loading-state">Cargando...</div>
+            <div className="loading-state">{t('investments.loading')}</div>
           ) : error ? (
             <div className="error-state">{error}</div>
           ) : investment ? (
@@ -125,29 +127,29 @@ export default function InvestmentDetailDrawer({ investmentId, isOpen, onClose, 
               {/* Usuario e Inversión */}
               <div className="header-investor">
                 <div className="investor-info">
-                  <span className="investor-name">{user?.displayName || user?.fullName || 'Usuario'}</span>
+                  <span className="investor-name">{user?.displayName || user?.fullName || t('investments.user')}</span>
                   <span className="investor-email">{user?.email || '—'}</span>
                 </div>
                 <span className={`status-badge status-${investment.status}`}>
-                  {investment.status === 'active' && 'Activa'}
-                  {investment.status === 'completed' && 'Completada'}
-                  {investment.status === 'cancelled' && 'Cancelada'}
-                  {investment.status === 'paused' && 'Pausada'}
+                  {investment.status === 'active' && t('investments.active')}
+                  {investment.status === 'completed' && t('investments.completed')}
+                  {investment.status === 'cancelled' && t('investments.cancelled')}
+                  {investment.status === 'paused' && t('investments.paused')}
                 </span>
               </div>
 
               {/* Monto y Proyecto */}
               <div className="header-meta">
                 <div className="meta-item">
-                  <span className="meta-label">Monto Invertido</span>
+                  <span className="meta-label">{t('investments.amountInvested')}</span>
                   <span className="meta-value bold">{formatCurrency(investment.amount)}</span>
                 </div>
                 <div className="meta-item">
-                  <span className="meta-label">Proyecto</span>
+                  <span className="meta-label">{t('investments.project')}</span>
                   <span className="meta-value">{project?.name || '—'}</span>
                 </div>
                 <div className="meta-item">
-                  <span className="meta-label">Fecha</span>
+                  <span className="meta-label">{t('investments.date')}</span>
                   <span className="meta-value">{formatDate(investment.createdAt)}</span>
                 </div>
               </div>
@@ -162,25 +164,25 @@ export default function InvestmentDetailDrawer({ investmentId, isOpen, onClose, 
               className={`tab ${activeTab === 'overview' ? 'active' : ''}`}
               onClick={() => setActiveTab('overview')}
             >
-              Resumen
+              {t('investments.overview')}
             </button>
             <button
               className={`tab ${activeTab === 'financial' ? 'active' : ''}`}
               onClick={() => setActiveTab('financial')}
             >
-              Financiero
+              {t('investments.financial')}
             </button>
             <button
               className={`tab ${activeTab === 'project' ? 'active' : ''}`}
               onClick={() => setActiveTab('project')}
             >
-              Proyecto ({projectEvents.length})
+              {t('investments.project')} ({projectEvents.length})
             </button>
             <button
               className={`tab ${activeTab === 'audit' ? 'active' : ''}`}
               onClick={() => setActiveTab('audit')}
             >
-              Audit ({auditLog.length})
+              {t('investments.audit')} ({auditLog.length})
             </button>
           </div>
         )}
@@ -196,17 +198,17 @@ export default function InvestmentDetailDrawer({ investmentId, isOpen, onClose, 
         {/* Contenido */}
         <div className="investment-content">
           {loading ? (
-            <div className="content-loading">Cargando detalles...</div>
+            <div className="content-loading">{t('investments.loadingDetails')}</div>
           ) : !investment ? (
-            <div className="content-empty">No se pudo cargar la inversión</div>
+            <div className="content-empty">{t('investments.couldNotLoad')}</div>
           ) : activeTab === 'overview' ? (
-            <OverviewTab investment={investment} project={project} user={user} formatCurrency={formatCurrency} formatDate={formatDate} />
+            <OverviewTab investment={investment} project={project} user={user} formatCurrency={formatCurrency} formatDate={formatDate} t={t} />
           ) : activeTab === 'financial' ? (
-            <FinancialTab investment={investment} project={project} formatCurrency={formatCurrency} onUpdateReturn={() => setIsReturnModalOpen(true)} />
+            <FinancialTab investment={investment} project={project} formatCurrency={formatCurrency} onUpdateReturn={() => setIsReturnModalOpen(true)} t={t} />
           ) : activeTab === 'project' ? (
-            <ProjectTab projectEvents={projectEvents} formatDateTime={formatDateTime} />
+            <ProjectTab projectEvents={projectEvents} formatDateTime={formatDateTime} t={t} />
           ) : activeTab === 'audit' ? (
-            <AuditTab auditLog={auditLog} formatDateTime={formatDateTime} formatCurrency={formatCurrency} />
+            <AuditTab auditLog={auditLog} formatDateTime={formatDateTime} formatCurrency={formatCurrency} t={t} />
           ) : null}
         </div>
 
@@ -218,14 +220,14 @@ export default function InvestmentDetailDrawer({ investmentId, isOpen, onClose, 
               onClick={() => setIsStatusModalOpen(true)}
               disabled={isActionLoading}
             >
-              Cambiar Estado
+              {t('investments.changeStatus')}
             </button>
             <button
               className="action-btn secondary"
               onClick={() => setIsEventModalOpen(true)}
               disabled={isActionLoading}
             >
-              Registrar Evento
+              {t('investments.recordEvent')}
             </button>
             {investment.status === 'active' && (
               <button
@@ -233,7 +235,7 @@ export default function InvestmentDetailDrawer({ investmentId, isOpen, onClose, 
                 onClick={() => setIsReturnModalOpen(true)}
                 disabled={isActionLoading}
               >
-                Actualizar Retorno
+                {t('investments.updateReturn')}
               </button>
             )}
           </div>
@@ -246,6 +248,7 @@ export default function InvestmentDetailDrawer({ investmentId, isOpen, onClose, 
             onConfirm={handleStatusChange}
             onClose={() => setIsStatusModalOpen(false)}
             isLoading={isActionLoading}
+            t={t}
           />
         )}
 
@@ -259,6 +262,7 @@ export default function InvestmentDetailDrawer({ investmentId, isOpen, onClose, 
             onClose={() => setIsReturnModalOpen(false)}
             isLoading={isActionLoading}
             formatCurrency={formatCurrency}
+            t={t}
           />
         )}
 
@@ -268,6 +272,7 @@ export default function InvestmentDetailDrawer({ investmentId, isOpen, onClose, 
             onConfirm={handleRecordEvent}
             onClose={() => setIsEventModalOpen(false)}
             isLoading={isActionLoading}
+            t={t}
           />
         )}
       </div>
@@ -278,59 +283,59 @@ export default function InvestmentDetailDrawer({ investmentId, isOpen, onClose, 
 /**
  * Componentes de Tab
  */
-function OverviewTab({ investment, project, user, formatCurrency, formatDate }) {
+function OverviewTab({ investment, project, user, formatCurrency, formatDate, t }) {
   return (
     <div className="tab-content overview-tab">
       <div className="info-cards">
         <div className="info-card">
-          <div className="card-label">Inversionista</div>
-          <div className="card-value">{user?.displayName || user?.fullName || 'Usuario'}</div>
+          <div className="card-label">{t('investments.investor')}</div>
+          <div className="card-value">{user?.displayName || user?.fullName || t('investments.user')}</div>
           <div className="card-sublabel">{user?.email}</div>
         </div>
         <div className="info-card">
-          <div className="card-label">Monto Invertido</div>
+          <div className="card-label">{t('investments.amountInvested')}</div>
           <div className="card-value">{formatCurrency(investment.amount)}</div>
         </div>
         <div className="info-card">
-          <div className="card-label">% del Proyecto</div>
+          <div className="card-label">{t('investments.projectPercent')}</div>
           <div className="card-value">{investment.projectionOfTotal}%</div>
         </div>
         <div className="info-card">
-          <div className="card-label">Estado</div>
+          <div className="card-label">{t('investments.status')}</div>
           <div className={`card-value status-${investment.status}`}>
-            {investment.status === 'active' && 'Activa'}
-            {investment.status === 'completed' && 'Completada'}
-            {investment.status === 'cancelled' && 'Cancelada'}
-            {investment.status === 'paused' && 'Pausada'}
+            {investment.status === 'active' && t('investments.active')}
+            {investment.status === 'completed' && t('investments.completed')}
+            {investment.status === 'cancelled' && t('investments.cancelled')}
+            {investment.status === 'paused' && t('investments.paused')}
           </div>
         </div>
       </div>
 
       <div className="info-section">
-        <h3 className="section-title">Información General</h3>
+        <h3 className="section-title">{t('investments.generalInfo')}</h3>
         <div className="info-items">
           <div className="info-item">
-            <span className="label">Proyecto</span>
+            <span className="label">{t('investments.project')}</span>
             <span className="value">{project?.name || '—'}</span>
           </div>
           <div className="info-item">
-            <span className="label">Tipo de Proyecto</span>
-            <span className="value">{project?.type === 'fixed' ? 'Fijo' : 'Variable'}</span>
+            <span className="label">{t('investments.projectType')}</span>
+            <span className="value">{project?.type === 'fixed' ? t('projects.fixed') : t('projects.variable')}</span>
           </div>
           <div className="info-item">
-            <span className="label">Riesgo del Proyecto</span>
+            <span className="label">{t('investments.projectRisk')}</span>
             <span className={`value risk-${project?.riskLevel}`}>
-              {project?.riskLevel === 'low' && 'Riesgo Bajo'}
-              {project?.riskLevel === 'medium' && 'Riesgo Medio'}
-              {project?.riskLevel === 'high' && 'Riesgo Alto'}
+              {project?.riskLevel === 'low' && t('investments.riskLow')}
+              {project?.riskLevel === 'medium' && t('investments.riskMedium')}
+              {project?.riskLevel === 'high' && t('investments.riskHigh')}
             </span>
           </div>
           <div className="info-item">
-            <span className="label">Fecha de Inversión</span>
+            <span className="label">{t('investments.investmentDate')}</span>
             <span className="value">{formatDate(investment.createdAt)}</span>
           </div>
           <div className="info-item">
-            <span className="label">Estado del Proyecto</span>
+            <span className="label">{t('investments.projectStatus')}</span>
             <span className="value">{project?.computedStatus || project?.status || '—'}</span>
           </div>
         </div>
@@ -339,7 +344,7 @@ function OverviewTab({ investment, project, user, formatCurrency, formatDate }) 
   );
 }
 
-function FinancialTab({ investment, project, formatCurrency, onUpdateReturn }) {
+function FinancialTab({ investment, project, formatCurrency, onUpdateReturn, t }) {
   const expectedGain = investment.amount && investment.expectedReturn
     ? investment.expectedReturn - investment.amount
     : 0;
@@ -352,51 +357,51 @@ function FinancialTab({ investment, project, formatCurrency, onUpdateReturn }) {
     <div className="tab-content financial-tab">
       <div className="financial-grid">
         <div className="fin-card roi">
-          <div className="fin-label">ROI Esperado</div>
+          <div className="fin-label">{t('investments.expectedROILabel')}</div>
           <div className={`fin-value ${investment.expectedROI >= 0 ? 'positive' : 'negative'}`}>
             {investment.expectedROI !== null ? `${investment.expectedROI}%` : '—'}
           </div>
         </div>
         <div className="fin-card roi">
-          <div className="fin-label">ROI Real</div>
+          <div className="fin-label">{t('investments.actualROILabel')}</div>
           <div className={`fin-value ${investment.actualROI >= 0 ? 'positive' : 'negative'}`}>
-            {investment.actualROI !== null ? `${investment.actualROI}%` : 'Pendiente'}
+            {investment.actualROI !== null ? `${investment.actualROI}%` : t('investments.pendingValue')}
           </div>
         </div>
         <div className="fin-card gain">
-          <div className="fin-label">Ganancia Esperada</div>
+          <div className="fin-label">{t('investments.expectedGain')}</div>
           <div className={`fin-value ${expectedGain >= 0 ? 'positive' : 'negative'}`}>
             {formatCurrency(expectedGain)}
           </div>
         </div>
         <div className="fin-card gain">
-          <div className="fin-label">Ganancia Realizada</div>
+          <div className="fin-label">{t('investments.realizedGain')}</div>
           <div className={`fin-value ${actualGain >= 0 ? 'positive' : 'negative'}`}>
-            {actualGain !== null ? formatCurrency(actualGain) : 'Pendiente'}
+            {actualGain !== null ? formatCurrency(actualGain) : t('investments.pendingValue')}
           </div>
         </div>
       </div>
 
       <div className="financial-details">
         <div className="fin-detail-section">
-          <h3 className="section-title">Detalles Financieros</h3>
+          <h3 className="section-title">{t('investments.financialDetails')}</h3>
           <div className="fin-items">
             <div className="fin-item">
-              <span className="label">Monto Invertido</span>
+              <span className="label">{t('investments.amountInvested')}</span>
               <span className="value bold">{formatCurrency(investment.amount)}</span>
             </div>
             <div className="fin-item">
-              <span className="label">Retorno Esperado</span>
+              <span className="label">{t('investments.expectedReturn')}</span>
               <span className="value">{formatCurrency(investment.expectedReturn)}</span>
             </div>
             <div className="fin-item">
-              <span className="label">Retorno Realizado</span>
+              <span className="label">{t('investments.realizedReturn')}</span>
               <span className="value">{formatCurrency(investment.realizedReturn || investment.payout || 0)}</span>
             </div>
             {investment.status === 'active' && (
               <div className="fin-item action">
                 <button className="update-btn" onClick={onUpdateReturn}>
-                  Actualizar Retorno
+                  {t('investments.updateReturn')}
                 </button>
               </div>
             )}
@@ -404,22 +409,22 @@ function FinancialTab({ investment, project, formatCurrency, onUpdateReturn }) {
         </div>
 
         <div className="fin-detail-section">
-          <h3 className="section-title">Relación con Proyecto</h3>
+          <h3 className="section-title">{t('investments.projectRelation')}</h3>
           <div className="fin-items">
             <div className="fin-item">
-              <span className="label">% del Capital Total</span>
+              <span className="label">{t('investments.totalCapitalPercent')}</span>
               <span className="value">{investment.projectionOfTotal}%</span>
             </div>
             <div className="fin-item">
-              <span className="label">Capital Total del Proyecto</span>
+              <span className="label">{t('investments.projectTotalCapital')}</span>
               <span className="value">{formatCurrency(project?.totalInvested || 0)}</span>
             </div>
             <div className="fin-item">
-              <span className="label">Meta del Proyecto</span>
+              <span className="label">{t('investments.projectGoal')}</span>
               <span className="value">
                 {project?.type === 'fixed'
                   ? formatCurrency(project?.targetAmount)
-                  : 'Variable'}
+                  : t('projects.variable')}
               </span>
             </div>
           </div>
@@ -429,7 +434,7 @@ function FinancialTab({ investment, project, formatCurrency, onUpdateReturn }) {
   );
 }
 
-function ProjectTab({ projectEvents, formatDateTime }) {
+function ProjectTab({ projectEvents, formatDateTime, t }) {
   const relevantEvents = projectEvents.filter(
     (e) => e.type === 'system' || e.visibility === 'investors' || e.visibility === 'all'
   );
@@ -439,8 +444,8 @@ function ProjectTab({ projectEvents, formatDateTime }) {
       {relevantEvents.length === 0 ? (
         <div className="empty-state">
           <div className="empty-icon">📭</div>
-          <div className="empty-title">Sin eventos del proyecto</div>
-          <div className="empty-subtitle">No hay actualizaciones de proyecto relacionadas</div>
+          <div className="empty-title">{t('investments.noProjectEvents')}</div>
+          <div className="empty-subtitle">{t('investments.noRelatedUpdates')}</div>
         </div>
       ) : (
         <div className="events-list">
@@ -455,9 +460,9 @@ function ProjectTab({ projectEvents, formatDateTime }) {
               )}
               <div className="event-meta">
                 <span className={`badge visibility-${event.visibility}`}>
-                  {event.visibility === 'admin' && 'Solo admin'}
-                  {event.visibility === 'investors' && 'Inversionistas'}
-                  {event.visibility === 'all' && 'Todos'}
+                  {event.visibility === 'admin' && t('investments.adminOnly')}
+                  {event.visibility === 'investors' && t('investments.investorsOnly')}
+                  {event.visibility === 'all' && t('investments.allVisibility')}
                 </span>
               </div>
             </div>
@@ -468,29 +473,29 @@ function ProjectTab({ projectEvents, formatDateTime }) {
   );
 }
 
-function AuditTab({ auditLog, formatDateTime, formatCurrency }) {
+function AuditTab({ auditLog, formatDateTime, formatCurrency, t }) {
   return (
     <div className="tab-content audit-tab">
       {auditLog.length === 0 ? (
         <div className="empty-state">
           <div className="empty-icon">📋</div>
-          <div className="empty-title">Sin historial de cambios</div>
-          <div className="empty-subtitle">No hay cambios registrados en esta inversión</div>
+          <div className="empty-title">{t('investments.noChangeHistory')}</div>
+          <div className="empty-subtitle">{t('investments.noChangesRecorded')}</div>
         </div>
       ) : (
         <div className="audit-list">
           {auditLog.map((entry, idx) => (
             <div key={entry.id || idx} className="audit-entry">
               <div className="audit-header">
-                <span className="audit-action">{formatAuditAction(entry.action)}</span>
+                <span className="audit-action">{formatAuditAction(entry.action, t)}</span>
                 <span className="audit-date">{formatDateTime(entry.timestamp)}</span>
               </div>
               {entry.action === 'status_change' && (
                 <div className="audit-details">
                   <span>
-                    De <strong>{entry.previousStatus}</strong> a <strong>{entry.newStatus}</strong>
+                    {t('investments.from')} <strong>{entry.previousStatus}</strong> {t('investments.to')} <strong>{entry.newStatus}</strong>
                   </span>
-                  {entry.reason && <span className="reason">Razón: {entry.reason}</span>}
+                  {entry.reason && <span className="reason">{t('investments.reason')}: {entry.reason}</span>}
                 </div>
               )}
               {entry.action === 'system_event' && (
@@ -504,9 +509,9 @@ function AuditTab({ auditLog, formatDateTime, formatCurrency }) {
               {entry.action === 'return_update' && (
                 <div className="audit-details">
                   <span>
-                    Retorno actualizado a <strong>{formatCurrency(Number(entry.newValue) || 0)}</strong>
+                    {t('investments.returnUpdatedTo')} <strong>{formatCurrency(Number(entry.newValue) || 0)}</strong>
                   </span>
-                  {entry.notes && <span className="notes">Notas: {entry.notes}</span>}
+                  {entry.notes && <span className="notes">{t('investments.notes')}: {entry.notes}</span>}
                 </div>
               )}
             </div>
@@ -520,27 +525,27 @@ function AuditTab({ auditLog, formatDateTime, formatCurrency }) {
 /**
  * Modales de Acciones
  */
-function StatusChangeModal({ currentStatus, onConfirm, onClose, isLoading }) {
+function StatusChangeModal({ currentStatus, onConfirm, onClose, isLoading, t }) {
   const [selectedStatus, setSelectedStatus] = useState(currentStatus);
   const [reason, setReason] = useState('');
 
   const statuses = [
-    { value: 'active', label: 'Activa' },
-    { value: 'paused', label: 'Pausada' },
-    { value: 'completed', label: 'Completada' },
-    { value: 'cancelled', label: 'Cancelada' },
+    { value: 'active', label: t('investments.active') },
+    { value: 'paused', label: t('investments.paused') },
+    { value: 'completed', label: t('investments.completed') },
+    { value: 'cancelled', label: t('investments.cancelled') },
   ];
 
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h3>Cambiar Estado de Inversión</h3>
+          <h3>{t('investments.changeInvestmentStatus')}</h3>
           <button className="close-modal-btn" onClick={onClose}>×</button>
         </div>
         <div className="modal-body">
           <div className="form-group">
-            <label>Nuevo Estado</label>
+            <label>{t('investments.newStatus')}</label>
             <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
@@ -554,11 +559,11 @@ function StatusChangeModal({ currentStatus, onConfirm, onClose, isLoading }) {
             </select>
           </div>
           <div className="form-group">
-            <label>Razón (opcional)</label>
+            <label>{t('investments.reasonOptional')}</label>
             <textarea
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              placeholder="Explica el cambio de estado..."
+              placeholder={t('investments.explainChange')}
               disabled={isLoading}
               rows={3}
             />
@@ -566,14 +571,14 @@ function StatusChangeModal({ currentStatus, onConfirm, onClose, isLoading }) {
         </div>
         <div className="modal-actions">
           <button className="btn secondary" onClick={onClose} disabled={isLoading}>
-            Cancelar
+            {t('investments.cancel')}
           </button>
           <button
             className="btn primary"
             onClick={() => onConfirm(selectedStatus, reason)}
             disabled={isLoading}
           >
-            {isLoading ? 'Actualizando...' : 'Confirmar'}
+            {isLoading ? t('investments.updating') : t('investments.confirm')}
           </button>
         </div>
       </div>
@@ -581,7 +586,7 @@ function StatusChangeModal({ currentStatus, onConfirm, onClose, isLoading }) {
   );
 }
 
-function ReturnUpdateModal({ currentReturn, expectedReturn, amount, onConfirm, onClose, isLoading, formatCurrency }) {
+function ReturnUpdateModal({ currentReturn, expectedReturn, amount, onConfirm, onClose, isLoading, formatCurrency, t }) {
   const [realizedReturn, setRealizedReturn] = useState(currentReturn || expectedReturn || '');
   const [notes, setNotes] = useState('');
 
@@ -592,41 +597,41 @@ function ReturnUpdateModal({ currentReturn, expectedReturn, amount, onConfirm, o
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h3>Actualizar Retorno de Inversión</h3>
+          <h3>{t('investments.updateInvestmentReturn')}</h3>
           <button className="close-modal-btn" onClick={onClose}>×</button>
         </div>
         <div className="modal-body">
           <div className="form-group">
-            <label>Retorno Realizado (USD)</label>
+            <label>{t('investments.realizedReturnUSD')}</label>
             <input
               type="number"
               value={realizedReturn}
               onChange={(e) => setRealizedReturn(e.target.value)}
-              placeholder="Cantidad recibida"
+              placeholder={t('investments.amountReceived')}
               disabled={isLoading}
             />
-            <div className="form-hint">Monto invertido: {formatCurrency(amount)}</div>
+            <div className="form-hint">{t('investments.investedAmount')}: {formatCurrency(amount)}</div>
           </div>
           {realizedReturn && (
             <div className="return-preview">
               <div className="preview-item">
-                <span>Ganancia / Pérdida</span>
+                <span>{t('investments.gainLoss')}</span>
                 <span className={gain >= 0 ? 'positive' : 'negative'}>
                   {formatCurrency(gain)}
                 </span>
               </div>
               <div className="preview-item">
-                <span>ROI</span>
+                <span>{t('investments.roi')}</span>
                 <span className={roi >= 0 ? 'positive' : 'negative'}>{roi}%</span>
               </div>
             </div>
           )}
           <div className="form-group">
-            <label>Notas (opcional)</label>
+            <label>{t('investments.notesOptional')}</label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Detalles sobre el retorno..."
+              placeholder={t('investments.returnDetails')}
               disabled={isLoading}
               rows={3}
             />
@@ -634,14 +639,14 @@ function ReturnUpdateModal({ currentReturn, expectedReturn, amount, onConfirm, o
         </div>
         <div className="modal-actions">
           <button className="btn secondary" onClick={onClose} disabled={isLoading}>
-            Cancelar
+            {t('investments.cancel')}
           </button>
           <button
             className="btn primary"
             onClick={() => onConfirm(realizedReturn, notes)}
             disabled={isLoading || !realizedReturn}
           >
-            {isLoading ? 'Actualizando...' : 'Guardar Retorno'}
+            {isLoading ? t('investments.updating') : t('investments.saveReturn')}
           </button>
         </div>
       </div>
@@ -649,7 +654,7 @@ function ReturnUpdateModal({ currentReturn, expectedReturn, amount, onConfirm, o
   );
 }
 
-function SystemEventModal({ onConfirm, onClose, isLoading }) {
+function SystemEventModal({ onConfirm, onClose, isLoading, t }) {
   const [eventTitle, setEventTitle] = useState('');
   const [eventDescription, setEventDescription] = useState('');
 
@@ -657,26 +662,26 @@ function SystemEventModal({ onConfirm, onClose, isLoading }) {
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h3>Registrar Evento de Sistema</h3>
+          <h3>{t('investments.registerSystemEvent')}</h3>
           <button className="close-modal-btn" onClick={onClose}>×</button>
         </div>
         <div className="modal-body">
           <div className="form-group">
-            <label>Título del Evento</label>
+            <label>{t('investments.eventTitle')}</label>
             <input
               type="text"
               value={eventTitle}
               onChange={(e) => setEventTitle(e.target.value)}
-              placeholder="Ej: Pago parcial recibido"
+              placeholder={t('investments.eventTitlePlaceholder')}
               disabled={isLoading}
             />
           </div>
           <div className="form-group">
-            <label>Descripción (opcional)</label>
+            <label>{t('investments.descriptionOptional')}</label>
             <textarea
               value={eventDescription}
               onChange={(e) => setEventDescription(e.target.value)}
-              placeholder="Detalles adicionales..."
+              placeholder={t('investments.additionalDetails')}
               disabled={isLoading}
               rows={4}
             />
@@ -684,14 +689,14 @@ function SystemEventModal({ onConfirm, onClose, isLoading }) {
         </div>
         <div className="modal-actions">
           <button className="btn secondary" onClick={onClose} disabled={isLoading}>
-            Cancelar
+            {t('investments.cancel')}
           </button>
           <button
             className="btn primary"
             onClick={() => onConfirm(eventTitle, eventDescription, {})}
             disabled={isLoading || !eventTitle}
           >
-            {isLoading ? 'Registrando...' : 'Registrar Evento'}
+            {isLoading ? t('investments.registering') : t('investments.registerEvent')}
           </button>
         </div>
       </div>
@@ -699,11 +704,11 @@ function SystemEventModal({ onConfirm, onClose, isLoading }) {
   );
 }
 
-function formatAuditAction(action) {
+function formatAuditAction(action, t) {
   const labels = {
-    status_change: 'Cambio de Estado',
-    system_event: 'Evento de Sistema',
-    return_update: 'Actualización de Retorno',
+    status_change: t('investments.statusChange'),
+    system_event: t('investments.systemEvent'),
+    return_update: t('investments.returnUpdate'),
   };
   return labels[action] || action;
 }

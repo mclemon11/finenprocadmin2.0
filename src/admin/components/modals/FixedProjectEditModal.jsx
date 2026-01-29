@@ -5,6 +5,7 @@ import { db, storage } from '../../../firebase/firebaseConfig';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { FreeMode } from 'swiper/modules';
 import Swal from 'sweetalert2';
+import { useLanguage } from '../../../context/LanguageContext';
 import 'swiper/css';
 import 'swiper/css/free-mode';
 import './FixedProjectEditModal.css';
@@ -29,6 +30,7 @@ const deepEqual = (obj1, obj2) => {
 };
 
 export default function FixedProjectEditModal({ project, isOpen, onClose, onSuccess, onTimelineEvent }) {
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState('general');
   const [form, setForm] = useState(() => getInitialForm(project));
   const [originalForm, setOriginalForm] = useState(() => getInitialForm(project));
@@ -227,8 +229,8 @@ export default function FixedProjectEditModal({ project, isOpen, onClose, onSucc
 
     if (tooLarge.length > 0) {
       await Swal.fire({
-        title: 'Archivo demasiado grande',
-        text: `Algunos archivos superan 5MB y no se agregaron: ${tooLarge.slice(0, 3).join(', ')}${tooLarge.length > 3 ? '…' : ''}`,
+        title: t('fixedProjectEdit.fileTooLarge'),
+        text: `${t('fixedProjectEdit.fileTooLargeText')} ${tooLarge.slice(0, 3).join(', ')}${tooLarge.length > 3 ? '…' : ''}`,
         icon: 'error',
         confirmButtonColor: '#ef4444',
         background: '#1a1f2e',
@@ -274,14 +276,14 @@ export default function FixedProjectEditModal({ project, isOpen, onClose, onSucc
     
     if (hasChanges) {
       const result = await Swal.fire({
-        title: '¿Descartar cambios?',
-        text: 'Tienes cambios sin guardar. Si cierras, perderás todos los cambios realizados.',
+        title: t('fixedProjectEdit.discardChanges'),
+        text: t('fixedProjectEdit.discardChangesText'),
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#ef4444',
         cancelButtonColor: '#6b7280',
-        confirmButtonText: 'Sí, descartar',
-        cancelButtonText: 'Seguir editando',
+        confirmButtonText: t('fixedProjectEdit.yesDiscard'),
+        cancelButtonText: t('fixedProjectEdit.keepEditing'),
         background: '#1a1f2e',
         color: '#ffffff',
         customClass: {
@@ -446,8 +448,8 @@ export default function FixedProjectEditModal({ project, isOpen, onClose, onSucc
         try {
           await onTimelineEvent({
             type: 'system',
-            title: 'Proyecto actualizado',
-            description: 'Se actualizó la configuración del proyecto fijo',
+            title: t('projectEdit.timeline.projectUpdated'),
+            description: t('projectEdit.timeline.fieldsEdited'),
             visibility: 'admin',
           });
         } catch (timelineErr) {
@@ -474,8 +476,8 @@ export default function FixedProjectEditModal({ project, isOpen, onClose, onSucc
 
       // Success alert
       await Swal.fire({
-        title: '¡Guardado!',
-        text: 'Los cambios se han guardado correctamente.',
+        title: t('fixedProjectEdit.alerts.successTitle'),
+        text: t('fixedProjectEdit.alerts.successText'),
         icon: 'success',
         confirmButtonColor: '#10b981',
         background: '#1a1f2e',
@@ -494,10 +496,10 @@ export default function FixedProjectEditModal({ project, isOpen, onClose, onSucc
       console.error('Error actualizando proyecto:', err);
       
       await Swal.fire({
-        title: 'Error',
+        title: t('fixedProjectEdit.alerts.errorTitle'),
         text: err?.code === 'permission-denied' 
-          ? 'Permisos insuficientes para actualizar el proyecto'
-          : 'No se pudo actualizar el proyecto',
+          ? t('fixedProjectEdit.alerts.permissionDenied')
+          : t('fixedProjectEdit.alerts.updateFailed'),
         icon: 'error',
         confirmButtonColor: '#ef4444',
         background: '#1a1f2e',
@@ -567,10 +569,10 @@ export default function FixedProjectEditModal({ project, isOpen, onClose, onSucc
         {/* Header with tabs */}
         <div className="fixed-edit-header">
           <div className="fixed-edit-title">
-            <h2>✏️ Editar Proyecto Fijo</h2>
+            <h2>✏️ {t('fixedProjectEdit.title')}</h2>
             <span className="project-name-badge">{project.name}</span>
           </div>
-          <button className="fixed-edit-close" onClick={handleClose} aria-label="Cerrar" disabled={saving}>
+          <button className="fixed-edit-close" onClick={handleClose} aria-label={t('common.close')} disabled={saving}>
             ✕
           </button>
         </div>
@@ -584,7 +586,7 @@ export default function FixedProjectEditModal({ project, isOpen, onClose, onSucc
               onClick={() => setActiveTab(tab.id)}
             >
               <span className="tab-icon">{tab.icon}</span>
-              <span className="tab-label">{tab.label}</span>
+              <span className="tab-label">{t(`fixedProjectEdit.tabs.${tab.id}`)}</span>
             </button>
           ))}
         </div>
@@ -611,7 +613,7 @@ export default function FixedProjectEditModal({ project, isOpen, onClose, onSucc
           onClick={handleClose}
           disabled={saving}
         >
-          ✕ Cancelar
+          ✕ {t('common.cancel')}
         </button>
         {hasChanges && (
           <button
@@ -623,11 +625,11 @@ export default function FixedProjectEditModal({ project, isOpen, onClose, onSucc
             {saving ? (
               <>
                 <span className="spinner"></span>
-                Guardando...
+                {t('fixedProjectEdit.saving')}
               </>
             ) : (
               <>
-                💾 Guardar cambios
+                💾 {t('fixedProjectEdit.saveChanges')}
               </>
             )}
           </button>

@@ -1,15 +1,17 @@
 import React from 'react';
 import Card from '../../components/Card';
 import useDashboardKPIs from '../../admin/hooks/useDashboardKPIs';
+import { useLanguage } from '../../context/LanguageContext';
 import './AdminDashboard.css';
 
 export default function AdminDashboard(){
   const { kpis, loading } = useDashboardKPIs();
+  const { t } = useLanguage();
 
   const stats = [
     {
       id: 'pending_topups',
-      label: 'Recargas pendientes',
+      label: t('dashboard.pendingTopups') || 'Recargas pendientes',
       value: String(kpis.pendingTopups ?? 0),
       icon: '⏳',
       change: null,
@@ -17,7 +19,7 @@ export default function AdminDashboard(){
     },
     {
       id: 'approved_topups',
-      label: 'Recargas aprobadas',
+      label: t('dashboard.approvedTopups') || 'Recargas aprobadas',
       value: String(kpis.approvedTopups ?? 0),
       icon: '✓',
       change: null,
@@ -25,7 +27,7 @@ export default function AdminDashboard(){
     },
     {
       id: 'rejected_topups',
-      label: 'Recargas rechazadas',
+      label: t('dashboard.rejectedTopups') || 'Recargas rechazadas',
       value: String(kpis.rejectedTopups ?? 0),
       icon: '✕',
       change: null,
@@ -33,7 +35,7 @@ export default function AdminDashboard(){
     },
     {
       id: 'total_users',
-      label: 'Usuarios totales',
+      label: t('dashboard.totalUsers'),
       value: String(kpis.totalUsers ?? 0),
       icon: '👥',
       change: null,
@@ -59,8 +61,8 @@ export default function AdminDashboard(){
       <div className="admin-dashboard">
         <div className="dashboard-header">
           <div>
-            <h1 className="dashboard-title">Cargando…</h1>
-            <p className="dashboard-subtitle">Obteniendo métricas de Firestore</p>
+            <h1 className="dashboard-title">{t('common.loading')}</h1>
+            <p className="dashboard-subtitle">{t('dashboard.fetchingMetrics') || 'Obteniendo métricas'}</p>
           </div>
         </div>
       </div>
@@ -71,11 +73,11 @@ export default function AdminDashboard(){
     <div className="admin-dashboard">
       <div className="dashboard-header">
         <div>
-          <h1 className="dashboard-title">¡Bienvenido, Admin!</h1>
-          <p className="dashboard-subtitle">Aquí está el resumen de la plataforma</p>
+          <h1 className="dashboard-title">{t('dashboard.welcomeAdmin') || '¡Bienvenido, Admin!'}</h1>
+          <p className="dashboard-subtitle">{t('dashboard.subtitle')}</p>
         </div>
         <div className="dashboard-meta">
-          <span className="last-updated">Última actualización: Hoy, {new Date().toLocaleTimeString('es-ES', {hour: '2-digit', minute: '2-digit'})}</span>
+          <span className="last-updated">{t('dashboard.lastUpdate') || 'Última actualización'}: {t('common.today')}, {new Date().toLocaleTimeString('es-ES', {hour: '2-digit', minute: '2-digit'})}</span>
         </div>
       </div>
 
@@ -97,17 +99,17 @@ export default function AdminDashboard(){
       </div>
 
       <div className="dashboard-section">
-        <h3 className="section-title">Actividad reciente</h3>
+        <h3 className="section-title">{t('dashboard.recentActivity') || 'Actividad reciente'}</h3>
         <Card>
           {kpis.recentTransactions?.length ? (
             <div className="table-wrap">
               <table className="table">
                 <thead>
                   <tr>
-                    <th>Tipo</th>
-                    <th>Monto</th>
-                    <th>Usuario</th>
-                    <th>Fecha</th>
+                    <th>{t('dashboard.type')}</th>
+                    <th>{t('dashboard.amount')}</th>
+                    <th>{t('dashboard.user')}</th>
+                    <th>{t('dashboard.date')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -125,8 +127,8 @@ export default function AdminDashboard(){
           ) : (
             <div className="empty-state">
               <div className="empty-state-icon">📊</div>
-              <div className="empty-state-title">Sin actividad reciente</div>
-              <div className="empty-state-text">No hay transacciones recientes en Firestore</div>
+              <div className="empty-state-title">{t('dashboard.noRecentActivity') || 'Sin actividad reciente'}</div>
+              <div className="empty-state-text">{t('dashboard.noTransactions') || 'No hay transacciones recientes'}</div>
             </div>
           )}
         </Card>

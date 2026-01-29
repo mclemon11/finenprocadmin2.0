@@ -4,6 +4,7 @@ import useAdminUsers from '../hooks/useAdminUsers';
 import useUserDetail from '../hooks/useUserDetail';
 import UsuariosTable from '../components/tables/UsuariosTable';
 import UsuarioDetailDrawer from '../components/modals/UsuarioDetailDrawer';
+import { useLanguage } from '../../context/LanguageContext';
 import './UsuariosPage.css';
 
 export default function UsuariosPage({ adminData }) {
@@ -12,6 +13,7 @@ export default function UsuariosPage({ adminData }) {
   const [selectedUserId, setSelectedUserId] = useState(null);
   const { users, loading, refetch: refetchUsers } = useAdminUsers(filters);
   const { user, wallet, investments, topups, withdrawals, transactions, loading: detailLoading, refetch: refetchDetail } = useUserDetail(selectedUserId);
+  const { t } = useLanguage();
 
   const handleActionComplete = () => {
     refetchUsers();
@@ -34,8 +36,8 @@ export default function UsuariosPage({ adminData }) {
   return (
     <div className="usuarios-page">
       <div className="page-header">
-        <h1 className="page-title">Gestión de Usuarios</h1>
-        <p className="page-subtitle">Administra todos los usuarios del sistema</p>
+        <h1 className="page-title">{t('users.title')}</h1>
+        <p className="page-subtitle">{t('users.subtitle')}</p>
         <div className="page-divider"></div>
       </div>
 
@@ -44,28 +46,28 @@ export default function UsuariosPage({ adminData }) {
         <div className="kpi-card">
           <div className="kpi-icon">👥</div>
           <div className="kpi-content">
-            <div className="kpi-label">Total de Usuarios</div>
+            <div className="kpi-label">{t('users.totalUsers')}</div>
             <div className="kpi-value">{totalUsers}</div>
           </div>
         </div>
         <div className="kpi-card">
           <div className="kpi-icon">✓</div>
           <div className="kpi-content">
-            <div className="kpi-label">Activos</div>
+            <div className="kpi-label">{t('users.activeCount')}</div>
             <div className="kpi-value">{activeUsers}</div>
           </div>
         </div>
         <div className="kpi-card">
           <div className="kpi-icon">○</div>
           <div className="kpi-content">
-            <div className="kpi-label">Inactivos</div>
+            <div className="kpi-label">{t('users.inactiveCount')}</div>
             <div className="kpi-value">{inactiveUsers}</div>
           </div>
         </div>
         <div className="kpi-card">
           <div className="kpi-icon">💰</div>
           <div className="kpi-content">
-            <div className="kpi-label">Inversores</div>
+            <div className="kpi-label">{t('users.investors')}</div>
             <div className="kpi-value">{investorUsers}</div>
           </div>
         </div>
@@ -77,7 +79,7 @@ export default function UsuariosPage({ adminData }) {
           <span className="search-icon">🔍</span>
           <input
             type="text"
-            placeholder="Buscar por email o nombre..."
+            placeholder={t('users.searchPlaceholder')}
             className="search-input"
             value={filters.search}
             onChange={(e) => setFilters({ ...filters, search: e.target.value })}
@@ -88,16 +90,16 @@ export default function UsuariosPage({ adminData }) {
           value={filters.status}
           onChange={(e) => setFilters({ ...filters, status: e.target.value })}
         >
-          <option value="all">Todos los estados</option>
-          <option value="active">Activos</option>
-          <option value="inactive">Inactivos</option>
+          <option value="all">{t('users.allStatuses')}</option>
+          <option value="active">{t('users.active')}</option>
+          <option value="inactive">{t('users.inactive')}</option>
         </select>
       </div>
 
       {/* Users Table Card */}
       <div className="usuarios-card">
         <div className="card-header">
-          <h3>Usuarios ({users.length})</h3>
+          <h3>{t('nav.users')} ({users.length})</h3>
         </div>
         <UsuariosTable
           users={users}

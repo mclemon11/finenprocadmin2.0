@@ -5,11 +5,13 @@ import { db, storage } from '../../../firebase/firebaseConfig';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { FreeMode } from 'swiper/modules';
 import Swal from 'sweetalert2';
+import { useLanguage } from '../../../context/LanguageContext';
 import 'swiper/css';
 import 'swiper/css/free-mode';
 import './ProjectFormModal.css';
 
 export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
+  const { t } = useLanguage();
   const [form, setForm] = useState({
     name: '',
     description: '',
@@ -117,7 +119,7 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
   const handleSubmit = async (e, statusToSet = 'draft') => {
     e.preventDefault();
     if (!form.name) {
-      setError('El nombre es obligatorio');
+      setError(t('projectForm.errors.nameRequired'));
       return;
     }
 
@@ -128,34 +130,34 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
 
     if (isFixed) {
       if (!Number.isFinite(targetAmountNum) || targetAmountNum <= 0) {
-        setError('El capital objetivo (targetAmount) es obligatorio y debe ser mayor a 0');
+        setError(t('projectForm.errors.targetRequired'));
         return;
       }
 
       if (minInvestmentNum !== null) {
         if (!Number.isFinite(minInvestmentNum) || minInvestmentNum <= 0) {
-          setError('La inversión mínima debe ser un número mayor a 0');
+          setError(t('projectForm.errors.minInvestmentPositive'));
           return;
         }
         if (minInvestmentNum > targetAmountNum) {
-          setError('La inversión mínima no puede ser mayor al capital objetivo');
+          setError(t('projectForm.errors.minGreaterThanTarget'));
           return;
         }
       }
 
       if (maxInvestmentNum !== null) {
         if (!Number.isFinite(maxInvestmentNum) || maxInvestmentNum <= 0) {
-          setError('La inversión máxima debe ser un número mayor a 0');
+          setError(t('projectForm.errors.maxInvestmentPositive'));
           return;
         }
         if (maxInvestmentNum > targetAmountNum) {
-          setError('La inversión máxima no puede ser mayor al capital objetivo');
+          setError(t('projectForm.errors.maxGreaterThanTarget'));
           return;
         }
       }
 
       if (minInvestmentNum !== null && maxInvestmentNum !== null && minInvestmentNum > maxInvestmentNum) {
-        setError('La inversión mínima no puede ser mayor que la inversión máxima');
+        setError(t('projectForm.errors.minGreaterThanMax'));
         return;
       }
     }
@@ -226,8 +228,8 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
 
       // Success alert
       await Swal.fire({
-        title: '¡Proyecto creado!',
-        text: `El proyecto "${form.name}" se ha creado correctamente.`,
+        title: t('projectForm.alerts.successTitle'),
+        text: t('projectForm.alerts.successText').replace('{name}', form.name),
         icon: 'success',
         confirmButtonColor: '#10b981',
         background: '#1a1f2e',
@@ -247,8 +249,8 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
       console.error('Error creando proyecto', err);
       
       await Swal.fire({
-        title: 'Error',
-        text: 'No se pudo crear el proyecto. Inténtalo de nuevo.',
+        title: t('projectForm.alerts.errorTitle'),
+        text: t('projectForm.errors.createFailed'),
         icon: 'error',
         confirmButtonColor: '#ef4444',
         background: '#1a1f2e',
@@ -269,26 +271,26 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
     <div className="project-modal-overlay" onClick={handleClose}>
       <div className="project-modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>Crear Proyecto Financiero</h2>
+          <h2>{t('projectForm.title')}</h2>
           <button className="close-btn" onClick={handleClose}>✕</button>
         </div>
         
         <form className="modal-form" onSubmit={(e) => handleSubmit(e, 'draft')}>
           <div className="modal-body">
             <div className="form-section-header">
-              <h3>Información General</h3>
-              <p>Datos básicos del proyecto financiero</p>
+              <h3>{t('projectForm.generalInfo')}</h3>
+              <p>{t('projectForm.generalInfoDesc')}</p>
             </div>
 
             <div className="form-section">
               <div className="form-section-header">
-                <h3>🖼️ Imágenes</h3>
-                <p>Puedes agregar varias imágenes (y eliminarlas antes de guardar)</p>
+                <h3>🖼️ {t('projectForm.images')}</h3>
+                <p>{t('projectForm.imagesDesc')}</p>
               </div>
 
               <div className="form-row">
                 <label>
-                  Agregar imágenes
+                  {t('projectForm.addImages')}
                   <input
                     type="file"
                     accept="image/*"
@@ -298,7 +300,7 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
                       e.target.value = '';
                     }}
                   />
-                  <span className="field-hint">Formato recomendado 16:9. Máx. 5MB por imagen.</span>
+                  <span className="field-hint">{t('projectForm.imageHint')}</span>
                 </label>
               </div>
 
@@ -333,12 +335,12 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
 
             <div className="form-row">
               <label>
-                Nombre del proyecto *
+                {t('projectForm.projectName')} *
                 <input
                   type="text"
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  placeholder="Fondo Deuda USD 12%"
+                  placeholder={t('projectForm.projectNamePlaceholder')}
                   required
                 />
               </label>
@@ -346,23 +348,23 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
 
             <div className="form-row">
               <label>
-                Subtítulo (descripción breve)
+                {t('projectForm.subtitle')}
                 <input
                   type="text"
                   value={form.description}
                   onChange={(e) => setForm({ ...form, description: e.target.value })}
-                  placeholder="Ej: Inversión a 12 meses con retorno estimado"
+                  placeholder={t('projectForm.subtitlePlaceholder')}
                 />
               </label>
             </div>
 
             <div className="form-row">
               <label>
-                Descripción extensa (se muestra solo en detalles)
+                {t('projectForm.longDescription')}
                 <textarea
                   value={form.body}
                   onChange={(e) => setForm({ ...form, body: e.target.value })}
-                  placeholder="Describe el proyecto con más detalle..."
+                  placeholder={t('projectForm.longDescriptionPlaceholder')}
                   rows={5}
                 />
               </label>
@@ -370,23 +372,23 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
 
             <div className="form-row form-row-2">
               <label>
-                Tipo de proyecto *
+                {t('projectForm.projectType')} *
                 <select
                   value={form.type}
                   onChange={(e) => setForm({ ...form, type: e.target.value })}
                 >
-                  <option value="fixed">Fijo (meta de capital)</option>
-                  <option value="variable">Variable (trading/crypto)</option>
+                  <option value="fixed">{t('projectForm.typeFixed')}</option>
+                  <option value="variable">{t('projectForm.typeVariable')}</option>
                 </select>
               </label>
               <label>
                 <span className="label-with-badge">
-                  Categoría
-                  <span className="label-badge">Catálogo admin</span>
+                  {t('projectForm.category')}
+                  <span className="label-badge">{t('projectForm.categoryBadge')}</span>
                 </span>
                 <div className="category-select" onClick={() => setIsCategoryOpen((prev) => !prev)}>
                   <div className="category-control" role="button" tabIndex={0}>
-                    <div className="category-value">{form.category || 'Busca o selecciona una categoría creada por admin'}</div>
+                    <div className="category-value">{form.category || t('projectForm.categoryPlaceholder')}</div>
                     <div className="category-caret">▾</div>
                   </div>
                   {isCategoryOpen && (
@@ -394,7 +396,7 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
                       <div className="dropdown-search">
                         <input
                           type="text"
-                          placeholder="Buscar categorías"
+                          placeholder={t('projectForm.searchCategories')}
                           value={form.category}
                           onChange={(e) => setForm({ ...form, category: e.target.value })}
                         />
@@ -423,18 +425,18 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
                             setShowCreateInline(true);
                           }}
                         >
-                          ➕ Crear nueva categoría
+                          ➕ {t('projectForm.createCategory')}
                         </button>
 
                         {showCreateInline && (
                           <div className="inline-create">
                             <label>
-                              Nombre de la categoría
+                              {t('projectForm.categoryNameLabel')}
                               <input
                                 type="text"
                                 value={newCategoryName}
                                 onChange={(e) => setNewCategoryName(e.target.value)}
-                                placeholder="Ej. Deuda privada USD"
+                                placeholder={t('projectForm.categoryNamePlaceholder')}
                               />
                             </label>
                             <div className="inline-actions">
@@ -446,7 +448,7 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
                                   setNewCategoryName('');
                                 }}
                               >
-                                Cancelar
+                                {t('common.cancel')}
                               </button>
                               <button
                                 type="button"
@@ -459,7 +461,7 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
                                   setNewCategoryName('');
                                 }}
                               >
-                                Crear y seleccionar
+                                {t('projectForm.createAndSelect')}
                               </button>
                             </div>
                           </div>
@@ -468,24 +470,24 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
                     </div>
                   )}
                 </div>
-                <span className="field-hint">Las categorías son creadas por administradores y se reutilizan en proyectos futuros.</span>
+                <span className="field-hint">{t('projectForm.categoryHint')}</span>
               </label>
             </div>
 
             <div className="form-row form-row-3">
               <label>
-                Nivel de riesgo *
+                {t('projectForm.riskLevel')} *
                 <select
                   value={form.riskLevel}
                   onChange={(e) => setForm({ ...form, riskLevel: e.target.value })}
                 >
-                  <option value="low">Bajo</option>
-                  <option value="medium">Medio</option>
-                  <option value="high">Alto</option>
+                  <option value="low">{t('projectForm.riskLow')}</option>
+                  <option value="medium">{t('projectForm.riskMedium')}</option>
+                  <option value="high">{t('projectForm.riskHigh')}</option>
                 </select>
               </label>
               <label>
-                ROI esperado (%)
+                {t('projectForm.expectedROI')}
                 <input
                   type="number"
                   step="0.01"
@@ -495,7 +497,7 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
                 />
               </label>
               <label>
-                Duración (meses)
+                {t('projectForm.duration')}
                 <input
                   type="number"
                   value={form.durationMonths}
@@ -508,12 +510,12 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
             {form.type === 'fixed' && (
               <div className="form-section form-section-financial">
                 <div className="form-section-header">
-                  <h3>⚙️ Configuración Financiera (Proyecto Fijo)</h3>
-                  <p>Establece los límites de capital e inversión</p>
+                  <h3>⚙️ {t('projectForm.fixedConfig')}</h3>
+                  <p>{t('projectForm.fixedConfigDesc')}</p>
                 </div>
                 <div className="form-row form-row-3">
                   <label>
-                    Capital objetivo (USD)
+                    {t('projectForm.targetAmount')}
                     <input
                       type="number"
                       value={form.targetAmount}
@@ -522,7 +524,7 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
                     />
                   </label>
                   <label>
-                    Inversión mínima (USD)
+                    {t('projectForm.minInvestment')}
                     <input
                       type="number"
                       value={form.minInvestment}
@@ -531,7 +533,7 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
                     />
                   </label>
                   <label>
-                    Inversión máxima (USD)
+                    {t('projectForm.maxInvestment')}
                     <input
                       type="number"
                       value={form.maxInvestment}
@@ -546,12 +548,12 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
             {form.type === 'variable' && (
               <div className="form-section form-section-financial">
                 <div className="form-section-header">
-                  <h3>📊 Configuración Financiera (Proyecto Variable)</h3>
-                  <p>Métricas de rendimiento y control</p>
+                  <h3>📊 {t('projectForm.variableConfig')}</h3>
+                  <p>{t('projectForm.variableConfigDesc')}</p>
                 </div>
                 <div className="form-row form-row-2">
                   <label>
-                    Drawdown (%)
+                    {t('projectForm.drawdown')}
                     <input
                       type="number"
                       step="0.01"
@@ -561,7 +563,7 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
                     />
                   </label>
                   <label>
-                    Performance (%)
+                    {t('projectForm.performance')}
                     <input
                       type="number"
                       step="0.01"
@@ -577,18 +579,18 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
                     checked={form.manualControl}
                     onChange={(e) => setForm({ ...form, manualControl: e.target.checked })}
                   />
-                  Control manual del estado (permite pausar/reanudar)
+                  {t('projectForm.manualControl')}
                 </label>
               </div>
             )}
 
             <div className="form-section form-section-advanced">
               <div className="form-section-header">
-                <h3>🛰️ Configuración avanzada</h3>
-                <p>Próximamente campos técnicos para proyectos mixtos o de trading/crypto</p>
+                <h3>🛰️ {t('projectForm.advancedConfig')}</h3>
+                <p>{t('projectForm.advancedConfigDesc')}</p>
               </div>
               <div className="placeholder-box">
-                <p>Esta área reservará parámetros como ejecución, exchanges, riesgo dinámico y conectores técnicos.</p>
+                <p>{t('projectForm.advancedPlaceholder')}</p>
               </div>
             </div>
 
@@ -597,10 +599,10 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
 
           <div className="modal-actions">
             <button type="button" className="cancel-btn" onClick={handleClose} disabled={saving}>
-              Cancelar
+              {t('common.cancel')}
             </button>
             <button type="submit" className="draft-btn" disabled={saving}>
-              {saving ? 'Guardando...' : 'Crear borrador'}
+              {saving ? t('projectForm.saving') : t('projectForm.createDraft')}
             </button>
             <button 
               type="button" 
@@ -608,7 +610,7 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
               onClick={(e) => handleSubmit(e, 'active')}
               disabled={saving}
             >
-              {saving ? 'Publicando...' : 'Crear y publicar'}
+              {saving ? t('projectForm.publishing') : t('projectForm.createAndPublish')}
             </button>
           </div>
         </form>

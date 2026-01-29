@@ -6,6 +6,7 @@ import ProjectEditModal from '../modals/ProjectEditModal';
 import FixedProjectEditModal from '../modals/FixedProjectEditModal';
 import ProjectTimeline from '../project/ProjectTimeline';
 import InvestmentDetailDrawer from './InvestmentDetailDrawer';
+import { useLanguage } from '../../../context/LanguageContext';
 import './ProjectDetailDrawer.css';
 
 export default function ProjectDetailDrawer({ 
@@ -20,6 +21,7 @@ export default function ProjectDetailDrawer({
   const [internalActiveTab, setInternalActiveTab] = useState('overview');
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [selectedInvestmentId, setSelectedInvestmentId] = useState(null);
+  const { t } = useLanguage();
 
   // Usar activeTab controlado externamente si se proporciona
   const activeTab = onTabChange ? externalActiveTab : internalActiveTab;
@@ -92,14 +94,14 @@ export default function ProjectDetailDrawer({
         <div className="drawer-header">
           <div className="drawer-header-top">
             <button className="close-drawer-btn" onClick={onClose}>
-              ← Volver a proyectos
+              ← {t('projects.backToProjects')}
             </button>
             <div className="drawer-actions">
               <button className="action-btn secondary" onClick={() => setIsEditOpen(true)}>
-                ✏️ Editar
+                ✏️ {t('common.edit')}
               </button>
               <button className="action-btn primary" onClick={() => setActiveTab('timeline')}>
-                📢 Publicar evento
+                📢 {t('projects.publishEvent')}
               </button>
             </div>
           </div>
@@ -109,19 +111,19 @@ export default function ProjectDetailDrawer({
               <h1 className="drawer-title">{project.name}</h1>
               <div className="drawer-badges">
                 <span className={`badge type-badge type-${project.type}`}>
-                  {project.type === 'variable' ? '📊 Variable' : '🎯 Fijo'}
+                  {project.type === 'variable' ? `📊 ${t('projects.variable')}` : `🎯 ${t('projects.fixed')}`}
                 </span>
                 <span className={`badge risk-badge risk-${project.riskLevel}`}>
-                  {project.riskLevel === 'low' && '🟢 Riesgo Bajo'}
-                  {project.riskLevel === 'medium' && '🟡 Riesgo Medio'}
-                  {project.riskLevel === 'high' && '🔴 Riesgo Alto'}
+                  {project.riskLevel === 'low' && `🟢 ${t('projects.riskLow')}`}
+                  {project.riskLevel === 'medium' && `🟡 ${t('projects.riskMedium')}`}
+                  {project.riskLevel === 'high' && `🔴 ${t('projects.riskHigh')}`}
                 </span>
                 <span className={`badge status-badge status-${project.computedStatus}`}>
-                  {project.computedStatus === 'funded' && '✅ Funded'}
-                  {project.computedStatus === 'active' && '🟢 Activo'}
-                  {project.computedStatus === 'paused' && '⏸️ Pausado'}
-                  {project.computedStatus === 'closed' && '🔒 Cerrado'}
-                  {project.computedStatus === 'draft' && '📝 Borrador'}
+                  {project.computedStatus === 'funded' && `✅ ${t('status.funded')}`}
+                  {project.computedStatus === 'active' && `🟢 ${t('status.active')}`}
+                  {project.computedStatus === 'paused' && `⏸️ ${t('status.paused')}`}
+                  {project.computedStatus === 'closed' && `🔒 ${t('status.closed')}`}
+                  {project.computedStatus === 'draft' && `📝 ${t('status.draft')}`}
                 </span>
               </div>
               {project.category && (
@@ -132,7 +134,7 @@ export default function ProjectDetailDrawer({
             {project.type === 'fixed' && project.targetAmount && (
               <div className="header-progress">
                 <div className="progress-header-row">
-                  <span className="progress-label-text">💰 Capital Recaudado</span>
+                  <span className="progress-label-text">💰 {t('projects.capitalRaised')}</span>
                   <span className="progress-percent">{project.progress || 0}%</span>
                 </div>
                 <div className="progress-bar-header">
@@ -143,11 +145,11 @@ export default function ProjectDetailDrawer({
                 </div>
                 <div className="progress-stats-row">
                   <div className="progress-stat">
-                    <span className="stat-label">Recaudado</span>
+                    <span className="stat-label">{t('projects.raised')}</span>
                     <span className="stat-value">{formatCurrency(project.totalInvested)}</span>
                   </div>
                   <div className="progress-stat">
-                    <span className="stat-label">Meta</span>
+                    <span className="stat-label">{t('projects.target')}</span>
                     <span className="stat-value">{formatCurrency(project.targetAmount)}</span>
                   </div>
                 </div>
@@ -161,25 +163,25 @@ export default function ProjectDetailDrawer({
               className={`drawer-tab ${activeTab === 'overview' ? 'active' : ''}`}
               onClick={() => setActiveTab('overview')}
             >
-              📊 Resumen
+              📊 {t('projects.overview')}
             </button>
             <button
               className={`drawer-tab ${activeTab === 'investments' ? 'active' : ''}`}
               onClick={() => setActiveTab('investments')}
             >
-              💼 Inversiones ({investmentStats.total})
+              💼 {t('nav.investments')} ({investmentStats.total})
             </button>
             <button
               className={`drawer-tab ${activeTab === 'timeline' ? 'active' : ''}`}
               onClick={() => setActiveTab('timeline')}
             >
-              📅 Timeline ({events.length})
+              📅 {t('projects.timeline')} ({events.length})
             </button>
             <button
               className={`drawer-tab ${activeTab === 'activity' ? 'active' : ''}`}
               onClick={() => setActiveTab('activity')}
             >
-              ⚙️ Actividad ({activityEvents.length})
+              ⚙️ {t('projects.activity')} ({activityEvents.length})
             </button>
           </div>
         </div>
@@ -193,29 +195,29 @@ export default function ProjectDetailDrawer({
                 <div className="kpi-box">
                   <div className="kpi-icon">💰</div>
                   <div className="kpi-data">
-                    <div className="kpi-label">Total Invertido</div>
+                    <div className="kpi-label">{t('projects.totalInvested')}</div>
                     <div className="kpi-value">{formatCurrency(investmentStats.totalAmount)}</div>
                   </div>
                 </div>
                 <div className="kpi-box">
                   <div className="kpi-icon">👥</div>
                   <div className="kpi-data">
-                    <div className="kpi-label">Inversionistas</div>
+                    <div className="kpi-label">{t('projects.investors')}</div>
                     <div className="kpi-value">{investmentStats.total}</div>
-                    <div className="kpi-sublabel">{investmentStats.active} activos</div>
+                    <div className="kpi-sublabel">{investmentStats.active} {t('projects.activeInvestorsCount')}</div>
                   </div>
                 </div>
                 <div className="kpi-box">
                   <div className="kpi-icon">📈</div>
                   <div className="kpi-data">
-                    <div className="kpi-label">ROI Esperado</div>
+                    <div className="kpi-label">{t('projects.expectedROI')}</div>
                     <div className="kpi-value">{project.expectedROI ? `${project.expectedROI}%` : '—'}</div>
                   </div>
                 </div>
                 <div className="kpi-box">
                   <div className="kpi-icon">⏱️</div>
                   <div className="kpi-data">
-                    <div className="kpi-label">Duración</div>
+                    <div className="kpi-label">{t('projects.duration')}</div>
                     <div className="kpi-value">{project.duration ? `${project.duration}m` : '—'}</div>
                   </div>
                 </div>
@@ -224,24 +226,24 @@ export default function ProjectDetailDrawer({
               {/* Información detallada */}
               <div className="info-sections">
                 <div className="info-section">
-                  <h3 className="section-title">📋 Información General</h3>
+                  <h3 className="section-title">📋 {t('projects.generalInfo')}</h3>
                   <div className="info-grid">
                     <div className="info-item">
-                      <span className="info-key">Fecha de creación</span>
+                      <span className="info-key">{t('projects.creationDate')}</span>
                       <span className="info-val">{formatDate(project.createdAt)}</span>
                     </div>
                     <div className="info-item">
-                      <span className="info-key">Última actualización</span>
+                      <span className="info-key">{t('projects.lastUpdate')}</span>
                       <span className="info-val">{formatDate(project.updatedAt)}</span>
                     </div>
                     <div className="info-item">
-                      <span className="info-key">Moneda base</span>
+                      <span className="info-key">{t('projects.baseCurrency')}</span>
                       <span className="info-val">USD 🇺🇸</span>
                     </div>
                     <div className="info-item">
-                      <span className="info-key">Estado de inversión</span>
+                      <span className="info-key">{t('projects.investmentStatus')}</span>
                       <span className="info-val">
-                        {project.investable ? '✅ Abierto' : '🔒 Cerrado'}
+                        {project.investable ? `✅ ${t('projects.openInvestment')}` : `🔒 ${t('projects.closedInvestment')}`}
                       </span>
                     </div>
                   </div>
@@ -249,27 +251,27 @@ export default function ProjectDetailDrawer({
 
                 {project.type === 'fixed' && (
                   <div className="info-section">
-                    <h3 className="section-title">⚙️ Configuración Fija</h3>
+                    <h3 className="section-title">⚙️ {t('projects.fixedConfig')}</h3>
                     <div className="info-grid">
                       <div className="info-item">
-                        <span className="info-key">Capital objetivo</span>
+                        <span className="info-key">{t('projects.targetCapital')}</span>
                         <span className="info-val bold">{formatCurrency(project.targetAmount)}</span>
                       </div>
                       <div className="info-item">
-                        <span className="info-key">Inversión mínima</span>
+                        <span className="info-key">{t('projects.minInvestment')}</span>
                         <span className="info-val">{formatCurrency(project.minInvestment)}</span>
                       </div>
                       {project.maxInvestment && (
                         <div className="info-item">
-                          <span className="info-key">Inversión máxima</span>
+                          <span className="info-key">{t('projects.maxInvestment')}</span>
                           <span className="info-val">{formatCurrency(project.maxInvestment)}</span>
                         </div>
                       )}
                       <div className="info-item">
-                        <span className="info-key">Auto-lock al alcanzar meta</span>
+                        <span className="info-key">{t('projects.autoLockOnTarget')}</span>
                         <span className="info-val">
                           <span className={`pill ${project.autoLockOnTarget ? 'pill-on' : 'pill-off'}`}>
-                            {project.autoLockOnTarget ? '✓ Activado' : '✗ Desactivado'}
+                            {project.autoLockOnTarget ? `✓ ${t('projects.activated')}` : `✗ ${t('projects.deactivated')}`}
                           </span>
                         </span>
                       </div>
@@ -279,18 +281,18 @@ export default function ProjectDetailDrawer({
 
                 {project.type === 'variable' && (
                   <div className="info-section">
-                    <h3 className="section-title">📊 Métricas Variables</h3>
+                    <h3 className="section-title">📊 {t('projects.variableMetrics')}</h3>
                     <div className="metrics-cards">
                       <div className="metric-card performance">
                         <div className="metric-icon">📈</div>
-                        <div className="metric-label">Performance</div>
+                        <div className="metric-label">{t('projects.performance')}</div>
                         <div className="metric-value positive">
                           {project.performance !== undefined ? `${project.performance}%` : '—'}
                         </div>
                       </div>
                       <div className="metric-card drawdown">
                         <div className="metric-icon">📉</div>
-                        <div className="metric-label">Drawdown</div>
+                        <div className="metric-label">{t('projects.drawdown')}</div>
                         <div className="metric-value negative">
                           {project.drawdown !== undefined ? `${project.drawdown}%` : '—'}
                         </div>
@@ -305,23 +307,23 @@ export default function ProjectDetailDrawer({
           {activeTab === 'investments' && (
             <div className="investments-section">
               {invLoading ? (
-                <div className="loading-state">Cargando inversiones...</div>
+                <div className="loading-state">{t('investments.loadingInvestments')}</div>
               ) : investments.length === 0 ? (
                 <div className="empty-state">
-                  <div className="empty-icon">�</div>
-                  <div className="empty-title">Sin inversiones</div>
-                  <div className="empty-subtitle">Este proyecto aún no tiene inversionistas</div>
+                  <div className="empty-icon">💼</div>
+                  <div className="empty-title">{t('projects.noInvestmentsTitle')}</div>
+                  <div className="empty-subtitle">{t('projects.noInvestmentsSubtitle')}</div>
                 </div>
               ) : (
                 <div className="investments-table-wrapper">
                   <table className="investments-table">
                     <thead>
                       <tr>
-                        <th>Inversionista</th>
-                        <th>Monto</th>
-                        <th>ROI Esperado</th>
-                        <th>Estado</th>
-                        <th>Fecha</th>
+                        <th>{t('projects.investor')}</th>
+                        <th>{t('investments.amount')}</th>
+                        <th>{t('investments.expectedROI')}</th>
+                        <th>{t('investments.status')}</th>
+                        <th>{t('investments.date')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -329,7 +331,7 @@ export default function ProjectDetailDrawer({
                         <tr key={inv.id} onClick={() => setSelectedInvestmentId(inv.id)} className="clickable-row">
                           <td>
                             <div className="investor-cell">
-                              <div className="investor-name">{inv.userName || 'Usuario'}</div>
+                              <div className="investor-name">{inv.userName || t('users.user')}</div>
                               <div className="investor-email">{inv.userEmail}</div>
                             </div>
                           </td>
@@ -341,9 +343,9 @@ export default function ProjectDetailDrawer({
                           </td>
                           <td>
                             <span className={`badge status-badge status-${inv.status}`}>
-                              {inv.status === 'active' && '🟢 Activa'}
-                              {inv.status === 'completed' && '✅ Completada'}
-                              {inv.status === 'cancelled' && '❌ Cancelada'}
+                              {inv.status === 'active' && `🟢 ${t('investments.active')}`}
+                              {inv.status === 'completed' && `✅ ${t('investments.completed')}`}
+                              {inv.status === 'cancelled' && `❌ ${t('investments.cancelled')}`}
                             </span>
                           </td>
                           <td className="date-cell">{formatDate(inv.createdAt)}</td>
@@ -367,8 +369,8 @@ export default function ProjectDetailDrawer({
               {activityEvents.length === 0 ? (
                 <div className="empty-state">
                   <div className="empty-icon">⚙️</div>
-                  <div className="empty-title">Sin actividad</div>
-                  <div className="empty-subtitle">No hay eventos del sistema registrados</div>
+                  <div className="empty-title">{t('projects.noActivityTitle')}</div>
+                  <div className="empty-subtitle">{t('projects.noActivitySubtitle')}</div>
                 </div>
               ) : (
                 <div className="activity-list">
@@ -387,9 +389,9 @@ export default function ProjectDetailDrawer({
                         )}
                         <div className="activity-meta">
                           <span className={`badge visibility-badge visibility-${event.visibility}`}>
-                            {event.visibility === 'admin' && 'Solo admin'}
-                            {event.visibility === 'investors' && 'Inversionistas'}
-                            {event.visibility === 'all' && 'Todos'}
+                            {event.visibility === 'admin' && t('projects.adminOnly')}
+                            {event.visibility === 'investors' && t('projects.investorsOnly')}
+                            {event.visibility === 'all' && t('common.all')}
                           </span>
                         </div>
                       </div>

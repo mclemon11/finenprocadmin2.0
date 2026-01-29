@@ -5,11 +5,13 @@ import { db, storage } from '../../../firebase/firebaseConfig';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { FreeMode } from 'swiper/modules';
 import Swal from 'sweetalert2';
+import { useLanguage } from '../../../context/LanguageContext';
 import 'swiper/css';
 import 'swiper/css/free-mode';
 import './ProjectEditModal.css';
 
 export default function ProjectEditModal({ project, isOpen, onClose, onSuccess, onTimelineEvent }) {
+  const { t } = useLanguage();
   const [form, setForm] = useState({
     name: project?.name || '',
     description: project?.description || '',
@@ -117,15 +119,15 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSuccess, 
       setError(null);
 
       const changes = [];
-      if (form.name !== project.name) changes.push(`Nombre: "${project.name}" → "${form.name}"`);
-      if ((form.description || '') !== (project.description || '')) changes.push('Subtítulo: actualizado');
-      if ((form.body || '') !== (project.body || '')) changes.push('Descripción extensa: actualizada');
-      if (form.category !== project.category) changes.push(`Categoría: "${project.category || 'N/A'}" → "${form.category}"`);
-      if (Number(form.expectedROI) !== Number(project.expectedROI)) changes.push(`ROI esperado: ${project.expectedROI}% → ${form.expectedROI}%`);
-      if (Number(form.duration) !== Number(project.duration)) changes.push(`Duración: ${project.duration} → ${form.duration} meses`);
+      if (form.name !== project.name) changes.push(`${t('projectEdit.timeline.nameChange')}: "${project.name}" → "${form.name}"`);
+      if ((form.description || '') !== (project.description || '')) changes.push(t('projectEdit.timeline.subtitleUpdated'));
+      if ((form.body || '') !== (project.body || '')) changes.push(t('projectEdit.timeline.descriptionUpdated'));
+      if (form.category !== project.category) changes.push(`${t('projectEdit.timeline.categoryChange')}: "${project.category || 'N/A'}" → "${form.category}"`);
+      if (Number(form.expectedROI) !== Number(project.expectedROI)) changes.push(`${t('projectEdit.timeline.roiChange')}: ${project.expectedROI}% → ${form.expectedROI}%`);
+      if (Number(form.duration) !== Number(project.duration)) changes.push(`${t('projectEdit.timeline.durationChange')}: ${project.duration} → ${form.duration} ${t('projectEdit.months')}`);
       if (project.type === 'variable') {
-        if (Number(form.drawdown) !== Number(project.drawdown)) changes.push(`Drawdown: ${project.drawdown}% → ${form.drawdown}%`);
-        if (Number(form.performance) !== Number(project.performance)) changes.push(`Performance: ${project.performance}% → ${form.performance}%`);
+        if (Number(form.drawdown) !== Number(project.drawdown)) changes.push(`${t('projectEdit.timeline.drawdownChange')}: ${project.drawdown}% → ${form.drawdown}%`);
+        if (Number(form.performance) !== Number(project.performance)) changes.push(`${t('projectEdit.timeline.performanceChange')}: ${project.performance}% → ${form.performance}%`);
       }
 
       const payload = {
@@ -154,7 +156,7 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSuccess, 
             // ignore
           }
         }
-        changes.push(`Imágenes: eliminadas (${deletedImagePaths.length})`);
+        changes.push(`${t('projectEdit.timeline.imagesDeleted')} (${deletedImagePaths.length})`);
       }
 
       // Upload new images
@@ -178,7 +180,7 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSuccess, 
         }
 
         if (uploaded.length > 0) {
-          changes.push(`Imágenes: agregadas (${uploaded.length})`);
+          changes.push(`${t('projectEdit.timeline.imagesAdded')} (${uploaded.length})`);
         }
       }
 
@@ -205,8 +207,8 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSuccess, 
         try {
           await onTimelineEvent({
             type: 'system',
-            title: 'Proyecto actualizado',
-            description: `Se editaron los siguientes campos:\n${changes.join('\n')}`,
+            title: t('projectEdit.timeline.projectUpdated'),
+            description: `${t('projectEdit.timeline.fieldsEdited')}\n${changes.join('\n')}`,
             visibility: 'admin',
             metadata: { changes },
           });
@@ -218,8 +220,8 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSuccess, 
 
       // Success alert
       await Swal.fire({
-        title: '¡Guardado!',
-        text: 'Los cambios se han guardado correctamente.',
+        title: t('projectEdit.alerts.successTitle'),
+        text: t('projectEdit.alerts.successText'),
         icon: 'success',
         confirmButtonColor: '#10b981',
         background: '#1a1f2e',
@@ -238,10 +240,10 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSuccess, 
       console.error('Error actualizando proyecto:', err);
       
       await Swal.fire({
-        title: 'Error',
+        title: t('projectEdit.alerts.errorTitle'),
         text: err?.code === 'permission-denied' 
-          ? 'Permisos insuficientes para actualizar el proyecto'
-          : 'No se pudo actualizar el proyecto',
+          ? t('projectEdit.alerts.permissionDenied')
+          : t('projectEdit.alerts.updateFailed'),
         icon: 'error',
         confirmButtonColor: '#ef4444',
         background: '#1a1f2e',
@@ -264,20 +266,20 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSuccess, 
         {/* Header */}
         <div className="modal-header">
           <div className="modal-header-content">
-            <h2>✏️ Editar Proyecto</h2>
-            <p className="modal-subtitle">Actualiza la información del proyecto</p>
+            <h2>✏️ {t('projectEdit.title')}</h2>
+            <p className="modal-subtitle">{t('projectEdit.subtitle')}</p>
           </div>
-          <button className="close-btn" onClick={handleClose} aria-label="Cerrar">✕</button>
+          <button className="close-btn" onClick={handleClose} aria-label={t('common.close')}>✕</button>
         </div>
 
         {/* Form */}
         <form className="modal-form" onSubmit={handleSubmit}>
           {/* Imágenes */}
           <div className="form-section">
-            <h3 className="section-title">🖼️ Imágenes</h3>
+            <h3 className="section-title">🖼️ {t('projectEdit.images')}</h3>
 
             <div className="form-field">
-              <label htmlFor="project-images">Agregar imágenes</label>
+              <label htmlFor="project-images">{t('projectEdit.addImages')}</label>
               <input
                 id="project-images"
                 type="file"
@@ -289,7 +291,7 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSuccess, 
                   e.target.value = '';
                 }}
               />
-              <div className="edit-modal-hint">Máx. 5MB por imagen. Puedes eliminar imágenes antes de guardar.</div>
+              <div className="edit-modal-hint">{t('projectEdit.imageHint')}</div>
             </div>
 
             {(existingImages.length > 0 || newImageItems.length > 0) && (
@@ -339,11 +341,11 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSuccess, 
 
           {/* Información General */}
           <div className="form-section">
-            <h3 className="section-title">📋 Información General</h3>
+            <h3 className="section-title">📋 {t('projectEdit.generalInfo')}</h3>
             
             <div className="form-field">
               <label htmlFor="project-name">
-                Nombre del proyecto <span className="required">*</span>
+                {t('projectEdit.projectName')} <span className="required">*</span>
               </label>
               <input
                 id="project-name"
@@ -351,55 +353,55 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSuccess, 
                 className="form-input"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
-                placeholder="Ej: Proyecto Solar Valle Verde"
+                placeholder={t('projectEdit.projectNamePlaceholder')}
                 required
               />
             </div>
 
             <div className="form-field">
-              <label htmlFor="project-subtitle">Subtítulo (descripción breve)</label>
+              <label htmlFor="project-subtitle">{t('projectEdit.subtitleLabel')}</label>
               <input
                 id="project-subtitle"
                 type="text"
                 className="form-input"
                 value={form.description}
                 onChange={(e) => setForm({ ...form, description: e.target.value })}
-                placeholder="Ej: Inversión a 12 meses con retorno estimado"
+                placeholder={t('projectEdit.subtitlePlaceholder')}
               />
             </div>
 
             <div className="form-field">
-              <label htmlFor="project-body">Descripción extensa (se muestra solo en detalles)</label>
+              <label htmlFor="project-body">{t('projectEdit.longDescription')}</label>
               <textarea
                 id="project-body"
                 className="form-input"
                 rows={6}
                 value={form.body}
                 onChange={(e) => setForm({ ...form, body: e.target.value })}
-                placeholder="Describe el proyecto con más detalle..."
+                placeholder={t('projectEdit.longDescriptionPlaceholder')}
               />
             </div>
 
             <div className="form-field">
-              <label htmlFor="project-category">Categoría</label>
+              <label htmlFor="project-category">{t('projectEdit.category')}</label>
               <input
                 id="project-category"
                 type="text"
                 className="form-input"
                 value={form.category}
                 onChange={(e) => setForm({ ...form, category: e.target.value })}
-                placeholder="Ej: Energía Renovable, Trading, Crypto"
+                placeholder={t('projectEdit.categoryPlaceholder')}
               />
             </div>
           </div>
 
           {/* Métricas Financieras */}
           <div className="form-section">
-            <h3 className="section-title">💰 Métricas Financieras</h3>
+            <h3 className="section-title">💰 {t('projectEdit.financialMetrics')}</h3>
             
             <div className="form-row-2">
               <div className="form-field">
-                <label htmlFor="project-roi">ROI esperado (%)</label>
+                <label htmlFor="project-roi">{t('projectEdit.expectedROI')}</label>
                 <div className="input-with-icon">
                   <input
                     id="project-roi"
@@ -415,7 +417,7 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSuccess, 
               </div>
               
               <div className="form-field">
-                <label htmlFor="project-duration">Duración (meses)</label>
+                <label htmlFor="project-duration">{t('projectEdit.duration')}</label>
                 <div className="input-with-icon">
                   <input
                     id="project-duration"
@@ -425,7 +427,7 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSuccess, 
                     onChange={(e) => setForm({ ...form, duration: e.target.value })}
                     placeholder="12"
                   />
-                  <span className="input-icon">meses</span>
+                  <span className="input-icon">{t('projectEdit.months')}</span>
                 </div>
               </div>
             </div>
@@ -434,11 +436,11 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSuccess, 
           {/* Métricas Variables (solo para tipo variable) */}
           {project.type === 'variable' && (
             <div className="form-section variable-section">
-              <h3 className="section-title">📊 Métricas Variables</h3>
+              <h3 className="section-title">📊 {t('projectEdit.variableMetrics')}</h3>
               
               <div className="form-row-2">
                 <div className="form-field">
-                  <label htmlFor="project-drawdown">Drawdown (%)</label>
+                  <label htmlFor="project-drawdown">{t('projectEdit.drawdown')}</label>
                   <div className="input-with-icon">
                     <input
                       id="project-drawdown"
@@ -454,7 +456,7 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSuccess, 
                 </div>
                 
                 <div className="form-field">
-                  <label htmlFor="project-performance">Performance (%)</label>
+                  <label htmlFor="project-performance">{t('projectEdit.performance')}</label>
                   <div className="input-with-icon">
                     <input
                       id="project-performance"
@@ -476,9 +478,9 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSuccess, 
           <div className="info-box">
             <div className="info-icon">ℹ️</div>
             <div className="info-content">
-              <strong>Campos no editables:</strong>
-              <p>Tipo de proyecto, Nivel de riesgo, Capital objetivo y Estado computado.</p>
-              <p className="info-note">Para cambios críticos en estos campos, contacta al administrador del sistema.</p>
+              <strong>{t('projectEdit.nonEditableFields')}</strong>
+              <p>{t('projectEdit.nonEditableDesc')}</p>
+              <p className="info-note">{t('projectEdit.nonEditableNote')}</p>
             </div>
           </div>
 
@@ -498,7 +500,7 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSuccess, 
               onClick={handleClose} 
               disabled={saving}
             >
-              Cancelar
+              {t('common.cancel')}
             </button>
             <button 
               type="submit" 
@@ -508,12 +510,12 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSuccess, 
               {saving ? (
                 <>
                   <span className="spinner"></span>
-                  Guardando...
+                  {t('projectForm.saving')}
                 </>
               ) : (
                 <>
                   <span>💾</span>
-                  Guardar cambios
+                  {t('projectEdit.saveChanges')}
                 </>
               )}
             </button>

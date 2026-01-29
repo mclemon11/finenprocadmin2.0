@@ -3,6 +3,7 @@ import useAdminWithdrawals from '../hooks/useAdminWithdrawals';
 import useApproveWithdrawal from '../hooks/mutations/useApproveWithdrawal';
 import useRejectWithdrawal from '../hooks/mutations/useRejectWithdrawal';
 import ActionModal from '../components/modals/ActionModal';
+import { useLanguage } from '../../context/LanguageContext';
 import './RetirosPage.css';
 
 export default function RetirosPage({ adminData }) {
@@ -10,6 +11,7 @@ export default function RetirosPage({ adminData }) {
   const [pageSize, setPageSize] = useState(25);
   const [selectedWithdrawal, setSelectedWithdrawal] = useState(null);
   const [actionModal, setActionModal] = useState({ isOpen: false, type: null });
+  const { t } = useLanguage();
   const {
     withdrawals,
     loading,
@@ -25,10 +27,10 @@ export default function RetirosPage({ adminData }) {
   const { reject: rejectWithdrawal, loading: rejectLoading } = useRejectWithdrawal();
 
   const filters = [
-    { value: 'all', label: 'Todos' },
-    { value: 'pending', label: 'Pendientes' },
-    { value: 'approved', label: 'Aprobados' },
-    { value: 'rejected', label: 'Rechazados' },
+    { value: 'all', label: t('withdrawals.allStatuses') },
+    { value: 'pending', label: t('withdrawals.pendingPlural') },
+    { value: 'approved', label: t('withdrawals.approvedPlural') },
+    { value: 'rejected', label: t('withdrawals.rejectedPlural') },
   ];
 
   const handleApprove = async () => {
@@ -79,12 +81,21 @@ export default function RetirosPage({ adminData }) {
     return date.toLocaleDateString('es-MX');
   };
 
+  const getStatusLabel = (status) => {
+    switch (status) {
+      case 'pending': return t('withdrawals.pending');
+      case 'approved': return t('withdrawals.approved');
+      case 'rejected': return t('withdrawals.rejected');
+      default: return status;
+    }
+  };
+
   return (
     <div className="retiros-page">
       <div className="page-header">
         <div>
-          <h1 className="page-title">Gestión de Retiros</h1>
-          <p className="page-subtitle">Administra todas las solicitudes de retiro de usuarios</p>
+          <h1 className="page-title">{t('withdrawals.title')}</h1>
+          <p className="page-subtitle">{t('withdrawals.subtitle')}</p>
         </div>
       </div>
 
@@ -107,7 +118,7 @@ export default function RetirosPage({ adminData }) {
 
       <div className="retiros-controls">
         <div className="retiros-control">
-          <span className="retiros-control-label">Mostrar</span>
+          <span className="retiros-control-label">{t('common.show')}</span>
           <select
             className="retiros-page-size"
             value={pageSize}
@@ -122,53 +133,51 @@ export default function RetirosPage({ adminData }) {
             <option value={50}>50</option>
             <option value={100}>100</option>
           </select>
-          <span className="retiros-control-label">por página</span>
+          <span className="retiros-control-label">{t('common.perPage')}</span>
         </div>
 
         <div className="retiros-pagination">
           <button className="pagination-btn" onClick={prevPage} disabled={loading || page <= 1}>
-            ← Anterior
+            ← {t('common.previous')}
           </button>
-          <span className="pagination-status">Página {page}</span>
+          <span className="pagination-status">{t('common.page')} {page}</span>
           <button className="pagination-btn" onClick={nextPage} disabled={loading || !hasNextPage}>
-            Siguiente →
+            {t('common.next')} →
           </button>
         </div>
       </div>
 
       <div className="retiros-card">
         <div className="card-header">
-          <h3>Total de retiros: {withdrawals.length}</h3>
+          <h3>{t('withdrawals.totalWithdrawals')}: {withdrawals.length}</h3>
         </div>
 
         {loading ? (
-          <div className="loading-state">Cargando retiros...</div>
+          <div className="loading-state">{t('withdrawals.loadingWithdrawals')}</div>
         ) : withdrawals.length === 0 ? (
-          <div className="empty-state">No hay retiros en este estado</div>
+          <div className="empty-state">{t('withdrawals.noWithdrawals')}</div>
         ) : (
           <div className="table-wrapper">
             <table className="retiros-table">
               <thead>
                 <tr>
-                  <th>Usuario</th>
-                  <th>Monto</th>
-                  <th>Método</th>
-                  <th>Estado</th>
-                  <th>Fecha</th>
-                  <th>Acción</th>
+                  <th>{t('withdrawals.user')}</th>
+                  <th>{t('withdrawals.amount')}</th>
+                  <th>{t('withdrawals.method')}</th>
+                  <th>{t('withdrawals.status')}</th>
+                  <th>{t('withdrawals.date')}</th>
+                  <th>{t('withdrawals.action')}</th>
                 </tr>
               </thead>
               <tbody>
                 {withdrawals.map(withdrawal => (
                   <tr key={withdrawal.id}>
-                    <td className="email-cell">{withdrawal.userEmail || withdrawal.userId || 'Email no disponible'}</td>
+                    <td className="email-cell">{withdrawal.userEmail || withdrawal.userId || t('common.emailNotAvailable')}</td>
                     <td className="amount-cell">{formatCurrency(withdrawal.amount)}</td>
                     <td>{withdrawal.method || '-'}</td>
                     <td>
                       <span className={`status-badge status-${withdrawal.status}`}>
-                        {withdrawal.status === 'pending' && 'Pendiente'}
-                        {withdrawal.status === 'approved' && 'Aprobado'}
-                        {withdrawal.status === 'rejected' && 'Rechazado'}
+                        {getStatusLabel(withdrawal.status)}
                       </span>
                     </td>
                     <td>{formatDate(withdrawal.createdAt)}</td>
@@ -181,7 +190,7 @@ export default function RetirosPage({ adminData }) {
                               setSelectedWithdrawal(withdrawal);
                               setActionModal({ isOpen: true, type: 'approve' });
                             }}
-                            title="Aprobar"
+                            title={t('common.approve')}
                           >
                             ✓
                           </button>
@@ -191,7 +200,7 @@ export default function RetirosPage({ adminData }) {
                               setSelectedWithdrawal(withdrawal);
                               setActionModal({ isOpen: true, type: 'reject' });
                             }}
-                            title="Rechazar"
+                            title={t('common.reject')}
                           >
                             ✕
                           </button>
@@ -208,11 +217,11 @@ export default function RetirosPage({ adminData }) {
 
       <ActionModal
         isOpen={actionModal.isOpen}
-        title={actionModal.type === 'approve' ? 'Aprobar Retiro' : 'Rechazar Retiro'}
-        message={`¿${actionModal.type === 'approve' ? 'Aprobar' : 'Rechazar'} retiro de ${selectedWithdrawal ? formatCurrency(selectedWithdrawal.amount) : ''} del usuario ${selectedWithdrawal?.userEmail || selectedWithdrawal?.userId}?`}
-        actionLabel={actionModal.type === 'approve' ? 'Aprobar' : 'Rechazar'}
+        title={actionModal.type === 'approve' ? t('withdrawals.approveTitle') : t('withdrawals.rejectTitle')}
+        message={`${actionModal.type === 'approve' ? t('withdrawals.approveMessage') : t('withdrawals.rejectMessage')} ${selectedWithdrawal ? formatCurrency(selectedWithdrawal.amount) : ''} ${t('topups.ofUser')} ${selectedWithdrawal?.userEmail || selectedWithdrawal?.userId}?`}
+        actionLabel={actionModal.type === 'approve' ? t('common.approve') : t('common.reject')}
         showReasonInput={actionModal.type === 'reject'}
-        reasonPlaceholder="Razón del rechazo..."
+        reasonPlaceholder={t('common.rejectReason')}
         loading={approveLoading || rejectLoading}
         onConfirm={actionModal.type === 'approve' ? handleApprove : handleReject}
         onCancel={() => {

@@ -10,6 +10,7 @@ import {
   where,
 } from 'firebase/firestore';
 import { db } from '../../../firebase/firebaseConfig';
+import { t } from '../../../utils/translationHelper';
 
 export default function useRejectWithdrawal() {
   const [loading, setLoading] = useState(false);
@@ -48,7 +49,7 @@ export default function useRejectWithdrawal() {
         const withdrawalSnap = await tx.get(withdrawalRef);
 
         if (!withdrawalSnap.exists()) {
-          throw new Error('Retiro no encontrado');
+          throw new Error(t('errors.withdrawalNotFound'));
         }
 
         const withdrawalData = withdrawalSnap.data();
@@ -67,7 +68,7 @@ export default function useRejectWithdrawal() {
         const transactionDocId = withdrawalData?.transactionId || existingTransactionId || withdrawalId;
 
         if (!resolvedUserId) {
-          throw new Error('Retiro inválido: falta userId');
+          throw new Error(t('errors.withdrawalInvalidUserId'));
         }
 
         tx.update(withdrawalRef, {
