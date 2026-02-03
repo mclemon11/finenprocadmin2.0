@@ -40,9 +40,12 @@
 
 .kpi-card {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: var(--spacing-md);
-  padding: var(--spacing-md);
+  justify-content: center;
+  text-align: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-lg) var(--spacing-md);
   background: rgba(255, 255, 255, 0.02);
   backdrop-filter: blur(var(--glass-blur));
   border: var(--glass-border);
@@ -57,13 +60,14 @@
 }
 
 .kpi-icon {
-  font-size: 24px;
-  opacity: 0.8;
+  font-size: 28px;
+  opacity: 0.9;
 }
 
 .kpi-content {
   display: flex;
   flex-direction: column;
+  align-items: center;
 }
 
 .kpi-label {
@@ -71,13 +75,14 @@
   color: var(--fg-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-bottom: 2px;
+  margin-bottom: 4px;
 }
 
 .kpi-value {
-  font-size: 20px;
+  font-size: 24px;
   font-weight: 700;
   color: var(--accent);
+}
 }
 
 /* Filters Toolbar */
@@ -155,7 +160,8 @@
   background: rgba(255, 255, 255, 0.02);
   border: var(--glass-border);
   border-radius: var(--radius);
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: visible;
 }
 
 .card-header {
@@ -193,6 +199,7 @@
 
   .search-input-wrapper {
     min-width: auto;
+    width: 100%;
   }
 
   .filter-select {
@@ -201,13 +208,26 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 640px) {
+  .usuarios-page {
+    padding: var(--spacing-md);
+  }
+
+  .page-title {
+    font-size: 20px;
+  }
+
+  .page-subtitle {
+    font-size: 11px;
+  }
+
   .kpi-row {
-    grid-template-columns: 1fr;
+    gap: var(--spacing-sm);
   }
 
   .kpi-card {
     padding: var(--spacing-sm);
+    gap: var(--spacing-sm);
   }
 
   .kpi-icon {
@@ -216,5 +236,59 @@
 
   .kpi-value {
     font-size: 18px;
+  }
+
+  .kpi-label {
+    font-size: 10px;
+  }
+
+  .search-input {
+    padding: 10px 14px 10px 36px;
+  }
+
+  .card-header {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+}
+
+@media (max-width: 480px) {
+  .usuarios-page {
+    padding: 10px;
+  }
+
+  .page-title {
+    font-size: 18px;
+  }
+
+  .kpi-row {
+    grid-template-columns: 1fr;
+  }
+
+  .kpi-card {
+    padding: var(--spacing-md);
+    flex-direction: column;
+    text-align: center;
+    gap: var(--spacing-sm);
+  }
+
+  .kpi-icon {
+    font-size: 28px;
+  }
+
+  .kpi-content {
+    align-items: center;
+  }
+
+  .kpi-value {
+    font-size: 20px;
+  }
+
+  .kpi-label {
+    font-size: 11px;
+  }
+
+  .filters-toolbar {
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
   }
 }

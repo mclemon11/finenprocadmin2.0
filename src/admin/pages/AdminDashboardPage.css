@@ -325,4 +325,113 @@
   .transactions-table td {
     padding: 10px 12px;
   }
+
+  .kpi-card {
+    padding: var(--spacing-md);
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-dashboard-page {
+    padding: var(--spacing-md);
+  }
+
+  .dashboard-title {
+    font-size: 20px;
+  }
+
+  .dashboard-subtitle {
+    font-size: 12px;
+  }
+
+  .kpi-value {
+    font-size: 20px;
+  }
+
+  .kpi-value-currency {
+    font-size: 16px;
+  }
+
+  .kpi-label {
+    font-size: 11px;
+  }
+
+  .section-title {
+    font-size: 14px;
+  }
+
+  .last-updated {
+    font-size: 11px;
+    padding: 6px 10px;
+  }
+
+  /* Table mobile styles */
+  .transactions-table {
+    font-size: 10px;
+  }
+
+  .transactions-table th,
+  .transactions-table td {
+    padding: 8px 10px;
+  }
+
+  .tx-type {
+    font-size: 9px;
+    padding: 2px 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-dashboard-page {
+    padding: 10px;
+  }
+
+  .dashboard-title {
+    font-size: 18px;
+  }
+
+  .kpi-value {
+    font-size: 18px;
+  }
+
+  .kpi-card {
+    padding: 12px;
+    gap: 8px;
+  }
+
+  /* Stack table on very small screens */
+  .transactions-table thead {
+    display: none;
+  }
+
+  .transactions-table,
+  .transactions-table tbody,
+  .transactions-table tr,
+  .transactions-table td {
+    display: block;
+  }
+
+  .transactions-table tr {
+    margin-bottom: 12px;
+    padding: 12px;
+    background: rgba(16, 185, 129, 0.03);
+    border-radius: 8px;
+    border: var(--glass-border);
+  }
+
+  .transactions-table td {
+    padding: 4px 0;
+    border: none;
+    text-align: left;
+  }
+
+  .transactions-table td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: var(--fg-muted);
+    font-size: 10px;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 2px;
+  }
 }

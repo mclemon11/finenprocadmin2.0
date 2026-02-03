@@ -7,10 +7,12 @@ import {
 import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '../../firebase/firebaseConfig';
 import { Link, useNavigate } from 'react-router-dom';
+import { useLanguage } from '../../context/LanguageContext';
 import logo from '../../assets/Logo.png';
 import './AdminRegister.css';
 
 export default function AdminRegister(){
+  const { t } = useLanguage();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -24,12 +26,12 @@ export default function AdminRegister(){
 
     // Validar que las contraseñas coincidan
     if (password !== confirmPassword) {
-      setError('Las contraseñas no coinciden');
+      setError(t('auth.passwordMismatch'));
       return;
     }
 
     if (password.length < 6) {
-      setError('La contraseña debe tener al menos 6 caracteres');
+      setError(t('auth.passwordMinLength'));
       return;
     }
 
@@ -112,11 +114,11 @@ export default function AdminRegister(){
       console.error('Error en registro:', err);
 
       if (err?.code === 'auth/wrong-password' || err?.code === 'auth/invalid-credential') {
-        setError('El email ya existe, pero la contraseña es incorrecta.');
+        setError(t('auth.emailExistsWrongPassword'));
       } else if (err?.code === 'auth/user-not-found') {
-        setError('No existe un usuario con ese email.');
+        setError(t('auth.userNotFound'));
       } else {
-        setError(err.message || 'Error desconocido en el registro');
+        setError(err.message || t('common.error'));
       }
 
     } finally {
@@ -130,8 +132,8 @@ export default function AdminRegister(){
         <div className="auth-card">
           <div className="auth-header">
             <img src={logo} alt="Logo" className="auth-logo" />
-            <h1 className="auth-title">Crear Cuenta Admin</h1>
-            <p className="auth-subtitle">Registra un nuevo administrador</p>
+            <h1 className="auth-title">{t('auth.createAdminAccount')}</h1>
+            <p className="auth-subtitle">{t('auth.registerNewAdmin')}</p>
           </div>
 
           {success && (
@@ -139,14 +141,14 @@ export default function AdminRegister(){
               <svg className="success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                 <polyline points="20 6 9 17 4 12"></polyline>
               </svg>
-              ¡Usuario admin registrado exitosamente! Serás redirigido...
+              {t('auth.adminRegisteredSuccess')}
             </div>
           )}
 
           <form onSubmit={handleRegister} className="auth-form">
             <div className="form-group">
               <label htmlFor="email">
-                <span>Email</span>
+                <span>{t('auth.email')}</span>
               </label>
               <input 
                 id="email"
@@ -160,7 +162,7 @@ export default function AdminRegister(){
 
             <div className="form-group">
               <label htmlFor="password">
-                <span>Contraseña</span>
+                <span>{t('auth.password')}</span>
               </label>
               <input 
                 id="password"
@@ -170,12 +172,12 @@ export default function AdminRegister(){
                 placeholder="••••••••"
                 required 
               />
-              <span className="password-hint">Mínimo 6 caracteres</span>
+              <span className="password-hint">{t('auth.passwordHint')}</span>
             </div>
 
             <div className="form-group">
               <label htmlFor="confirmPassword">
-                <span>Confirmar Contraseña</span>
+                <span>{t('auth.confirmPassword')}</span>
               </label>
               <input 
                 id="confirmPassword"
@@ -204,16 +206,16 @@ export default function AdminRegister(){
               {loading ? (
                 <>
                   <span className="spinner"></span>
-                  Registrando…
+                  {t('auth.registering')}
                 </>
               ) : (
-                'Crear Cuenta'
+                t('auth.createAccount')
               )}
             </button>
           </form>
 
           <div className="auth-links">
-            <p>¿Ya tienes cuenta? <Link to="/login">Inicia sesión aquí</Link></p>
+            <p>{t('auth.hasAccount')} <Link to="/login">{t('auth.loginHere')}</Link></p>
           </div>
         </div>
 

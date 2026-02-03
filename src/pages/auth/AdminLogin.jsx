@@ -3,10 +3,12 @@ import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signOu
 import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../../firebase/firebaseConfig';
 import { Link, useNavigate } from 'react-router-dom';
+import { useLanguage } from '../../context/LanguageContext';
 import logo from '../../assets/Logo.png';
 import './AdminLogin.css';
 
 export default function AdminLogin(){
+  const { t } = useLanguage();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
@@ -19,19 +21,19 @@ export default function AdminLogin(){
     
     if (!userDoc.exists()) {
       await signOut(auth);
-      throw new Error('Perfil de usuario no encontrado en Firestore');
+      throw new Error(t('auth.profileNotFound'));
     }
     
     const { role, status } = userDoc.data();
     
     if (role !== 'admin') {
       await signOut(auth);
-      throw new Error('No tienes permisos de administrador');
+      throw new Error(t('auth.notAuthorizedMessage'));
     }
     
     if (status !== 'active') {
       await signOut(auth);
-      throw new Error('Tu cuenta no está activa');
+      throw new Error(t('auth.accountNotActive'));
     }
     
     // Redirigir al dashboard después del login exitoso
@@ -75,14 +77,14 @@ export default function AdminLogin(){
         <div className="auth-card">
           <div className="auth-header">
             <img src={logo} alt="Logo" className="auth-logo" />
-            <h1 className="auth-title">Iniciar Sesión</h1>
-            <p className="auth-subtitle">Panel de Administrador</p>
+            <h1 className="auth-title">{t('auth.login')}</h1>
+            <p className="auth-subtitle">{t('auth.adminPanel')}</p>
           </div>
 
           <form onSubmit={handleLogin} className="auth-form">
             <div className="form-group">
               <label htmlFor="email">
-                <span>Email</span>
+                <span>{t('auth.email')}</span>
               </label>
               <input 
                 id="email"
@@ -96,7 +98,7 @@ export default function AdminLogin(){
 
             <div className="form-group">
               <label htmlFor="password">
-                <span>Contraseña</span>
+                <span>{t('auth.password')}</span>
               </label>
               <input 
                 id="password"
@@ -125,16 +127,16 @@ export default function AdminLogin(){
               {loading ? (
                 <>
                   <span className="spinner"></span>
-                  Accediendo…
+                  {t('auth.signingIn')}
                 </>
               ) : (
-                'Iniciar Sesión'
+                t('auth.login')
               )}
             </button>
           </form>
 
           <div className="auth-divider">
-            <span>o continúa con</span>
+            <span>{t('auth.orContinueWith')}</span>
           </div>
 
           <button 
@@ -149,11 +151,11 @@ export default function AdminLogin(){
               <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
               <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
             </svg>
-            Continuar con Google
+            {t('auth.continueWithGoogle')}
           </button>
 
           <div className="auth-links">
-            <p>¿No tienes cuenta? <Link to="/register">Regístrate aquí</Link></p>
+            <p>{t('auth.noAccount')} <Link to="/register">{t('auth.registerHere')}</Link></p>
           </div>
         </div>
 

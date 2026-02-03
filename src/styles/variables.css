@@ -54,4 +54,47 @@
   --break-sm: 640px;
   --break-md: 768px;
   --break-lg: 1024px;
+
+  /* Safe area for mobile */
+  --safe-area-top: env(safe-area-inset-top, 0);
+  --safe-area-bottom: env(safe-area-inset-bottom, 0);
+  --safe-area-left: env(safe-area-inset-left, 0);
+  --safe-area-right: env(safe-area-inset-right, 0);
+}
+
+/* Prevent horizontal overflow on mobile */
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+}
+
+/* Responsive spacing for mobile */
+@media (max-width: 768px) {
+  :root {
+    --spacing-lg: 16px;
+    --spacing-xl: 20px;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+}
+
+@media (max-width: 640px) {
+  :root {
+    --spacing-lg: 14px;
+    --spacing-xl: 16px;
+  }
+}
+
+/* Touch-friendly tap targets */
+@media (max-width: 768px) {
+  button, 
+  .button, 
+  a.sidebar-item,
+  .clickable {
+    min-height: 44px;
+  }
+  
+  input, textarea, select {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
 }

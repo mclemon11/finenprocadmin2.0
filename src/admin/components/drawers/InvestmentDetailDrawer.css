@@ -897,6 +897,14 @@
     right: -100%;
   }
 
+  .investment-drawer-header {
+    padding: 16px;
+  }
+
+  .investment-drawer-header .header-title {
+    font-size: 16px;
+  }
+
   .financial-details {
     grid-template-columns: 1fr;
   }
@@ -914,6 +922,11 @@
     padding: 0 16px;
   }
 
+  .investment-tabs .tab {
+    padding: 10px 14px;
+    font-size: 12px;
+  }
+
   .investment-content {
     padding: 16px;
   }
@@ -925,5 +938,71 @@
 
   .action-btn {
     width: 100%;
+  }
+
+  .header-meta {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 640px) {
+  .investment-drawer-header {
+    padding: 14px;
+  }
+
+  .investment-drawer-header .header-title {
+    font-size: 15px;
+  }
+
+  .header-investor {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .investment-tabs .tab {
+    padding: 8px 12px;
+    font-size: 11px;
+  }
+
+  .investment-content {
+    padding: 14px;
+  }
+
+  .meta-label {
+    font-size: 10px;
+  }
+
+  .meta-value {
+    font-size: 13px;
+  }
+
+  .investor-name {
+    font-size: 14px;
+  }
+
+  .investor-email {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .investment-drawer-header {
+    padding: 12px;
+  }
+
+  .investment-content {
+    padding: 12px;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .modal-actions .btn {
+    width: 100%;
+    margin: 0;
   }
 }

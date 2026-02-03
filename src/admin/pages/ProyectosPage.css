@@ -667,6 +667,11 @@
   .filters-row {
     grid-template-columns: repeat(2, 1fr);
   }
+
+  .proyectos-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
 }
 
 @media (max-width: 768px) {
@@ -677,6 +682,10 @@
   .page-header {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .page-title {
+    font-size: 24px;
   }
 
   .kpis-section {
@@ -703,6 +712,149 @@
 
   .pagination-btn {
     width: 100%;
+  }
+
+  .proyectos-table th,
+  .proyectos-table td {
+    padding: 8px 10px;
+  }
+
+  .cell-title {
+    font-size: 13px;
+  }
+
+  .cell-subtle {
+    font-size: 10px;
+  }
+
+  .status-badge,
+  .type-badge,
+  .risk-badge {
+    min-width: 60px;
+    font-size: 11px;
+    padding: 0 8px;
+    min-height: 22px;
+  }
+}
+
+@media (max-width: 640px) {
+  .proyectos-page {
+    padding: var(--spacing-sm);
+  }
+
+  .page-header {
+    margin-bottom: var(--spacing-md);
+  }
+
+  .page-title {
+    font-size: 20px;
+  }
+
+  .page-subtitle {
+    font-size: 12px;
+  }
+
+  .create-btn {
+    width: 100%;
+    padding: 10px 16px;
+  }
+
+  .kpis-section {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-sm);
+  }
+
+  .kpi-card {
+    padding: var(--spacing-md);
+  }
+
+  .kpi-value {
+    font-size: 22px;
+  }
+
+  .filters-bar {
+    padding: 10px 12px;
+  }
+
+  /* Convertir tabla a layout de tarjetas en móvil */
+  .proyectos-table thead {
+    display: none;
+  }
+
+  .proyectos-table,
+  .proyectos-table tbody,
+  .proyectos-table tr,
+  .proyectos-table td {
+    display: block;
+  }
+
+  .proyectos-table tbody tr {
+    margin-bottom: 12px;
+    padding: 14px;
+    background: rgba(16, 185, 129, 0.02);
+    border-radius: 10px;
+    border: var(--glass-border);
+  }
+
+  .proyectos-table td {
+    padding: 6px 0;
+    border: none;
+  }
+
+  .proyectos-table td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: var(--fg-muted);
+    font-size: 10px;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .actions-cell {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .actions-wrapper {
+    justify-content: flex-start;
+  }
+
+  .action-menu {
+    left: 0;
+    right: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .proyectos-page {
+    padding: 10px;
+  }
+
+  .page-title {
+    font-size: 18px;
+  }
+
+  .kpi-value {
+    font-size: 20px;
+  }
+
+  .kpi-currency {
+    font-size: 16px;
+  }
+
+  .per-page-label {
+    font-size: 12px;
+  }
+
+  .pagination-btn {
+    padding: 8px 14px;
+    font-size: 12px;
+  }
+
+  .pagination-info {
+    font-size: 12px;
   }
 }
 
@@ -786,24 +938,5 @@
 
   .filter-select {
     width: 100%;
-  }
-}
-
-@media (max-width: 640px) {
-  .proyectos-page {
-    padding: var(--spacing-lg);
-  }
-
-  .page-header {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .create-btn {
-    width: 100%;
-  }
-
-  .kpis-section {
-    grid-template-columns: 1fr;
   }
 }

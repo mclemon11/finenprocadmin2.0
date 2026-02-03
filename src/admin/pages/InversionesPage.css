@@ -281,4 +281,107 @@
   .filter-input {
     flex: 1 1 100%;
   }
+
+  .filter-btn {
+    flex: 1 1 calc(50% - var(--spacing-sm));
+    min-width: 140px;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 640px) {
+  .inversiones-page {
+    padding: var(--spacing-md);
+  }
+
+  .page-title {
+    font-size: 20px;
+  }
+
+  .page-subtitle {
+    font-size: 12px;
+  }
+
+  .summary-value {
+    font-size: 22px;
+  }
+
+  .summary-label {
+    font-size: 11px;
+  }
+
+  .filter-btn {
+    flex: 1 1 100%;
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  /* Convertir tabla a layout de tarjetas en móvil */
+  .inversiones-table thead {
+    display: none;
+  }
+
+  .inversiones-table,
+  .inversiones-table tbody,
+  .inversiones-table tr,
+  .inversiones-table td {
+    display: block;
+  }
+
+  .inversiones-table tbody tr {
+    margin-bottom: 12px;
+    padding: 14px;
+    background: rgba(16, 185, 129, 0.02);
+    border-radius: 10px;
+    border: var(--glass-border);
+  }
+
+  .inversiones-table td {
+    padding: 6px 0;
+    border: none;
+  }
+
+  .inversiones-table td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: var(--fg-muted);
+    font-size: 10px;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .actions-cell {
+    margin-top: 8px;
+    flex-direction: row;
+    gap: 8px;
+  }
+
+  .link-btn {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .inversiones-page {
+    padding: 10px;
+  }
+
+  .page-title {
+    font-size: 18px;
+  }
+
+  .summary-card {
+    padding: var(--spacing-md);
+  }
+
+  .summary-value {
+    font-size: 20px;
+  }
+
+  .status-badge,
+  .roi-badge {
+    font-size: 10px;
+    padding: 3px 6px;
+  }
 }

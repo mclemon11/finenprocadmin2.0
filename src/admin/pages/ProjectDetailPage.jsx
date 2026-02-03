@@ -3,12 +3,14 @@ import { useNavigate, useParams } from 'react-router-dom';
 import useAdminProjects from '../hooks/useAdminProjects';
 import useAdminInvestments from '../hooks/useAdminInvestments';
 import useProjectTimeline from '../hooks/useProjectTimeline';
+import { useLanguage } from '../../context/LanguageContext';
 import ProjectEditModal from '../components/modals/ProjectEditModal';
 import FixedProjectEditModal from '../components/modals/FixedProjectEditModal';
 import ProjectTimeline from '../components/project/ProjectTimeline';
 import './ProjectDetailPage.css';
 
 export default function ProjectDetailPage({ adminData }) {
+  const { t, currentLanguage } = useLanguage();
   const navigate = useNavigate();
   const { projectId } = useParams();
   const { projects, refetch } = useAdminProjects();
@@ -26,8 +28,10 @@ export default function ProjectDetailPage({ adminData }) {
     return locked ? 'readonly' : mode;
   }, [project, mode]);
 
+  const locale = currentLanguage === 'es' ? 'es-ES' : currentLanguage === 'de' ? 'de-DE' : currentLanguage === 'zh' ? 'zh-CN' : currentLanguage === 'it' ? 'it-IT' : 'en-US';
+
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat(locale, {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 2,
@@ -38,7 +42,7 @@ export default function ProjectDetailPage({ adminData }) {
   const formatDate = (timestamp) => {
     if (!timestamp) return '—';
     const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-    return date.toLocaleDateString('en-US');
+    return date.toLocaleDateString(locale);
   };
 
   const handleEditSuccess = () => {
@@ -52,7 +56,7 @@ export default function ProjectDetailPage({ adminData }) {
   if (!project) {
     return (
       <div className="project-detail-page">
-        <div className="not-found">Proyecto no encontrado</div>
+        <div className="not-found">{t('projectDetail.notFound')}</div>
       </div>
     );
   }
@@ -62,19 +66,19 @@ export default function ProjectDetailPage({ adminData }) {
       {/* Header con navegación y acciones */}
       <div className="detail-header">
         <button className="back-btn" onClick={() => navigate('/admin/proyectos')}>
-          ← Volver a proyectos
+          ← {t('projectDetail.backToProjects')}
         </button>
         <div className="header-actions">
           {computedMode === 'readonly' && (
-            <span className="locked-badge">🔒 Proyecto cerrado / bloqueado</span>
+            <span className="locked-badge">🔒 {t('projectDetail.projectLocked')}</span>
           )}
           {computedMode !== 'readonly' && (
             <>
               <button className="ghost-btn" onClick={() => setActiveTab('timeline')}>
-                📢 Publicar evento
+                📢 {t('projectDetail.publishEvent')}
               </button>
               <button className="edit-btn" onClick={() => setIsEditOpen(true)}>
-                ✏️ Editar proyecto
+                ✏️ {t('projectDetail.editProject')}
               </button>
             </>
           )}
@@ -87,19 +91,19 @@ export default function ProjectDetailPage({ adminData }) {
           <h1 className="project-name">{project.name}</h1>
           <div className="project-badges">
             <span className={`type-badge type-${project.type}`}>
-              {project.type === 'variable' ? '📊 Variable' : '🎯 Fijo'}
+              {project.type === 'variable' ? `📊 ${t('projectDetail.variable')}` : `🎯 ${t('projectDetail.fixed')}`}
             </span>
             <span className={`risk-badge risk-${project.riskLevel}`}>
-              {project.riskLevel === 'low' && '🟢 Riesgo Bajo'}
-              {project.riskLevel === 'medium' && '🟡 Riesgo Medio'}
-              {project.riskLevel === 'high' && '🔴 Riesgo Alto'}
+              {project.riskLevel === 'low' && `🟢 ${t('projectDetail.riskLow')}`}
+              {project.riskLevel === 'medium' && `🟡 ${t('projectDetail.riskMedium')}`}
+              {project.riskLevel === 'high' && `🔴 ${t('projectDetail.riskHigh')}`}
             </span>
             <span className={`status-badge status-${project.computedStatus}`}>
-              {project.computedStatus === 'funded' && '✅ Funded'}
-              {project.computedStatus === 'active' && '🟢 Activo'}
-              {project.computedStatus === 'paused' && '⏸️ Pausado'}
-              {project.computedStatus === 'closed' && '🔒 Cerrado'}
-              {project.computedStatus === 'draft' && '📝 Borrador'}
+              {project.computedStatus === 'funded' && `✅ ${t('projectDetail.statusFunded')}`}
+              {project.computedStatus === 'active' && `🟢 ${t('projectDetail.statusActive')}`}
+              {project.computedStatus === 'paused' && `⏸️ ${t('projectDetail.statusPaused')}`}
+              {project.computedStatus === 'closed' && `🔒 ${t('projectDetail.statusClosed')}`}
+              {project.computedStatus === 'draft' && `📝 ${t('projectDetail.statusDraft')}`}
             </span>
           </div>
           {project.category && <div className="project-category">📁 {project.category}</div>}
@@ -109,7 +113,7 @@ export default function ProjectDetailPage({ adminData }) {
         {project.type === 'fixed' && project.targetAmount && (
           <div className="progress-card">
             <div className="progress-header">
-              <span className="progress-label">💰 Capital Recaudado</span>
+              <span className="progress-label">💰 {t('projectDetail.capitalRaised')}</span>
               <span className="progress-percentage">{project.progress || 0}%</span>
             </div>
             <div className="progress-bar-large">
@@ -117,11 +121,11 @@ export default function ProjectDetailPage({ adminData }) {
             </div>
             <div className="progress-stats">
               <div className="progress-stat">
-                <span className="stat-label">Recaudado</span>
+                <span className="stat-label">{t('projectDetail.raised')}</span>
                 <span className="stat-value">{formatCurrency(project.totalInvested)}</span>
               </div>
               <div className="progress-stat">
-                <span className="stat-label">Meta</span>
+                <span className="stat-label">{t('projectDetail.goal')}</span>
                 <span className="stat-value">{formatCurrency(project.targetAmount)}</span>
               </div>
             </div>
@@ -135,19 +139,19 @@ export default function ProjectDetailPage({ adminData }) {
           className={`tab ${activeTab === 'overview' ? 'active' : ''}`}
           onClick={() => setActiveTab('overview')}
         >
-          📊 Resumen
+          📊 {t('projectDetail.overview')}
         </button>
         <button
           className={`tab ${activeTab === 'investments' ? 'active' : ''}`}
           onClick={() => setActiveTab('investments')}
         >
-          💼 Inversiones ({investments.length})
+          💼 {t('projectDetail.investments')} ({investments.length})
         </button>
         <button
           className={`tab ${activeTab === 'timeline' ? 'active' : ''}`}
           onClick={() => setActiveTab('timeline')}
         >
-          📅 Timeline
+          📅 {t('projectDetail.timeline')}
         </button>
       </div>
 
@@ -160,28 +164,28 @@ export default function ProjectDetailPage({ adminData }) {
               <div className="kpi-card">
                 <div className="kpi-icon">💰</div>
                 <div className="kpi-content">
-                  <div className="kpi-label">Total invertido</div>
+                  <div className="kpi-label">{t('projectDetail.totalInvested')}</div>
                   <div className="kpi-value">{formatCurrency(project.totalInvested || 0)}</div>
                 </div>
               </div>
               <div className="kpi-card">
                 <div className="kpi-icon">👥</div>
                 <div className="kpi-content">
-                  <div className="kpi-label">Inversionistas</div>
+                  <div className="kpi-label">{t('projectDetail.investors')}</div>
                   <div className="kpi-value">{investments.length}</div>
                 </div>
               </div>
               <div className="kpi-card">
                 <div className="kpi-icon">📈</div>
                 <div className="kpi-content">
-                  <div className="kpi-label">ROI esperado</div>
+                  <div className="kpi-label">{t('projectDetail.expectedROI')}</div>
                   <div className="kpi-value">{project.expectedROI ? `${project.expectedROI}%` : '—'}</div>
                 </div>
               </div>
               <div className="kpi-card">
                 <div className="kpi-icon">⏱️</div>
                 <div className="kpi-content">
-                  <div className="kpi-label">Duración</div>
+                  <div className="kpi-label">{t('projectDetail.duration')}</div>
                   <div className="kpi-value">{project.duration ? `${project.duration}m` : '—'}</div>
                 </div>
               </div>
@@ -191,31 +195,31 @@ export default function ProjectDetailPage({ adminData }) {
             <div className="info-grid">
               {/* Información General */}
               <div className="info-card">
-                <h3>📋 Información General</h3>
+                <h3>📋 {t('projectDetail.generalInfo')}</h3>
                 <div className="info-content">
                   <div className="info-row">
-                    <span className="info-label">ROI Esperado</span>
+                    <span className="info-label">{t('projectDetail.expectedROI')}</span>
                     <span className="info-value highlight">{project.expectedROI ? `${project.expectedROI}%` : '—'}</span>
                   </div>
                   <div className="info-row">
-                    <span className="info-label">Duración del proyecto</span>
-                    <span className="info-value">{project.duration ? `${project.duration} meses` : '—'}</span>
+                    <span className="info-label">{t('projectDetail.projectDuration')}</span>
+                    <span className="info-value">{project.duration ? `${project.duration} ${t('projectDetail.months')}` : '—'}</span>
                   </div>
                   <div className="info-row">
-                    <span className="info-label">Fecha de creación</span>
+                    <span className="info-label">{t('projectDetail.creationDate')}</span>
                     <span className="info-value">{formatDate(project.createdAt)}</span>
                   </div>
                   <div className="info-row">
-                    <span className="info-label">Última actualización</span>
+                    <span className="info-label">{t('projectDetail.lastUpdate')}</span>
                     <span className="info-value">{formatDate(project.updatedAt)}</span>
                   </div>
                   <div className="info-row">
-                    <span className="info-label">Moneda base</span>
+                    <span className="info-label">{t('projectDetail.baseCurrency')}</span>
                     <span className="info-value">USD 🇺🇸</span>
                   </div>
                   {project.category && (
                     <div className="info-row">
-                      <span className="info-label">Categoría</span>
+                      <span className="info-label">{t('projectDetail.category')}</span>
                       <span className="info-value">{project.category}</span>
                     </div>
                   )}
@@ -225,31 +229,31 @@ export default function ProjectDetailPage({ adminData }) {
               {/* Configuración según tipo */}
               {project.type === 'fixed' && (
                 <div className="info-card">
-                  <h3>⚙️ Configuración Fija</h3>
+                  <h3>⚙️ {t('projectDetail.fixedConfig')}</h3>
                   <div className="info-content">
                     <div className="info-row">
-                      <span className="info-label">Capital Objetivo</span>
+                      <span className="info-label">{t('projectDetail.targetCapital')}</span>
                       <span className="info-value highlight">{formatCurrency(project.targetAmount)}</span>
                     </div>
                     <div className="info-row">
-                      <span className="info-label">Capital Actual</span>
+                      <span className="info-label">{t('projectDetail.currentCapital')}</span>
                       <span className="info-value">{formatCurrency(project.totalInvested)}</span>
                     </div>
                     <div className="info-row">
-                      <span className="info-label">Inversión Mínima</span>
+                      <span className="info-label">{t('projectDetail.minInvestment')}</span>
                       <span className="info-value">{formatCurrency(project.minInvestment)}</span>
                     </div>
                     {project.maxInvestment && (
                       <div className="info-row">
-                        <span className="info-label">Inversión Máxima</span>
+                        <span className="info-label">{t('projectDetail.maxInvestment')}</span>
                         <span className="info-value">{formatCurrency(project.maxInvestment)}</span>
                       </div>
                     )}
                     <div className="info-row">
-                      <span className="info-label">Auto-lock al alcanzar meta</span>
+                      <span className="info-label">{t('projectDetail.autoLockOnTarget')}</span>
                       <span className="info-value">
                         <span className={`pill ${project.autoLockOnTarget ? 'pill-on' : 'pill-off'}`}>
-                          {project.autoLockOnTarget ? '✓ Activado' : '✗ Desactivado'}
+                          {project.autoLockOnTarget ? `✓ ${t('common.enabled')}` : `✗ ${t('common.disabled')}`}
                         </span>
                       </span>
                     </div>
@@ -259,32 +263,32 @@ export default function ProjectDetailPage({ adminData }) {
 
               {project.type === 'variable' && (
                 <div className="info-card">
-                  <h3>📊 Métricas Variables</h3>
+                  <h3>📊 {t('projectDetail.variableMetrics')}</h3>
                   <div className="info-content">
                     <div className="info-row">
-                      <span className="info-label">Performance</span>
+                      <span className="info-label">{t('projectDetail.performance')}</span>
                       <span className={`info-value ${project.performance && project.performance > 0 ? 'positive' : 'negative'}`}>
                         {project.performance !== undefined ? `${project.performance}%` : '—'}
                       </span>
                     </div>
                     <div className="info-row">
-                      <span className="info-label">Drawdown</span>
+                      <span className="info-label">{t('projectDetail.drawdown')}</span>
                       <span className="info-value negative">{project.drawdown !== undefined ? `${project.drawdown}%` : '—'}</span>
                     </div>
                     <div className="info-row">
-                      <span className="info-label">Control Manual</span>
+                      <span className="info-label">{t('projectDetail.manualControl')}</span>
                       <span className="info-value">
                         <span className={`pill ${project.manualControl ? 'pill-on' : 'pill-off'}`}>
-                          {project.manualControl ? '✓ Activado' : '✗ Desactivado'}
+                          {project.manualControl ? `✓ ${t('common.enabled')}` : `✗ ${t('common.disabled')}`}
                         </span>
                       </span>
                     </div>
                     <div className="info-row">
-                      <span className="info-label">Mercado</span>
+                      <span className="info-label">{t('projectDetail.market')}</span>
                       <span className="info-value">{project.market || '—'}</span>
                     </div>
                     <div className="info-row">
-                      <span className="info-label">Estrategia</span>
+                      <span className="info-label">{t('projectDetail.strategy')}</span>
                       <span className="info-value">{project.strategy || '—'}</span>
                     </div>
                   </div>
@@ -297,22 +301,22 @@ export default function ProjectDetailPage({ adminData }) {
         {activeTab === 'investments' && (
           <div className="investments-section">
             {invLoading ? (
-              <div className="loading-state">⏳ Cargando inversiones...</div>
+              <div className="loading-state">⏳ {t('projectDetail.loadingInvestments')}</div>
             ) : investments.length === 0 ? (
               <div className="empty-state">
                 <div className="empty-icon">📭</div>
-                <p>No hay inversiones en este proyecto</p>
+                <p>{t('projectDetail.noInvestments')}</p>
               </div>
             ) : (
               <div className="table-wrapper">
                 <table className="investments-table">
                   <thead>
                     <tr>
-                      <th>Usuario</th>
-                      <th>Monto</th>
-                      <th>ROI Esperado</th>
-                      <th>Estado</th>
-                      <th>Fecha</th>
+                      <th>{t('projectDetail.user')}</th>
+                      <th>{t('projectDetail.amount')}</th>
+                      <th>{t('projectDetail.expectedROI')}</th>
+                      <th>{t('projectDetail.status')}</th>
+                      <th>{t('projectDetail.date')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -330,9 +334,9 @@ export default function ProjectDetailPage({ adminData }) {
                         </td>
                         <td>
                           <span className={`status-badge status-${inv.status}`}>
-                            {inv.status === 'active' && '🟢 Activa'}
-                            {inv.status === 'completed' && '✅ Completada'}
-                            {inv.status === 'cancelled' && '❌ Cancelada'}
+                            {inv.status === 'active' && `🟢 ${t('projectDetail.invActive')}`}
+                            {inv.status === 'completed' && `✅ ${t('projectDetail.invCompleted')}`}
+                            {inv.status === 'cancelled' && `❌ ${t('projectDetail.invCancelled')}`}
                           </span>
                         </td>
                         <td className="date-cell">{formatDate(inv.createdAt)}</td>

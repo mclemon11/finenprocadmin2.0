@@ -54,7 +54,7 @@ export default function useAdminUsers(filters = {}) {
 
   useEffect(() => {
     fetchUsers();
-  }, [filters.status]);
+  }, [filters.status, filters.search]);
 
   const refetch = () => fetchUsers();
 
