@@ -162,7 +162,7 @@
   gap: 6px;
 }
 
-.rm-field:nth-child(4) {
+.rm-field-full {
   grid-column: 1 / -1;
 }
 
@@ -197,6 +197,20 @@
 .rm-textarea:focus {
   outline: none;
   border-color: var(--accent);
+}
+
+.rm-image-preview-wrapper {
+  margin-top: 8px;
+  max-width: 260px;
+}
+
+.rm-image-preview {
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-sm);
+  border: var(--glass-border);
+  object-fit: contain;
+  background: rgba(0, 0, 0, 0.4);
 }
 
 

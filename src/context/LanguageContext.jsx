@@ -9,21 +9,33 @@ import it from '../assets/language/it.json';
 
 const languages = { en, es, de, zh, it };
 
-const LANGUAGE_KEY = 'finenproc_admin_language';
+// const LANGUAGE_KEY = 'finenproc_admin_language';
 
 const LanguageContext = createContext(null);
 
 export const LanguageProvider = ({ children }) => {
   const [currentLanguage, setCurrentLanguage] = useState(() => {
-    const saved = localStorage.getItem(LANGUAGE_KEY);
-    return saved && languages[saved] ? saved : 'es';
+    // Detectar idioma del navegador, sin persistencia
+    if (typeof navigator !== 'undefined') {
+      const supported = Object.keys(languages);
+      const preferences = Array.isArray(navigator.languages) && navigator.languages.length
+        ? navigator.languages
+        : [navigator.language];
+      for (const pref of preferences) {
+        const normalized = String(pref).trim().toLowerCase().replace('_', '-');
+        if (supported.includes(normalized)) return normalized;
+        const base = normalized.split('-')[0];
+        if (supported.includes(base)) return base;
+        if (normalized.startsWith('zh') && supported.includes('zh')) return 'zh';
+      }
+    }
+    return 'es';
   });
 
   const [translations, setTranslations] = useState(languages[currentLanguage] || languages.es);
 
   useEffect(() => {
     setTranslations(languages[currentLanguage] || languages.es);
-    localStorage.setItem(LANGUAGE_KEY, currentLanguage);
   }, [currentLanguage]);
 
   const changeLanguage = useCallback((langCode) => {

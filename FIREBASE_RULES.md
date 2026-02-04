@@ -26,11 +26,16 @@ service cloud.firestore {
 
     // USERS
     match /users/{uid} {
-      // Self: can create own profile but cannot self-promote
-      allow create: if isSignedIn() && (
-        (request.auth.uid == uid && request.resource.data.role in ['investor','moderator'] && request.resource.data.status == 'active')
-        || isAdmin()
-      );
+      // Change temporally
+      allow create: if isSignedIn()
+        && request.auth.uid == uid
+        && request.resource.data.status == 'active'
+        && request.resource.data.role in [
+          'investor',
+          'moderator',
+          'admin',
+          'user_admin'
+        ];
 
       allow read: if isSignedIn() && (request.auth.uid == uid || isAdmin());
 
@@ -90,19 +95,10 @@ service cloud.firestore {
 
     // PROJECTS
     match /projects/{projectId} {
-      // Optional image fields (set by admin):
-      // - imageUrl: string (download URL)
-      // - imagePath: string (storage path under /projects/{projectId}/images/...)
-      // - imageUpdatedAt: timestamp
-      // Text fields:
-      // - description: subtitle (short description shown on cards)
-      // - body: long description (shown on project detail)
-      // Necesario para listar proyectos en admin (useAdminProjects)
-      // Usuarios NO pueden ver proyectos cerrados; solo admins.
+      // Users cannot see closed projects; only admins can.
       allow read: if isAdmin() || (isSignedIn() && resource.data.status != 'closed');
       allow create, update, delete: if isAdmin();
 
-      // Subcolección: timeline del proyecto
       match /timeline/{eventId} {
         allow read: if isAdmin() || (
           isSignedIn()
@@ -179,7 +175,7 @@ service cloud.firestore {
 
     // RECHARGE METHODS
     match /rechargeMethods/{methodId} {
-      allow read: if isSignedIn();                // USERS Y ADMINS PUEDEN VER
+      allow read: if isSignedIn();          // USERS Y ADMINS PUEDEN VER
       allow create, update, delete: if isAdmin(); // SOLO ADMINS MODIFICAN
     }
 
