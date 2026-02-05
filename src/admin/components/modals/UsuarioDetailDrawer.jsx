@@ -77,8 +77,23 @@ export default function UsuarioDetailDrawer({
       <div className="usuario-detail-drawer">
         <div className="drawer-header">
           <div className="header-content">
-            <h2 className="drawer-title">{user?.displayName || user?.email || t('users.user')}</h2>
-            <p className="drawer-email">{user?.email}</p>
+            <div className="header-avatar-section">
+              {user?.photoURL || user?.photoUrl ? (
+                <img 
+                  src={user.photoURL || user.photoUrl} 
+                  alt={user?.displayName || user?.email}
+                  className="drawer-avatar"
+                />
+              ) : (
+                <div className="drawer-avatar-placeholder">
+                  {(user?.displayName || user?.email || '?').charAt(0).toUpperCase()}
+                </div>
+              )}
+              <div className="header-info">
+                <h2 className="drawer-title">{user?.displayName || user?.email || t('users.user')}</h2>
+                <p className="drawer-email">{user?.email}</p>
+              </div>
+            </div>
             <div className="header-badges">
               <span className={`status-badge status-${user?.status}`}>
                 {user?.status === 'active' ? `● ${t('status.active')}` : `○ ${t('status.inactive')}`}

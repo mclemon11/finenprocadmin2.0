@@ -221,7 +221,7 @@
   gap: 8px;
 }
 
-.card-label {
+.investment-drawer .card-label {
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
@@ -229,29 +229,29 @@
   letter-spacing: 0.5px;
 }
 
-.card-value {
+.investment-drawer .card-value {
   font-size: 14px;
   font-weight: 600;
   color: #111827;
 }
 
-.card-value.status-active {
+.investment-drawer .card-value.status-active {
   color: #10b981;
 }
 
-.card-value.status-completed {
+.investment-drawer .card-value.status-completed {
   color: #0891b2;
 }
 
-.card-value.status-cancelled {
+.investment-drawer .card-value.status-cancelled {
   color: #ef4444;
 }
 
-.card-value.status-paused {
+.investment-drawer .card-value.status-paused {
   color: #f59e0b;
 }
 
-.card-sublabel {
+.investment-drawer .card-sublabel {
   font-size: 12px;
   color: #6b7280;
 }
@@ -260,7 +260,7 @@
   margin-bottom: 24px;
 }
 
-.section-title {
+.investment-drawer .section-title {
   margin: 0 0 16px 0;
   font-size: 14px;
   font-weight: 600;

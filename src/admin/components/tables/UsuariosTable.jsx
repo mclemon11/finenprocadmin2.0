@@ -34,8 +34,7 @@ export default function UsuariosTable({ users, loading, onSelectUser }) {
         <table className="usuarios-table">
           <thead>
             <tr>
-              <th>{t('users.email')}</th>
-              <th>{t('users.name')}</th>
+              <th>{t('users.user')}</th>
               <th>{t('users.status')}</th>
               <th>{t('users.role')}</th>
               <th>{t('users.registrationDate')}</th>
@@ -45,8 +44,25 @@ export default function UsuariosTable({ users, loading, onSelectUser }) {
           <tbody>
             {users.map(user => (
               <tr key={user.uid} className="usuario-row">
-                <td className="email-cell">{user.email}</td>
-                <td>{user.displayName || '-'}</td>
+                <td className="user-cell">
+                  <div className="user-info">
+                    {user.photoURL || user.photoUrl ? (
+                      <img 
+                        src={user.photoURL || user.photoUrl} 
+                        alt={user.displayName || user.email}
+                        className="user-avatar"
+                      />
+                    ) : (
+                      <div className="user-avatar-placeholder">
+                        {(user.displayName || user.email || '?').charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                    <div className="user-details">
+                      <span className="user-name">{user.displayName || '-'}</span>
+                      <span className="user-email">{user.email}</span>
+                    </div>
+                  </div>
+                </td>
                 <td>
                   <span className={`status-badge status-${user.status}`}>
                     {user.status === 'active' ? t('status.active') : t('status.inactive')}
@@ -73,7 +89,20 @@ export default function UsuariosTable({ users, loading, onSelectUser }) {
         {users.map(user => (
           <div key={user.uid} className="usuario-card">
             <div className="usuario-card-header">
-              <span className="usuario-card-email">{user.email}</span>
+              <div className="usuario-card-user">
+                {user.photoURL || user.photoUrl ? (
+                  <img 
+                    src={user.photoURL || user.photoUrl} 
+                    alt={user.displayName || user.email}
+                    className="user-avatar-mobile"
+                  />
+                ) : (
+                  <div className="user-avatar-placeholder-mobile">
+                    {(user.displayName || user.email || '?').charAt(0).toUpperCase()}
+                  </div>
+                )}
+                <span className="usuario-card-email">{user.email}</span>
+              </div>
               <span className={`status-badge status-${user.status}`}>
                 {user.status === 'active' ? t('status.active') : t('status.inactive')}
               </span>
