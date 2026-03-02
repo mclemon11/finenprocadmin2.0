@@ -166,28 +166,101 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
       setSaving(true);
       setError(null);
       const payload = {
-        name: form.name,
-        // Subtitle (short description shown on cards)
-        description: form.description?.trim() ? form.description.trim() : null,
-        // Long description (shown only on project detail)
-        body: form.body?.trim() ? form.body.trim() : null,
-        type: form.type,
-        category: form.category || null,
-        riskLevel: form.riskLevel || 'medium',
-        expectedROI: form.expectedROI ? Number(form.expectedROI) : null,
-        duration: form.durationMonths ? Number(form.durationMonths) : null,
-        status: 'draft',
-        targetAmount: isFixed ? targetAmountNum : null,
-        // Support both field names used in different parts of the app.
-        totalInvested: 0,
-        totalInvestment: 0,
-        minInvestment: isFixed ? minInvestmentNum : null,
-        maxInvestment: isFixed ? maxInvestmentNum : null,
-        autoLockOnTarget: isFixed ? true : null,
-        drawdown: !isFixed && form.drawdown ? Number(form.drawdown) : null,
+        // ─── General ──────────────────────────────────
+        general: {
+          name: form.name,
+          description: form.description?.trim() ? form.description.trim() : null,
+          body: form.body?.trim() ? form.body.trim() : null,
+          type: form.type,
+          category: form.category || null,
+          status: 'draft',
+          visibleToUsers: true,
+          investable: statusToSet === 'active',
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        },
+
+        // ─── Financials ───────────────────────────────
+        financials: {
+          targetAmount: isFixed ? targetAmountNum : null,
+          capitalRecaudado: 0,
+          capitalObjetivo: isFixed ? targetAmountNum : null,
+          minInvestment: isFixed ? minInvestmentNum : null,
+          maxInvestment: isFixed ? maxInvestmentNum : null,
+          totalInvested: 0,
+          totalInvestment: 0,
+        },
+
+        // ─── Returns ──────────────────────────────────
+        returns: {
+          expectedROI: form.expectedROI ? Number(form.expectedROI) : null,
+          roiAnual: 0,
+          roiAcumulado: 0,
+          totalROI: null,
+          estimatedIRR: null,
+          paybackPeriod: null,
+          paymentFrequency: 'monthly',
+          returnExpected: null,
+        },
+
+        // ─── Risk ─────────────────────────────────────
+        risk: {
+          riskScore: form.riskLevel === 'low' ? 2 : form.riskLevel === 'high' ? 4 : 3,
+          riskLevel: form.riskLevel || 'medium',
+          countryRisk: false,
+          regulatoryRisk: false,
+          hasGuarantee: false,
+          guaranteeType: '',
+          guaranteeValue: null,
+        },
+
+        // ─── Duration ─────────────────────────────────
+        duration: {
+          months: form.durationMonths ? Number(form.durationMonths) : null,
+          durationMeses: form.durationMonths ? Number(form.durationMonths) : null,
+        },
+
+        // ─── Location ─────────────────────────────────
+        location: { country: '', region: '', city: '', assetType: '', operator: '' },
+
+        // ─── Capital Distribution ─────────────────────
+        capitalDistribution: { infraestructura: 35, operacion: 25, beneficio: 25, reserva: 15 },
+
+        // ─── Cost Structure ───────────────────────────
+        costStructure: { initialCapex: null, minViableCapital: null, monthlyOperatingCost: null },
+
+        // ─── Projections ──────────────────────────────
+        projections: { scenario: 'base', monthlyRevenue: null, monthlyCosts: null, operatingMargin: null, contingencyFund: null },
+
+        // ─── Controls ─────────────────────────────────
+        controls: {
+          manualControl: form.manualControl,
+          autoLockOnTarget: isFixed ? true : null,
+          kycRequired: true,
+        },
+
+        // ─── Restrictions ─────────────────────────────
+        restrictions: {
+          minInvestment: isFixed ? minInvestmentNum : null,
+          maxInvestment: isFixed ? maxInvestmentNum : null,
+          maxInvestors: null,
+          maxPercentPerInvestor: null,
+        },
+
+        // ─── Images (populated after upload) ──────────
+        images: { cover: null, gallery: [] },
+
+        // ─── Documents ────────────────────────────────
+        documents: { items: [], updatedAt: null },
+
+        // ─── Optional top-level ───────────────────────
         performance: !isFixed && form.performance ? Number(form.performance) : null,
-        manualControl: form.manualControl,
-        investable: statusToSet === 'active',
+        drawdown: !isFixed && form.drawdown ? Number(form.drawdown) : null,
+        paymentCalendar: [],
+        charts: {},
+        finance: {},
+        metrics: {},
+
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       };
@@ -213,15 +286,16 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
           uploads.push({ url, path: storagePath });
         }
 
-        const urls = uploads.map((u) => u.url).filter(Boolean);
-        const paths = uploads.map((u) => u.path).filter(Boolean);
+        const coverImage = uploads[0] || null;
+        const galleryImages = uploads.slice(1);
 
         await updateDoc(docRef, {
-          images: urls,
-          imagePaths: paths,
-          imageUrl: urls[0] || null,
-          imagePath: paths[0] || null,
-          imageUpdatedAt: serverTimestamp(),
+          images: {
+            cover: coverImage
+              ? { url: coverImage.url, path: coverImage.path, updatedAt: serverTimestamp() }
+              : null,
+            gallery: galleryImages.map((img) => ({ url: img.url, path: img.path })),
+          },
           updatedAt: serverTimestamp(),
         });
       }

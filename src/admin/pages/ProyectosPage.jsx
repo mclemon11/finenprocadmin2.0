@@ -62,7 +62,8 @@ export default function ProyectosPage({ adminData }) {
     try {
       setActionLoading(projectId);
       await updateDoc(doc(db, 'projects', projectId), {
-        status: nextStatus,
+        'general.status': nextStatus,
+        'general.updatedAt': serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
       refetch();

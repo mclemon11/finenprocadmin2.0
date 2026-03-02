@@ -106,56 +106,16 @@ export default function ProjectDetailDrawer({
             </div>
           </div>
 
-          <div className="drawer-header-content">
-            <div className="project-title-section">
-              <h1 className="drawer-title">{project.name}</h1>
-              <div className="drawer-badges">
-                <span className={`badge type-badge type-${project.type}`}>
-                  {project.type === 'variable' ? `📊 ${t('projects.variable')}` : `🎯 ${t('projects.fixed')}`}
-                </span>
-                <span className={`badge risk-badge risk-${project.riskLevel}`}>
-                  {project.riskLevel === 'low' && `🟢 ${t('projects.riskLow')}`}
-                  {project.riskLevel === 'medium' && `🟡 ${t('projects.riskMedium')}`}
-                  {project.riskLevel === 'high' && `🔴 ${t('projects.riskHigh')}`}
-                </span>
-                <span className={`badge status-badge status-${project.computedStatus}`}>
-                  {project.computedStatus === 'funded' && `✅ ${t('status.funded')}`}
-                  {project.computedStatus === 'active' && `🟢 ${t('status.active')}`}
-                  {project.computedStatus === 'paused' && `⏸️ ${t('status.paused')}`}
-                  {project.computedStatus === 'closed' && `🔒 ${t('status.closed')}`}
-                  {project.computedStatus === 'draft' && `📝 ${t('status.draft')}`}
-                </span>
-              </div>
-              {project.category && (
-                <div className="project-meta">📁 {project.category}</div>
-              )}
-            </div>
-
-            {project.type === 'fixed' && project.targetAmount && (
-              <div className="header-progress">
-                <div className="progress-header-row">
-                  <span className="progress-label-text">💰 {t('projects.capitalRaised')}</span>
-                  <span className="progress-percent">{project.progress || 0}%</span>
-                </div>
-                <div className="progress-bar-header">
-                  <div 
-                    className="progress-fill-header" 
-                    style={{ width: `${project.progress || 0}%` }}
-                  ></div>
-                </div>
-                <div className="progress-stats-row">
-                  <div className="progress-stat">
-                    <span className="stat-label">{t('projects.raised')}</span>
-                    <span className="stat-value">{formatCurrency(project.totalInvested)}</span>
-                  </div>
-                  <div className="progress-stat">
-                    <span className="stat-label">{t('projects.target')}</span>
-                    <span className="stat-value">{formatCurrency(project.targetAmount)}</span>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
+          {/* <div className="drawer-header-content">
+            <h1 className="drawer-title">{project.name}</h1>
+            <span className={`badge status-badge status-${project.computedStatus}`}>
+              {project.computedStatus === 'funded' && `✅ ${t('status.funded')}`}
+              {project.computedStatus === 'active' && `🟢 ${t('status.active')}`}
+              {project.computedStatus === 'paused' && `⏸️ ${t('status.paused')}`}
+              {project.computedStatus === 'closed' && `🔒 ${t('status.closed')}`}
+              {project.computedStatus === 'draft' && `📝 ${t('status.draft')}`}
+            </span>
+          </div> */}
 
           {/* Tabs */}
           <div className="drawer-tabs">
@@ -190,116 +150,315 @@ export default function ProjectDetailDrawer({
         <div className="drawer-content">
           {activeTab === 'overview' && (
             <div className="overview-section">
-              <div className="overview-grid">
-                {/* KPIs principales */}
-                <div className="kpi-box">
-                  <div className="kpi-icon">💰</div>
-                  <div className="kpi-data">
-                    <div className="kpi-label">{t('projects.totalInvested')}</div>
-                    <div className="kpi-value">{formatCurrency(investmentStats.totalAmount)}</div>
+              {/* Hero Image Gallery */}
+              {(project.images?.cover?.url || project.images?.gallery?.length > 0 || (Array.isArray(project.images) && project.images.length > 0) || project.imageUrl) && (() => {
+                // Resolve images: new nested format or legacy flat
+                let allImages = [];
+                if (project.images?.cover?.url || Array.isArray(project.images?.gallery)) {
+                  if (project.images?.cover?.url) allImages.push(project.images.cover.url);
+                  if (Array.isArray(project.images?.gallery)) {
+                    allImages.push(...project.images.gallery.map(g => g?.url).filter(Boolean));
+                  }
+                } else {
+                  allImages = Array.isArray(project.images) ? project.images.filter(u => typeof u === 'string' && u.trim()) : [];
+                  if (allImages.length === 0 && project.imageUrl) allImages = [project.imageUrl];
+                }
+                if (allImages.length === 0) return null;
+                return (
+                  <div className="hero-gallery">
+                    <div className="gallery-main">
+                      <img src={allImages[0]} alt={project.name} />
+                    </div>
+                    {allImages.length > 1 && allImages.slice(1, 5).map((img, idx) => (
+                      <div key={idx} className={`gallery-thumb ${idx === 3 && allImages.length > 5 ? 'has-more' : ''}`}>
+                        <img src={img} alt={`${project.name} ${idx + 2}`} />
+                        {idx === 3 && allImages.length > 5 && (
+                          <div className="gallery-more-overlay">
+                            <span>+{allImages.length - 5}</span>
+                          </div>
+                        )}
+                      </div>
+                    ))}
                   </div>
-                </div>
-                <div className="kpi-box">
-                  <div className="kpi-icon">👥</div>
-                  <div className="kpi-data">
-                    <div className="kpi-label">{t('projects.investors')}</div>
-                    <div className="kpi-value">{investmentStats.total}</div>
-                    <div className="kpi-sublabel">{investmentStats.active} {t('projects.activeInvestorsCount')}</div>
+                );
+              })()}
+
+              {/* Project Hero Info */}
+              <div className="overview-hero">
+                <div className="overview-hero-left">
+                  <h2 className="overview-title">{project.name}</h2>
+                  <div className="overview-meta-row">
+                    <span className={`meta-pill status-${project.computedStatus}`}>
+                      <span className="status-dot"></span>
+                      {project.computedStatus === 'funded' && t('status.funded')}
+                      {project.computedStatus === 'active' && t('status.active')}
+                      {project.computedStatus === 'paused' && t('status.paused')}
+                      {project.computedStatus === 'closed' && t('status.closed')}
+                      {project.computedStatus === 'draft' && t('status.draft')}
+                    </span>
+                    {project.expectedROI && (
+                      <div className="meta-chip">
+                        📈 ROI: <strong>{project.expectedROI}%</strong>
+                      </div>
+                    )}
+                    {project.duration && (
+                      <div className="meta-chip">
+                        ⏱️ {t('projects.duration')}: <strong>{project.duration}m</strong>
+                      </div>
+                    )}
+                    {project.category && (
+                      <div className="meta-chip">
+                        📁 {project.category}
+                      </div>
+                    )}
                   </div>
-                </div>
-                <div className="kpi-box">
-                  <div className="kpi-icon">📈</div>
-                  <div className="kpi-data">
-                    <div className="kpi-label">{t('projects.expectedROI')}</div>
-                    <div className="kpi-value">{project.expectedROI ? `${project.expectedROI}%` : '—'}</div>
-                  </div>
-                </div>
-                <div className="kpi-box">
-                  <div className="kpi-icon">⏱️</div>
-                  <div className="kpi-data">
-                    <div className="kpi-label">{t('projects.duration')}</div>
-                    <div className="kpi-value">{project.duration ? `${project.duration}m` : '—'}</div>
+                  <div className="overview-badges">
+                    <span className={`badge type-badge type-${project.type}`}>
+                      {project.type === 'variable' ? `📊 ${t('projects.variable')}` : `🎯 ${t('projects.fixed')}`}
+                    </span>
+                    <span className={`badge risk-badge risk-${project.riskLevel}`}>
+                      {project.riskLevel === 'low' && `🟢 ${t('projects.riskLow')}`}
+                      {project.riskLevel === 'medium' && `🟡 ${t('projects.riskMedium')}`}
+                      {project.riskLevel === 'high' && `🔴 ${t('projects.riskHigh')}`}
+                    </span>
                   </div>
                 </div>
               </div>
 
-              {/* Información detallada */}
-              <div className="info-sections">
-                <div className="info-section">
-                  <h3 className="section-title">📋 {t('projects.generalInfo')}</h3>
-                  <div className="info-grid">
-                    <div className="info-item">
-                      <span className="info-key">{t('projects.creationDate')}</span>
-                      <span className="info-val">{formatDate(project.createdAt)}</span>
+              {/* 2-Column Layout */}
+              <div className="overview-layout">
+                {/* Left Column */}
+                <div className="overview-main-col">
+                  {/* About Section */}
+                  {(project.description || project.body) && (
+                    <section className="about-section">
+                      <h3>📋 {t('projects.generalInfo')}</h3>
+                      {project.description && <p className="about-text">{project.description}</p>}
+                      {project.body && <p className="about-text">{project.body}</p>}
+                    </section>
+                  )}
+
+                  {/* Key Highlights */}
+                  <div className="highlights-grid">
+                    <div className="highlight-card">
+                      <div className="highlight-icon-wrap">💰</div>
+                      <div className="highlight-content">
+                        <h4>{t('projects.totalInvested')}</h4>
+                        <p>{formatCurrency(investmentStats.totalAmount)}</p>
+                      </div>
                     </div>
-                    <div className="info-item">
-                      <span className="info-key">{t('projects.lastUpdate')}</span>
-                      <span className="info-val">{formatDate(project.updatedAt)}</span>
+                    <div className="highlight-card">
+                      <div className="highlight-icon-wrap">👥</div>
+                      <div className="highlight-content">
+                        <h4>{t('projects.investors')}</h4>
+                        <p>{investmentStats.total}</p>
+                        <span className="highlight-sub">{investmentStats.active} {t('projects.activeInvestorsCount')}</span>
+                      </div>
                     </div>
-                    <div className="info-item">
-                      <span className="info-key">{t('projects.baseCurrency')}</span>
-                      <span className="info-val">USD 🇺🇸</span>
+                    <div className="highlight-card">
+                      <div className="highlight-icon-wrap">📈</div>
+                      <div className="highlight-content">
+                        <h4>{t('projects.expectedROI')}</h4>
+                        <p>{project.expectedROI ? `${project.expectedROI}%` : '—'}</p>
+                      </div>
                     </div>
-                    <div className="info-item">
-                      <span className="info-key">{t('projects.investmentStatus')}</span>
-                      <span className="info-val">
-                        {project.investable ? `✅ ${t('projects.openInvestment')}` : `🔒 ${t('projects.closedInvestment')}`}
-                      </span>
+                    <div className="highlight-card">
+                      <div className="highlight-icon-wrap">⏱️</div>
+                      <div className="highlight-content">
+                        <h4>{t('projects.duration')}</h4>
+                        <p>{project.duration ? `${project.duration}m` : '—'}</p>
+                      </div>
                     </div>
+                  </div>
+
+                  {/* Info Sections */}
+                  <div className="info-sections">
+                    <div className="info-section">
+                      <h3 className="section-title">📋 {t('projects.generalInfo')}</h3>
+                      <div className="info-grid">
+                        <div className="info-item">
+                          <span className="info-key">{t('projects.creationDate')}</span>
+                          <span className="info-val">{formatDate(project.createdAt)}</span>
+                        </div>
+                        <div className="info-item">
+                          <span className="info-key">{t('projects.lastUpdate')}</span>
+                          <span className="info-val">{formatDate(project.updatedAt)}</span>
+                        </div>
+                        <div className="info-item">
+                          <span className="info-key">{t('projects.baseCurrency')}</span>
+                          <span className="info-val">USD 🇺🇸</span>
+                        </div>
+                        <div className="info-item">
+                          <span className="info-key">{t('projects.investmentStatus')}</span>
+                          <span className="info-val">
+                            {project.investable ? `✅ ${t('projects.openInvestment')}` : `🔒 ${t('projects.closedInvestment')}`}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {project.type === 'fixed' && (
+                      <div className="info-section">
+                        <h3 className="section-title">⚙️ {t('projects.fixedConfig')}</h3>
+                        <div className="info-grid">
+                          <div className="info-item">
+                            <span className="info-key">{t('projects.targetCapital')}</span>
+                            <span className="info-val bold">{formatCurrency(project.targetAmount)}</span>
+                          </div>
+                          <div className="info-item">
+                            <span className="info-key">{t('projects.minInvestment')}</span>
+                            <span className="info-val">{formatCurrency(project.minInvestment)}</span>
+                          </div>
+                          {project.maxInvestment && (
+                            <div className="info-item">
+                              <span className="info-key">{t('projects.maxInvestment')}</span>
+                              <span className="info-val">{formatCurrency(project.maxInvestment)}</span>
+                            </div>
+                          )}
+                          <div className="info-item">
+                            <span className="info-key">{t('projects.autoLockOnTarget')}</span>
+                            <span className="info-val">
+                              <span className={`pill ${project.autoLockOnTarget ? 'pill-on' : 'pill-off'}`}>
+                                {project.autoLockOnTarget ? `✓ ${t('projects.activated')}` : `✗ ${t('projects.deactivated')}`}
+                              </span>
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {project.type === 'variable' && (
+                      <div className="info-section">
+                        <h3 className="section-title">📊 {t('projects.variableMetrics')}</h3>
+                        <div className="metrics-cards">
+                          <div className="metric-card performance">
+                            <div className="metric-icon">📈</div>
+                            <div className="metric-label">{t('projects.performance')}</div>
+                            <div className="metric-value positive">
+                              {project.performance !== undefined ? `${project.performance}%` : '—'}
+                            </div>
+                          </div>
+                          <div className="metric-card drawdown">
+                            <div className="metric-icon">📉</div>
+                            <div className="metric-label">{t('projects.drawdown')}</div>
+                            <div className="metric-value negative">
+                              {project.drawdown !== undefined ? `${project.drawdown}%` : '—'}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
-                {project.type === 'fixed' && (
-                  <div className="info-section">
-                    <h3 className="section-title">⚙️ {t('projects.fixedConfig')}</h3>
-                    <div className="info-grid">
-                      <div className="info-item">
-                        <span className="info-key">{t('projects.targetCapital')}</span>
-                        <span className="info-val bold">{formatCurrency(project.targetAmount)}</span>
-                      </div>
-                      <div className="info-item">
-                        <span className="info-key">{t('projects.minInvestment')}</span>
-                        <span className="info-val">{formatCurrency(project.minInvestment)}</span>
-                      </div>
-                      {project.maxInvestment && (
-                        <div className="info-item">
-                          <span className="info-key">{t('projects.maxInvestment')}</span>
-                          <span className="info-val">{formatCurrency(project.maxInvestment)}</span>
+                {/* Right Sidebar */}
+                <div className="overview-sidebar">
+                  {/* Funding Card - Fixed */}
+                  {project.type === 'fixed' && project.targetAmount && (
+                    <div className="funding-card">
+                      <div className="funding-card-header">
+                        <span className="funding-label">{t('projects.capitalRaised')}</span>
+                        <div className="funding-amounts">
+                          <span className="funding-current">{formatCurrency(project.totalInvested)}</span>
+                          <span className="funding-of">of {formatCurrency(project.targetAmount)}</span>
                         </div>
-                      )}
-                      <div className="info-item">
-                        <span className="info-key">{t('projects.autoLockOnTarget')}</span>
-                        <span className="info-val">
-                          <span className={`pill ${project.autoLockOnTarget ? 'pill-on' : 'pill-off'}`}>
-                            {project.autoLockOnTarget ? `✓ ${t('projects.activated')}` : `✗ ${t('projects.deactivated')}`}
-                          </span>
-                        </span>
+                      </div>
+                      <div className="funding-progress-bar">
+                        <div className="funding-progress-fill" style={{ width: `${Math.min(project.progress || 0, 100)}%` }}></div>
+                      </div>
+                      <div className="funding-progress-meta">
+                        <span>{project.progress || 0}% {t('status.funded')}</span>
+                        <span>{investmentStats.total} {t('projects.investors')}</span>
+                      </div>
+                      <div className="funding-stats-grid">
+                        {project.minInvestment != null && (
+                          <div className="funding-stat">
+                            <span className="funding-stat-label">{t('projects.minInvestment')}</span>
+                            <span className="funding-stat-value">{formatCurrency(project.minInvestment)}</span>
+                          </div>
+                        )}
+                        {project.expectedROI != null && (
+                          <div className="funding-stat">
+                            <span className="funding-stat-label">{t('projects.expectedROI')}</span>
+                            <span className="funding-stat-value accent">{project.expectedROI}%</span>
+                          </div>
+                        )}
+                        {project.duration != null && (
+                          <div className="funding-stat">
+                            <span className="funding-stat-label">{t('projects.duration')}</span>
+                            <span className="funding-stat-value">{project.duration}m</span>
+                          </div>
+                        )}
+                        {project.maxInvestment != null && (
+                          <div className="funding-stat">
+                            <span className="funding-stat-label">{t('projects.maxInvestment')}</span>
+                            <span className="funding-stat-value">{formatCurrency(project.maxInvestment)}</span>
+                          </div>
+                        )}
                       </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                {project.type === 'variable' && (
-                  <div className="info-section">
-                    <h3 className="section-title">📊 {t('projects.variableMetrics')}</h3>
-                    <div className="metrics-cards">
-                      <div className="metric-card performance">
-                        <div className="metric-icon">📈</div>
-                        <div className="metric-label">{t('projects.performance')}</div>
-                        <div className="metric-value positive">
-                          {project.performance !== undefined ? `${project.performance}%` : '—'}
-                        </div>
+                  {/* Funding Card - Variable */}
+                  {project.type === 'variable' && (
+                    <div className="funding-card">
+                      <div className="funding-card-header">
+                        <span className="funding-label">{t('projects.variableMetrics')}</span>
                       </div>
-                      <div className="metric-card drawdown">
-                        <div className="metric-icon">📉</div>
-                        <div className="metric-label">{t('projects.drawdown')}</div>
-                        <div className="metric-value negative">
-                          {project.drawdown !== undefined ? `${project.drawdown}%` : '—'}
+                      <div className="funding-stats-grid">
+                        <div className="funding-stat">
+                          <span className="funding-stat-label">{t('projects.performance')}</span>
+                          <span className="funding-stat-value accent">
+                            {project.performance !== undefined ? `${project.performance}%` : '—'}
+                          </span>
                         </div>
+                        <div className="funding-stat">
+                          <span className="funding-stat-label">{t('projects.drawdown')}</span>
+                          <span className="funding-stat-value negative">
+                            {project.drawdown !== undefined ? `${project.drawdown}%` : '—'}
+                          </span>
+                        </div>
+                        {project.expectedROI != null && (
+                          <div className="funding-stat">
+                            <span className="funding-stat-label">{t('projects.expectedROI')}</span>
+                            <span className="funding-stat-value accent">{project.expectedROI}%</span>
+                          </div>
+                        )}
+                        {project.duration != null && (
+                          <div className="funding-stat">
+                            <span className="funding-stat-label">{t('projects.duration')}</span>
+                            <span className="funding-stat-value">{project.duration}m</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Quick Info Card */}
+                  <div className="quick-info-card">
+                    <h4>{t('projects.generalInfo')}</h4>
+                    <div className="quick-info-items">
+                      <div className="quick-info-item">
+                        <span>{t('projects.creationDate')}</span>
+                        <strong>{formatDate(project.createdAt)}</strong>
+                      </div>
+                      <div className="quick-info-item">
+                        <span>{t('projects.lastUpdate')}</span>
+                        <strong>{formatDate(project.updatedAt)}</strong>
+                      </div>
+                      <div className="quick-info-item">
+                        <span>{t('projects.baseCurrency')}</span>
+                        <strong>USD 🇺🇸</strong>
+                      </div>
+                      <div className="quick-info-item">
+                        <span>{t('projects.investmentStatus')}</span>
+                        <strong>
+                          {project.investable ? `✅ ${t('projects.openInvestment')}` : `🔒 ${t('projects.closedInvestment')}`}
+                        </strong>
                       </div>
                     </div>
                   </div>
-                )}
+                </div>
               </div>
             </div>
           )}

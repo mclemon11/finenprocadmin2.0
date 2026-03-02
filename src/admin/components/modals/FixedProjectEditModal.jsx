@@ -58,16 +58,31 @@ export default function FixedProjectEditModal({ project, isOpen, onClose, onSucc
       setActiveTab('general');
       setError(null);
 
-      // Initialize images
-      const urls = Array.isArray(project.images)
-        ? project.images.filter((u) => typeof u === 'string' && u.trim())
-        : (project.imageUrl ? [project.imageUrl] : []);
+      // Initialize images — support new nested format + legacy flat format
+      const newFmtCover = project.images?.cover;
+      const newFmtGallery = Array.isArray(project.images?.gallery) ? project.images.gallery : [];
 
-      const paths = Array.isArray(project.imagePaths)
-        ? project.imagePaths.filter((p) => typeof p === 'string' && p.trim())
-        : (project.imagePath ? [project.imagePath] : []);
+      let imageData = [];
+      if (newFmtCover || newFmtGallery.length > 0) {
+        // New format: images.cover + images.gallery
+        if (newFmtCover?.url) {
+          imageData.push({ url: newFmtCover.url, path: newFmtCover.path || null });
+        }
+        for (const g of newFmtGallery) {
+          if (g?.url) imageData.push({ url: g.url, path: g.path || null });
+        }
+      } else {
+        // Legacy flat format: images[] + imagePaths[]
+        const urls = Array.isArray(project.images)
+          ? project.images.filter((u) => typeof u === 'string' && u.trim())
+          : (project.imageUrl ? [project.imageUrl] : []);
 
-      const imageData = urls.map((url, idx) => ({ url, path: paths[idx] || null }));
+        const paths = Array.isArray(project.imagePaths)
+          ? project.imagePaths.filter((p) => typeof p === 'string' && p.trim())
+          : (project.imagePath ? [project.imagePath] : []);
+
+        imageData = urls.map((url, idx) => ({ url, path: paths[idx] || null }));
+      }
       setExistingImages(imageData);
       setOriginalImages(imageData);
       setDeletedImagePaths([]);
@@ -390,53 +405,131 @@ export default function FixedProjectEditModal({ project, isOpen, onClose, onSucc
         }
       }
 
-      const finalImages = [
-        ...existingImages.map((x) => x.url).filter(Boolean),
-        ...uploaded.map((x) => x.url).filter(Boolean),
-      ];
-      const finalPaths = [
-        ...existingImages.map((x) => x.path).filter(Boolean),
-        ...uploaded.map((x) => x.path).filter(Boolean),
-      ];
-
       const finalDocuments = [
         ...existingDocuments,
         ...uploadedDocs,
       ];
 
+      // Build images in new nested format
+      const allImageItems = [
+        ...existingImages,
+        ...uploaded,
+      ];
+      const coverImage = allImageItems[0] || null;
+      const galleryImages = allImageItems.slice(1);
+
       const payload = {
-        // General
-        name: form.name,
-        category: form.category || null,
-        status: form.status,
-        visibleToUsers: form.visibleToUsers,
+        // ─── General ──────────────────────────────────
+        general: {
+          name: form.general.name,
+          description: form.general.description || null,
+          body: form.general.body || null,
+          category: form.general.category || null,
+          type: form.general.type || 'fixed',
+          status: form.general.status,
+          visibleToUsers: form.general.visibleToUsers,
+          investable: form.general.investable,
+          updatedAt: serverTimestamp(),
+        },
 
-        // Images
-        images: finalImages,
-        imagePaths: finalPaths,
-        imageUrl: finalImages[0] || null,
-        imagePath: finalPaths[0] || null,
-        imageUpdatedAt: serverTimestamp(),
-
-        // Nested objects
+        // ─── Location ─────────────────────────────────
         location: form.location,
-        finance: form.finance,
-        metrics: form.metrics,
-        risks: form.risks,
-        restrictions: form.restrictions,
-        projections: form.projections,
-        charts: form.charts,
 
-        // Documents
-        documents: finalDocuments,
-        documentsUpdatedAt: serverTimestamp(),
+        // ─── Financials ───────────────────────────────
+        financials: {
+          targetAmount: form.financials.targetAmount ? Number(form.financials.targetAmount) : null,
+          capitalRecaudado: form.financials.capitalRecaudado ? Number(form.financials.capitalRecaudado) : 0,
+          capitalObjetivo: form.financials.capitalObjetivo ? Number(form.financials.capitalObjetivo) : (form.financials.targetAmount ? Number(form.financials.targetAmount) : null),
+          minInvestment: form.financials.minInvestment ? Number(form.financials.minInvestment) : null,
+          maxInvestment: form.financials.maxInvestment ? Number(form.financials.maxInvestment) : null,
+          totalInvested: form.financials.totalInvested ? Number(form.financials.totalInvested) : 0,
+          totalInvestment: form.financials.totalInvestment ? Number(form.financials.totalInvestment) : 0,
+        },
 
-        // Legacy compatibility
-        targetAmount: form.finance.targetAmount ? Number(form.finance.targetAmount) : null,
-        expectedROI: form.metrics.expectedROI ? Number(form.metrics.expectedROI) : null,
-        duration: form.metrics.duration ? Number(form.metrics.duration) : null,
-        riskLevel: form.risks.riskLevel,
-        minInvestment: form.restrictions.minInvestment ? Number(form.restrictions.minInvestment) : null,
+        // ─── Returns ──────────────────────────────────
+        returns: {
+          expectedROI: form.returns.expectedROI ? Number(form.returns.expectedROI) : null,
+          roiAnual: form.returns.roiAnual ? Number(form.returns.roiAnual) : 0,
+          roiAcumulado: form.returns.roiAcumulado ? Number(form.returns.roiAcumulado) : 0,
+          totalROI: form.returns.totalROI ? Number(form.returns.totalROI) : null,
+          estimatedIRR: form.returns.estimatedIRR ? Number(form.returns.estimatedIRR) : null,
+          paybackPeriod: form.returns.paybackPeriod ? Number(form.returns.paybackPeriod) : null,
+          paymentFrequency: form.returns.paymentFrequency || 'monthly',
+          returnExpected: form.returns.returnExpected ? Number(form.returns.returnExpected) : null,
+        },
+
+        // ─── Risk ─────────────────────────────────────
+        risk: {
+          riskScore: form.risk.riskScore ? Number(form.risk.riskScore) : 3,
+          riskLevel: form.risk.riskLevel || 'medium',
+          countryRisk: form.risk.countryRisk ?? false,
+          regulatoryRisk: form.risk.regulatoryRisk ?? false,
+          hasGuarantee: form.risk.hasGuarantee ?? false,
+          guaranteeType: form.risk.guaranteeType || '',
+          guaranteeValue: form.risk.guaranteeValue ? Number(form.risk.guaranteeValue) : null,
+        },
+
+        // ─── Capital Distribution ─────────────────────
+        capitalDistribution: form.capitalDistribution,
+
+        // ─── Cost Structure ───────────────────────────
+        costStructure: {
+          initialCapex: form.costStructure.initialCapex ? Number(form.costStructure.initialCapex) : null,
+          minViableCapital: form.costStructure.minViableCapital ? Number(form.costStructure.minViableCapital) : null,
+          monthlyOperatingCost: form.costStructure.monthlyOperatingCost ? Number(form.costStructure.monthlyOperatingCost) : null,
+        },
+
+        // ─── Projections ──────────────────────────────
+        projections: {
+          scenario: form.projections.scenario || 'base',
+          monthlyRevenue: form.projections.monthlyRevenue ? Number(form.projections.monthlyRevenue) : null,
+          monthlyCosts: form.projections.monthlyCosts ? Number(form.projections.monthlyCosts) : null,
+          operatingMargin: form.projections.operatingMargin ? Number(form.projections.operatingMargin) : null,
+          contingencyFund: form.projections.contingencyFund ? Number(form.projections.contingencyFund) : null,
+        },
+
+        // ─── Duration ─────────────────────────────────
+        duration: {
+          months: form.duration.months ? Number(form.duration.months) : null,
+          durationMeses: form.duration.durationMeses ? Number(form.duration.durationMeses) : (form.duration.months ? Number(form.duration.months) : null),
+        },
+
+        // ─── Images (nested) ──────────────────────────
+        images: {
+          cover: coverImage
+            ? { url: coverImage.url, path: coverImage.path || null, updatedAt: serverTimestamp() }
+            : null,
+          gallery: galleryImages.map((img) => ({ url: img.url, path: img.path || null })),
+        },
+
+        // ─── Documents (nested) ───────────────────────
+        documents: {
+          items: finalDocuments,
+          updatedAt: serverTimestamp(),
+        },
+
+        // ─── Controls ─────────────────────────────────
+        controls: {
+          manualControl: form.controls.manualControl ?? true,
+          autoLockOnTarget: form.controls.autoLockOnTarget ?? true,
+          kycRequired: form.controls.kycRequired ?? true,
+        },
+
+        // ─── Restrictions ─────────────────────────────
+        restrictions: {
+          minInvestment: form.restrictions.minInvestment ? Number(form.restrictions.minInvestment) : null,
+          maxInvestment: form.restrictions.maxInvestment ? Number(form.restrictions.maxInvestment) : null,
+          maxInvestors: form.restrictions.maxInvestors ? Number(form.restrictions.maxInvestors) : null,
+          maxPercentPerInvestor: form.restrictions.maxPercentPerInvestor ? Number(form.restrictions.maxPercentPerInvestor) : null,
+        },
+
+        // ─── Optional top-level ───────────────────────
+        performance: null,
+        drawdown: null,
+        paymentCalendar: form.paymentCalendar || [],
+        charts: {},
+        finance: {},
+        metrics: {},
 
         updatedAt: serverTimestamp(),
       };
@@ -468,9 +561,8 @@ export default function FixedProjectEditModal({ project, isOpen, onClose, onSucc
       setNewImageItems([]);
       setDeletedImagePaths([]);
 
-      const newOriginalDocuments = [...finalDocuments];
-      setOriginalDocuments(newOriginalDocuments);
-      setExistingDocuments(newOriginalDocuments);
+      setOriginalDocuments([...finalDocuments]);
+      setExistingDocuments([...finalDocuments]);
       setNewDocumentItems([]);
       setDeletedDocumentPaths([]);
 

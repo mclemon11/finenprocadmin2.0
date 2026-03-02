@@ -16,7 +16,15 @@ export default function useDistribution() {
       setLoading(true);
       const snap = await getDocs(collection(db, 'projects'));
       const projs = snap.docs
-        .map(d => ({ id: d.id, ...d.data() }))
+        .map(d => {
+          const raw = d.data();
+          return {
+            id: d.id,
+            ...raw,
+            name: raw.general?.name || raw.name || '',
+            status: raw.general?.status || raw.status || 'draft',
+          };
+        })
         .filter(p => ['active', 'funded', 'open'].includes(p.status));
       setProjects(projs);
     } catch (err) {

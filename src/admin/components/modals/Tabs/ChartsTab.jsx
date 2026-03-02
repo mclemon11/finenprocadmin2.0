@@ -1,28 +1,25 @@
 import React from 'react';
 
 export default function ChartsTab({ form, setForm, updateField }) {
-  // Handle capital distribution
+  // Handle capital distribution (now top-level form.capitalDistribution)
   const handleDistributionChange = (key, value) => {
     const numValue = Number(value) || 0;
     setForm((prev) => ({
       ...prev,
-      charts: {
-        ...prev.charts,
-        capitalDistribution: {
-          ...prev.charts.capitalDistribution,
-          [key]: numValue,
-        },
+      capitalDistribution: {
+        ...prev.capitalDistribution,
+        [key]: numValue,
       },
     }));
   };
 
   // Calculate distribution total
-  const distributionTotal = Object.values(form.charts.capitalDistribution || {}).reduce(
+  const distributionTotal = Object.values(form.capitalDistribution || {}).reduce(
     (a, b) => a + (Number(b) || 0),
     0
   );
 
-  // Handle payment calendar
+  // Handle payment calendar (now top-level form.paymentCalendar)
   const addPayment = () => {
     const newPayment = {
       id: Date.now(),
@@ -33,32 +30,23 @@ export default function ChartsTab({ form, setForm, updateField }) {
     };
     setForm((prev) => ({
       ...prev,
-      charts: {
-        ...prev.charts,
-        paymentCalendar: [...(prev.charts.paymentCalendar || []), newPayment],
-      },
+      paymentCalendar: [...(prev.paymentCalendar || []), newPayment],
     }));
   };
 
   const updatePayment = (id, field, value) => {
     setForm((prev) => ({
       ...prev,
-      charts: {
-        ...prev.charts,
-        paymentCalendar: (prev.charts.paymentCalendar || []).map((p) =>
-          p.id === id ? { ...p, [field]: value } : p
-        ),
-      },
+      paymentCalendar: (prev.paymentCalendar || []).map((p) =>
+        p.id === id ? { ...p, [field]: value } : p
+      ),
     }));
   };
 
   const removePayment = (id) => {
     setForm((prev) => ({
       ...prev,
-      charts: {
-        ...prev.charts,
-        paymentCalendar: (prev.charts.paymentCalendar || []).filter((p) => p.id !== id),
-      },
+      paymentCalendar: (prev.paymentCalendar || []).filter((p) => p.id !== id),
     }));
   };
 
@@ -70,7 +58,7 @@ export default function ChartsTab({ form, setForm, updateField }) {
       {/* Chart 1: Progress */}
       <div className="chart-config-card">
         <h4>📊 Gráfica 1 – Progreso del Proyecto</h4>
-        <div className="form-row-3">
+        <div className="form-row-2">
           <div className="form-field">
             <label>Capital Objetivo</label>
             <div className="input-with-icon">
@@ -78,8 +66,8 @@ export default function ChartsTab({ form, setForm, updateField }) {
               <input
                 type="number"
                 className="form-input with-prefix"
-                value={form.charts.capitalObjetivo}
-                onChange={(e) => updateField('charts', 'capitalObjetivo', e.target.value)}
+                value={form.financials.capitalObjetivo}
+                onChange={(e) => updateField('financials', 'capitalObjetivo', e.target.value)}
               />
             </div>
           </div>
@@ -90,21 +78,9 @@ export default function ChartsTab({ form, setForm, updateField }) {
               <input
                 type="number"
                 className="form-input with-prefix"
-                value={form.charts.capitalRecaudado}
-                onChange={(e) => updateField('charts', 'capitalRecaudado', e.target.value)}
+                value={form.financials.capitalRecaudado}
+                onChange={(e) => updateField('financials', 'capitalRecaudado', e.target.value)}
               />
-            </div>
-          </div>
-          <div className="form-field">
-            <label>% Completado</label>
-            <div className="input-with-icon">
-              <input
-                type="number"
-                className="form-input"
-                value={form.charts.porcentajeCompletado}
-                onChange={(e) => updateField('charts', 'porcentajeCompletado', e.target.value)}
-              />
-              <span className="input-suffix">%</span>
             </div>
           </div>
         </div>
@@ -121,8 +97,8 @@ export default function ChartsTab({ form, setForm, updateField }) {
                 type="number"
                 className="form-input"
                 step="0.01"
-                value={form.charts.roiAnual}
-                onChange={(e) => updateField('charts', 'roiAnual', e.target.value)}
+                value={form.returns.roiAnual}
+                onChange={(e) => updateField('returns', 'roiAnual', e.target.value)}
               />
               <span className="input-suffix">%</span>
             </div>
@@ -134,8 +110,8 @@ export default function ChartsTab({ form, setForm, updateField }) {
                 type="number"
                 className="form-input"
                 step="0.01"
-                value={form.charts.roiAcumulado}
-                onChange={(e) => updateField('charts', 'roiAcumulado', e.target.value)}
+                value={form.returns.roiAcumulado}
+                onChange={(e) => updateField('returns', 'roiAcumulado', e.target.value)}
               />
               <span className="input-suffix">%</span>
             </div>
@@ -145,8 +121,8 @@ export default function ChartsTab({ form, setForm, updateField }) {
             <input
               type="number"
               className="form-input"
-              value={form.charts.duracionMeses}
-              onChange={(e) => updateField('charts', 'duracionMeses', e.target.value)}
+              value={form.duration.durationMeses}
+              onChange={(e) => updateField('duration', 'durationMeses', e.target.value)}
             />
           </div>
         </div>
@@ -166,7 +142,7 @@ export default function ChartsTab({ form, setForm, updateField }) {
               <input
                 type="number"
                 className="form-input"
-                value={form.charts.capitalDistribution?.operacion || ''}
+                value={form.capitalDistribution?.operacion || ''}
                 onChange={(e) => handleDistributionChange('operacion', e.target.value)}
               />
               <span className="input-suffix">%</span>
@@ -178,7 +154,7 @@ export default function ChartsTab({ form, setForm, updateField }) {
               <input
                 type="number"
                 className="form-input"
-                value={form.charts.capitalDistribution?.infraestructura || ''}
+                value={form.capitalDistribution?.infraestructura || ''}
                 onChange={(e) => handleDistributionChange('infraestructura', e.target.value)}
               />
               <span className="input-suffix">%</span>
@@ -190,7 +166,7 @@ export default function ChartsTab({ form, setForm, updateField }) {
               <input
                 type="number"
                 className="form-input"
-                value={form.charts.capitalDistribution?.reserva || ''}
+                value={form.capitalDistribution?.reserva || ''}
                 onChange={(e) => handleDistributionChange('reserva', e.target.value)}
               />
               <span className="input-suffix">%</span>
@@ -202,7 +178,7 @@ export default function ChartsTab({ form, setForm, updateField }) {
               <input
                 type="number"
                 className="form-input"
-                value={form.charts.capitalDistribution?.beneficio || ''}
+                value={form.capitalDistribution?.beneficio || ''}
                 onChange={(e) => handleDistributionChange('beneficio', e.target.value)}
               />
               <span className="input-suffix">%</span>
@@ -215,7 +191,7 @@ export default function ChartsTab({ form, setForm, updateField }) {
       <div className="chart-config-card">
         <h4>📅 Gráfica 4 – Calendario de Pagos</h4>
         <div className="payment-calendar-list">
-          {(form.charts.paymentCalendar || []).map((payment, idx) => (
+          {(form.paymentCalendar || []).map((payment, idx) => (
             <div key={payment.id} className="payment-item">
               <span className="payment-index">#{idx + 1}</span>
               <select
@@ -281,13 +257,13 @@ export default function ChartsTab({ form, setForm, updateField }) {
               type="range"
               min="1"
               max="5"
-              value={form.charts.riskLevel || 3}
-              onChange={(e) => updateField('charts', 'riskLevel', Number(e.target.value))}
+              value={form.risk.riskScore || 3}
+              onChange={(e) => updateField('risk', 'riskScore', Number(e.target.value))}
               className="risk-slider"
             />
             <div className="risk-labels">
               <span>1 - Muy bajo</span>
-              <span className="current-risk">Actual: {form.charts.riskLevel || 3}</span>
+              <span className="current-risk">Actual: {form.risk.riskScore || 3}</span>
               <span>5 - Muy alto</span>
             </div>
           </div>
@@ -298,8 +274,8 @@ export default function ChartsTab({ form, setForm, updateField }) {
                 type="number"
                 className="form-input"
                 step="0.01"
-                value={form.charts.returnExpected}
-                onChange={(e) => updateField('charts', 'returnExpected', e.target.value)}
+                value={form.returns.returnExpected}
+                onChange={(e) => updateField('returns', 'returnExpected', e.target.value)}
               />
               <span className="input-suffix">%</span>
             </div>

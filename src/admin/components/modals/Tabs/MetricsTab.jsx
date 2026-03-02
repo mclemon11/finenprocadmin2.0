@@ -13,8 +13,8 @@ export default function MetricsTab({ form, updateField }) {
               type="number"
               className="form-input"
               step="0.01"
-              value={form.metrics.expectedROI}
-              onChange={(e) => updateField('metrics', 'expectedROI', e.target.value)}
+              value={form.returns.expectedROI}
+              onChange={(e) => updateField('returns', 'expectedROI', e.target.value)}
               placeholder="12.5"
             />
             <span className="input-suffix">%</span>
@@ -28,8 +28,8 @@ export default function MetricsTab({ form, updateField }) {
               type="number"
               className="form-input"
               step="0.01"
-              value={form.metrics.totalROI}
-              onChange={(e) => updateField('metrics', 'totalROI', e.target.value)}
+              value={form.returns.totalROI}
+              onChange={(e) => updateField('returns', 'totalROI', e.target.value)}
               placeholder="25"
             />
             <span className="input-suffix">%</span>
@@ -44,8 +44,8 @@ export default function MetricsTab({ form, updateField }) {
             <input
               type="number"
               className="form-input"
-              value={form.metrics.duration}
-              onChange={(e) => updateField('metrics', 'duration', e.target.value)}
+              value={form.duration.months}
+              onChange={(e) => updateField('duration', 'months', e.target.value)}
               placeholder="24"
             />
             <span className="input-suffix">meses</span>
@@ -56,8 +56,8 @@ export default function MetricsTab({ form, updateField }) {
           <label>Periodicidad de Pagos</label>
           <select
             className="form-input"
-            value={form.metrics.paymentFrequency}
-            onChange={(e) => updateField('metrics', 'paymentFrequency', e.target.value)}
+            value={form.returns.paymentFrequency}
+            onChange={(e) => updateField('returns', 'paymentFrequency', e.target.value)}
           >
             <option value="monthly">Mensual</option>
             <option value="quarterly">Trimestral</option>
@@ -74,8 +74,8 @@ export default function MetricsTab({ form, updateField }) {
               type="number"
               className="form-input"
               step="0.01"
-              value={form.metrics.estimatedIRR}
-              onChange={(e) => updateField('metrics', 'estimatedIRR', e.target.value)}
+              value={form.returns.estimatedIRR}
+              onChange={(e) => updateField('returns', 'estimatedIRR', e.target.value)}
               placeholder="15"
             />
             <span className="input-suffix">%</span>
@@ -88,8 +88,8 @@ export default function MetricsTab({ form, updateField }) {
             <input
               type="number"
               className="form-input"
-              value={form.metrics.paybackPeriod}
-              onChange={(e) => updateField('metrics', 'paybackPeriod', e.target.value)}
+              value={form.returns.paybackPeriod}
+              onChange={(e) => updateField('returns', 'paybackPeriod', e.target.value)}
               placeholder="18"
             />
             <span className="input-suffix">meses</span>

@@ -68,8 +68,8 @@ export default function RestrictionsTab({ form, updateField }) {
         <label className="checkbox-label">
           <input
             type="checkbox"
-            checked={form.restrictions.kycRequired}
-            onChange={(e) => updateField('restrictions', 'kycRequired', e.target.checked)}
+            checked={form.controls.kycRequired}
+            onChange={(e) => updateField('controls', 'kycRequired', e.target.checked)}
           />
           <span className="checkbox-text">KYC requerido</span>
         </label>

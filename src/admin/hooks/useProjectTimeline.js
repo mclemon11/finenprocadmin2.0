@@ -77,7 +77,7 @@ export default function useProjectTimeline(projectId) {
       try {
         const projectSnap = await getDoc(doc(db, 'projects', projectId));
         const project = projectSnap.exists() ? projectSnap.data() : null;
-        projectName = project?.name || project?.title || project?.projectName || null;
+        projectName = project?.general?.name || project?.name || project?.title || project?.projectName || null;
       } catch (e) {
         // ignore
       }

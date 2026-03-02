@@ -76,9 +76,11 @@ export default function useApproveInvestment() {
         }
 
         const project = projectSnap.data() || {};
-        const targetAmount = Number(project.targetAmount ?? project.target ?? project.goalAmount);
+        const targetAmount = Number(
+          project.financials?.targetAmount ?? project.targetAmount ?? project.target ?? project.goalAmount
+        );
         const currentTotalInvestment = Number(
-          project.totalInvestment ?? project.totalInvested ?? project.totalInvestedAmount ?? 0
+          project.financials?.totalInvested ?? project.totalInvestment ?? project.totalInvested ?? project.totalInvestedAmount ?? 0
         );
 
         if (!Number.isFinite(currentTotalInvestment) || currentTotalInvestment < 0) {
@@ -137,9 +139,11 @@ export default function useApproveInvestment() {
         });
 
         tx.update(projectRef, {
-          // Support both field names seen across the codebase.
+          // Write to both nested (new) and flat (legacy) paths
+          'financials.totalInvested': increment(amount),
           totalInvestment: increment(amount),
           totalInvested: increment(amount),
+          'general.updatedAt': serverTimestamp(),
           updatedAt: serverTimestamp()
         });
 
@@ -181,7 +185,7 @@ export default function useApproveInvestment() {
           timestamp: serverTimestamp()
         });
 
-        const projectName = project?.name || project?.title || project?.projectName || 'el proyecto';
+        const projectName = project?.general?.name || project?.name || project?.title || project?.projectName || 'el proyecto';
         const notificationRef = doc(collection(db, 'users', userId, 'notifications'));
         tx.set(notificationRef, {
           userId,

@@ -46,6 +46,13 @@ service firebase.storage {
         && request.resource.contentType.matches('image/.*');
     }
 
+    //  PROJECT DOCUMENTS
+    match /projects/{projectId}/documents/{allPaths=**} {
+      allow read: if isAdmin() || (isSignedIn() && projectIsVisible(projectId));
+      allow write: if isAdmin()
+        && request.resource.size < 20 * 1024 * 1024;
+    }
+
     // INVESTMENT PROOFS
     match /investments/{investmentId}/proofs/{file} {
       allow read: if isAdmin() || isSignedIn();

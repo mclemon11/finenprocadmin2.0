@@ -90,29 +90,65 @@ export default function GeneralTab({
         <input
           type="text"
           className="form-input"
-          value={form.name}
-          onChange={(e) => updateField(null, 'name', e.target.value)}
+          value={form.general.name}
+          onChange={(e) => updateField('general', 'name', e.target.value)}
           placeholder="Ej: Proyecto Solar Valle Verde"
         />
       </div>
 
       <div className="form-field">
-        <label>Categoría</label>
+        <label>Descripción corta</label>
         <input
           type="text"
           className="form-input"
-          value={form.category}
-          onChange={(e) => updateField(null, 'category', e.target.value)}
-          placeholder="Ej: Energía, Minería, Inmobiliario"
+          value={form.general.description}
+          onChange={(e) => updateField('general', 'description', e.target.value)}
+          placeholder="Breve descripción para tarjetas"
         />
+      </div>
+
+      <div className="form-field">
+        <label>Descripción detallada</label>
+        <textarea
+          className="form-input"
+          rows={4}
+          value={form.general.body}
+          onChange={(e) => updateField('general', 'body', e.target.value)}
+          placeholder="Descripción completa del proyecto (visible en detalle)"
+        />
+      </div>
+
+      <div className="form-row-2">
+        <div className="form-field">
+          <label>Categoría</label>
+          <input
+            type="text"
+            className="form-input"
+            value={form.general.category}
+            onChange={(e) => updateField('general', 'category', e.target.value)}
+            placeholder="Ej: Energía, Minería, Inmobiliario"
+          />
+        </div>
+
+        <div className="form-field">
+          <label>Tipo de proyecto</label>
+          <select
+            className="form-input"
+            value={form.general.type}
+            onChange={(e) => updateField('general', 'type', e.target.value)}
+          >
+            <option value="fixed">🎯 Fijo</option>
+            <option value="variable">📊 Variable</option>
+          </select>
+        </div>
       </div>
 
       <div className="form-field">
         <label>Estado del proyecto</label>
         <select
           className="form-input"
-          value={form.status}
-          onChange={(e) => updateField(null, 'status', e.target.value)}
+          value={form.general.status}
+          onChange={(e) => updateField('general', 'status', e.target.value)}
         >
           <option value="draft">📝 Borrador</option>
           <option value="active">🟢 Activo</option>
@@ -122,16 +158,28 @@ export default function GeneralTab({
         </select>
       </div>
 
-      <div className="form-field checkbox-field">
-        <label className="checkbox-label">
-          <input
-            type="checkbox"
-            checked={form.visibleToUsers}
-            onChange={(e) => updateField(null, 'visibleToUsers', e.target.checked)}
-          />
-          <span className="checkbox-text">Visible para usuarios</span>
-        </label>
-      </div>
+      <div className="checkbox-group">
+        <div className="form-field checkbox-field">
+          <label className="checkbox-label">
+            <input
+              type="checkbox"
+              checked={form.general.visibleToUsers}
+              onChange={(e) => updateField('general', 'visibleToUsers', e.target.checked)}
+            />
+            <span className="checkbox-text">Visible para usuarios</span>
+          </label>
+        </div>
+
+        <div className="form-field checkbox-field">
+          <label className="checkbox-label">
+            <input
+              type="checkbox"
+              checked={form.general.investable}
+              onChange={(e) => updateField('general', 'investable', e.target.checked)}
+            />
+            <span className="checkbox-text">Abierto a inversión</span>
+          </label>
+        </div>      </div>
     </div>
   );
 }

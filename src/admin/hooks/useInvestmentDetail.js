@@ -64,7 +64,22 @@ export default function useInvestmentDetail(investmentId) {
         const projectRef = doc(db, 'projects', investmentData.projectId);
         const projectSnap = await getDoc(projectRef);
         if (projectSnap.exists()) {
-          projectData = { id: projectSnap.id, ...projectSnap.data() };
+          const raw = projectSnap.data();
+          const dur = raw.duration;
+          projectData = {
+            id: projectSnap.id,
+            ...raw,
+            // Flatten nested fields for backward compat
+            name: raw.general?.name || raw.name || '',
+            type: raw.general?.type || raw.type || 'fixed',
+            status: raw.general?.status || raw.status || 'draft',
+            category: raw.general?.category || raw.category || '',
+            riskLevel: raw.risk?.riskLevel || raw.risks?.riskLevel || raw.riskLevel || 'medium',
+            targetAmount: raw.financials?.targetAmount || raw.finance?.targetAmount || raw.targetAmount || 0,
+            totalInvested: raw.financials?.totalInvested || raw.finance?.totalInvested || raw.totalInvested || 0,
+            expectedROI: raw.returns?.expectedROI || raw.metrics?.expectedROI || raw.expectedROI || 0,
+            duration: typeof dur === 'object' ? (dur?.months || 0) : (dur || 0),
+          };
         }
       }
 

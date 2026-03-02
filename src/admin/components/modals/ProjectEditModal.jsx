@@ -13,12 +13,12 @@ import './ProjectEditModal.css';
 export default function ProjectEditModal({ project, isOpen, onClose, onSuccess, onTimelineEvent }) {
   const { t } = useLanguage();
   const [form, setForm] = useState({
-    name: project?.name || '',
-    description: project?.description || '',
-    body: project?.body || '',
-    category: project?.category || '',
-    expectedROI: project?.expectedROI || '',
-    duration: project?.duration || '',
+    name: project?.general?.name || project?.name || '',
+    description: project?.general?.description || project?.description || '',
+    body: project?.general?.body || project?.body || '',
+    category: project?.general?.category || project?.category || '',
+    expectedROI: project?.returns?.expectedROI || project?.expectedROI || '',
+    duration: (typeof project?.duration === 'object' ? project?.duration?.months : null) || project?.duration || '',
     drawdown: project?.drawdown || '',
     performance: project?.performance || '',
   });
@@ -31,24 +31,39 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSuccess, 
   useEffect(() => {
     if (project) {
       setForm({
-        name: project.name || '',
-        description: project.description || '',
-        body: project.body || '',
-        category: project.category || '',
-        expectedROI: project.expectedROI || '',
-        duration: project.duration || '',
+        name: project.general?.name || project.name || '',
+        description: project.general?.description || project.description || '',
+        body: project.general?.body || project.body || '',
+        category: project.general?.category || project.category || '',
+        expectedROI: project.returns?.expectedROI || project.expectedROI || '',
+        duration: (typeof project.duration === 'object' ? project.duration?.months : null) || project.duration || '',
         drawdown: project.drawdown || '',
         performance: project.performance || '',
       });
-      const urls = Array.isArray(project.images)
-        ? project.images.filter((u) => typeof u === 'string' && u.trim())
-        : (project.imageUrl ? [project.imageUrl] : []);
 
-      const paths = Array.isArray(project.imagePaths)
-        ? project.imagePaths.filter((p) => typeof p === 'string' && p.trim())
-        : (project.imagePath ? [project.imagePath] : []);
+      // Initialize images — support new nested format + legacy flat format
+      const newFmtCover = project.images?.cover;
+      const newFmtGallery = Array.isArray(project.images?.gallery) ? project.images.gallery : [];
 
-      setExistingImages(urls.map((url, idx) => ({ url, path: paths[idx] || null })));
+      let imageData = [];
+      if (newFmtCover?.url || newFmtGallery.length > 0) {
+        if (newFmtCover?.url) imageData.push({ url: newFmtCover.url, path: newFmtCover.path || null });
+        for (const g of newFmtGallery) {
+          if (g?.url) imageData.push({ url: g.url, path: g.path || null });
+        }
+      } else {
+        const urls = Array.isArray(project.images)
+          ? project.images.filter((u) => typeof u === 'string' && u.trim())
+          : (project.imageUrl ? [project.imageUrl] : []);
+
+        const paths = Array.isArray(project.imagePaths)
+          ? project.imagePaths.filter((p) => typeof p === 'string' && p.trim())
+          : (project.imagePath ? [project.imagePath] : []);
+
+        imageData = urls.map((url, idx) => ({ url, path: paths[idx] || null }));
+      }
+
+      setExistingImages(imageData);
       setDeletedImagePaths([]);
       setNewImageItems((prev) => {
         for (const item of prev) {
@@ -131,14 +146,17 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSuccess, 
       }
 
       const payload = {
-        name: form.name,
-        // Subtitle (shown on cards)
-        description: form.description?.trim() ? form.description.trim() : null,
-        // Long description (shown only on detail)
-        body: form.body?.trim() ? form.body.trim() : null,
-        category: form.category || null,
-        expectedROI: form.expectedROI ? Number(form.expectedROI) : null,
-        duration: form.duration ? Number(form.duration) : null,
+        // Update nested general fields
+        'general.name': form.name,
+        'general.description': form.description?.trim() ? form.description.trim() : null,
+        'general.body': form.body?.trim() ? form.body.trim() : null,
+        'general.category': form.category || null,
+        'general.updatedAt': serverTimestamp(),
+        // Update returns
+        'returns.expectedROI': form.expectedROI ? Number(form.expectedROI) : null,
+        // Update duration
+        'duration.months': form.duration ? Number(form.duration) : null,
+        'duration.durationMeses': form.duration ? Number(form.duration) : null,
         updatedAt: serverTimestamp(),
       };
 
@@ -185,19 +203,20 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSuccess, 
       }
 
       const finalImages = [
-        ...existingImages.map((x) => x.url).filter(Boolean),
-        ...uploaded.map((x) => x.url).filter(Boolean),
-      ];
-      const finalPaths = [
-        ...existingImages.map((x) => x.path).filter(Boolean),
-        ...uploaded.map((x) => x.path).filter(Boolean),
+        ...existingImages,
+        ...uploaded,
       ];
 
-      // Keep both new and legacy fields for compatibility
-      payload.images = finalImages;
-      payload.imagePaths = finalPaths;
-      payload.imageUrl = finalImages[0] || null;
-      payload.imagePath = finalPaths[0] || null;
+      // Build nested images structure
+      const coverImage = finalImages[0] || null;
+      const galleryImages = finalImages.slice(1);
+
+      payload.images = {
+        cover: coverImage
+          ? { url: coverImage.url, path: coverImage.path || null, updatedAt: serverTimestamp() }
+          : null,
+        gallery: galleryImages.map((img) => ({ url: img.url, path: img.path || null })),
+      };
       payload.imageUpdatedAt = serverTimestamp();
 
       await updateDoc(doc(db, 'projects', project.id), payload);
