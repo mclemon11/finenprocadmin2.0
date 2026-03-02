@@ -6,6 +6,8 @@ export default function UsuariosTable({ users, loading, onSelectUser }) {
   const { t, currentLanguage } = useLanguage();
   const locale = currentLanguage === 'es' ? 'es-ES' : currentLanguage === 'de' ? 'de-DE' : currentLanguage === 'zh' ? 'zh-CN' : currentLanguage === 'it' ? 'it-IT' : 'en-US';
 
+  const formatCurrency = (v) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }).format(v || 0);
+
   if (loading) {
     return (
       <div className="usuarios-loading">
@@ -29,14 +31,17 @@ export default function UsuariosTable({ users, loading, onSelectUser }) {
 
   return (
     <div className="usuarios-list">
-      {/* Vista Desktop - Tabla */}
+      {/* Desktop Table */}
       <div className="usuarios-table-desktop">
         <table className="usuarios-table">
           <thead>
             <tr>
               <th>{t('users.user')}</th>
               <th>{t('users.status')}</th>
-              <th>{t('users.role')}</th>
+              <th>{t('users.walletBalance')}</th>
+              <th>{t('users.totalInvested')}</th>
+              <th>{t('users.totalEarned')}</th>
+              <th>{t('users.activeInv')}</th>
               <th>{t('users.registrationDate')}</th>
               <th>{t('users.action')}</th>
             </tr>
@@ -68,7 +73,10 @@ export default function UsuariosTable({ users, loading, onSelectUser }) {
                     {user.status === 'active' ? t('status.active') : t('status.inactive')}
                   </span>
                 </td>
-                <td>{user.role || t('users.investor')}</td>
+                <td className="amount-cell">{formatCurrency(user.walletBalance)}</td>
+                <td className="amount-cell">{formatCurrency(user.totalInvested)}</td>
+                <td className="amount-cell earned-cell">{formatCurrency(user.totalEarned)}</td>
+                <td className="center-cell">{user.activeInvestments || 0}</td>
                 <td>{formatDate(user.createdAt)}</td>
                 <td>
                   <button
@@ -84,7 +92,7 @@ export default function UsuariosTable({ users, loading, onSelectUser }) {
         </table>
       </div>
 
-      {/* Vista Móvil - Cards */}
+      {/* Mobile Cards */}
       <div className="usuarios-cards-mobile">
         {users.map(user => (
           <div key={user.uid} className="usuario-card">
@@ -113,12 +121,16 @@ export default function UsuariosTable({ users, loading, onSelectUser }) {
                 <span className="usuario-card-value">{user.displayName || '-'}</span>
               </div>
               <div className="usuario-card-row">
-                <span className="usuario-card-label">{t('users.role')}</span>
-                <span className="usuario-card-value">{user.role || t('users.investor')}</span>
+                <span className="usuario-card-label">{t('users.walletBalance')}</span>
+                <span className="usuario-card-value">{formatCurrency(user.walletBalance)}</span>
               </div>
               <div className="usuario-card-row">
-                <span className="usuario-card-label">{t('users.registrationDate')}</span>
-                <span className="usuario-card-value">{formatDate(user.createdAt)}</span>
+                <span className="usuario-card-label">{t('users.totalInvested')}</span>
+                <span className="usuario-card-value">{formatCurrency(user.totalInvested)}</span>
+              </div>
+              <div className="usuario-card-row">
+                <span className="usuario-card-label">{t('users.totalEarned')}</span>
+                <span className="usuario-card-value accent">{formatCurrency(user.totalEarned)}</span>
               </div>
             </div>
             <div className="usuario-card-footer">

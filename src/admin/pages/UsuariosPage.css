@@ -40,12 +40,10 @@
 
 .kpi-card {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  text-align: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-lg) var(--spacing-md);
+  gap: 14px;
+  padding: 18px 20px;
   background: rgba(255, 255, 255, 0.02);
   backdrop-filter: blur(var(--glass-blur));
   border: var(--glass-border);
@@ -60,9 +58,19 @@
 }
 
 .kpi-icon {
-  font-size: 28px;
-  opacity: 0.9;
+  font-size: 22px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  flex-shrink: 0;
 }
+.kpi-icon.blue   { background: rgba(59,130,246,0.12); }
+.kpi-icon.green  { background: rgba(16,185,129,0.12); }
+.kpi-icon.purple { background: rgba(168,85,247,0.12); }
+.kpi-icon.teal   { background: rgba(20,184,166,0.12); }
 
 .kpi-content {
   display: flex;
@@ -152,6 +160,30 @@
 
 .filter-select:hover {
   background: rgba(255, 255, 255, 0.04);
+}
+
+/* Filter Chips */
+.filter-chips {
+  display: flex;
+  gap: 8px;
+  margin-bottom: var(--spacing-lg);
+  flex-wrap: wrap;
+}
+.chip {
+  padding: 6px 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.03);
+  color: var(--fg-muted);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.chip.active,
+.chip:hover {
+  background: rgba(16,185,129,0.12);
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 /* Users Card */

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import useAdminWithdrawals from '../hooks/useAdminWithdrawals';
 import useApproveWithdrawal from '../hooks/mutations/useApproveWithdrawal';
 import useRejectWithdrawal from '../hooks/mutations/useRejectWithdrawal';
@@ -32,6 +32,20 @@ export default function RetirosPage({ adminData }) {
     { value: 'approved', label: t('withdrawals.approvedPlural') },
     { value: 'rejected', label: t('withdrawals.rejectedPlural') },
   ];
+
+  // Stats
+  const stats = useMemo(() => {
+    const pending = withdrawals.filter(w => w.status === 'pending');
+    const rejected = withdrawals.filter(w => w.status === 'rejected');
+    const pendingTotal = pending.reduce((s, w) => s + Number(w.amount || 0), 0);
+    const approvedToday = withdrawals.filter(w => {
+      if (w.status !== 'approved') return false;
+      const d = w.approvedAt?.toDate ? w.approvedAt.toDate() : new Date(w.approvedAt || w.updatedAt);
+      const today = new Date();
+      return d && d.toDateString() === today.toDateString();
+    }).length;
+    return { pendingCount: pending.length, pendingTotal, approvedToday, rejectedCount: rejected.length };
+  }, [withdrawals]);
 
   const handleApprove = async () => {
     if (!selectedWithdrawal) return;
@@ -78,7 +92,7 @@ export default function RetirosPage({ adminData }) {
     if (!dateString) return '-';
     const date = dateString?.toDate ? dateString.toDate() : new Date(dateString);
     if (Number.isNaN(date.getTime())) return '-';
-    return date.toLocaleDateString('es-MX');
+    return date.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
   };
 
   const getStatusLabel = (status) => {
@@ -99,14 +113,38 @@ export default function RetirosPage({ adminData }) {
         </div>
       </div>
 
+      {/* Stats Row */}
+      <div className="retiros-stats">
+        <div className="ret-stat amber">
+          <div className="ret-stat-icon">⏳</div>
+          <div className="ret-stat-content">
+            <div className="ret-stat-label">{t('withdrawals.totalPending')}</div>
+            <div className="ret-stat-value">{formatCurrency(stats.pendingTotal)}</div>
+            <div className="ret-stat-sub">{stats.pendingCount} {t('withdrawals.requests')}</div>
+          </div>
+        </div>
+        <div className="ret-stat green">
+          <div className="ret-stat-icon">✓</div>
+          <div className="ret-stat-content">
+            <div className="ret-stat-label">{t('withdrawals.todayApprovals')}</div>
+            <div className="ret-stat-value">{stats.approvedToday}</div>
+          </div>
+        </div>
+        <div className="ret-stat red">
+          <div className="ret-stat-icon">✕</div>
+          <div className="ret-stat-content">
+            <div className="ret-stat-label">{t('withdrawals.rejectedCount')}</div>
+            <div className="ret-stat-value">{stats.rejectedCount}</div>
+          </div>
+        </div>
+      </div>
+
       <div className="retiros-filters">
         {filters.map(f => (
           <button
             key={f.value}
             className={`filter-btn ${filter === f.value ? 'active' : ''}`}
-            onClick={() => {
-              setFilter(f.value);
-            }}
+            onClick={() => setFilter(f.value)}
           >
             {f.label}
             <span className="filter-count">
@@ -182,30 +220,38 @@ export default function RetirosPage({ adminData }) {
                     </td>
                     <td>{formatDate(withdrawal.createdAt)}</td>
                     <td>
-                      {withdrawal.status === 'pending' && (
-                        <div className="action-buttons">
-                          <button
-                            className="btn-action btn-approve"
-                            onClick={() => {
-                              setSelectedWithdrawal(withdrawal);
-                              setActionModal({ isOpen: true, type: 'approve' });
-                            }}
-                            title={t('common.approve')}
-                          >
-                            ✓
-                          </button>
-                          <button
-                            className="btn-action btn-reject"
-                            onClick={() => {
-                              setSelectedWithdrawal(withdrawal);
-                              setActionModal({ isOpen: true, type: 'reject' });
-                            }}
-                            title={t('common.reject')}
-                          >
-                            ✕
-                          </button>
-                        </div>
-                      )}
+                      <div className="action-buttons">
+                        {withdrawal.status === 'pending' && (
+                          <>
+                            <button
+                              className="btn-action btn-approve"
+                              onClick={() => {
+                                setSelectedWithdrawal(withdrawal);
+                                setActionModal({ isOpen: true, type: 'approve' });
+                              }}
+                              title={t('common.approve')}
+                            >
+                              ✓ {t('common.approve')}
+                            </button>
+                            <button
+                              className="btn-action btn-reject"
+                              onClick={() => {
+                                setSelectedWithdrawal(withdrawal);
+                                setActionModal({ isOpen: true, type: 'reject' });
+                              }}
+                              title={t('common.reject')}
+                            >
+                              ✕
+                            </button>
+                          </>
+                        )}
+                        {withdrawal.status === 'approved' && (
+                          <span className="action-label completed-label">✓ {t('withdrawals.processed')}</span>
+                        )}
+                        {withdrawal.status === 'rejected' && (
+                          <span className="action-label rejected-label">— {t('withdrawals.rejected')}</span>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}

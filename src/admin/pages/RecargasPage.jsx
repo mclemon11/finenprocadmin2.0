@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import useAdminTopups from '../hooks/useAdminTopups';
 import useApproveTopup from '../hooks/mutations/useApproveTopup';
 import useRejectTopup from '../hooks/mutations/useRejectTopup';
@@ -11,7 +11,6 @@ export default function RecargasPage({ adminData }) {
   const [filter, setFilter] = useState('all');
   const [selectedTopup, setSelectedTopup] = useState(null);
   const [actionModal, setActionModal] = useState({ isOpen: false, type: null });
-  const [proofViewer, setProofViewer] = useState({ isOpen: false, url: null });
   const [methodsModalOpen, setMethodsModalOpen] = useState(false);
   const { topups, loading, refetch } = useAdminTopups({ status: filter });
   const { approve: approveTopup, loading: approveLoading } = useApproveTopup();
@@ -24,6 +23,21 @@ export default function RecargasPage({ adminData }) {
     { value: 'approved', label: t('topups.approvedPlural') },
     { value: 'rejected', label: t('topups.rejectedPlural') },
   ];
+
+  // Stats
+  const stats = useMemo(() => {
+    const pending = topups.filter(t => t.status === 'pending');
+    const approved = topups.filter(t => t.status === 'approved');
+    return {
+      pendingCount: pending.length,
+      pendingTotal: pending.reduce((s, t) => s + Number(t.amount || 0), 0),
+      approvedToday: approved.filter(t => {
+        const d = t.approvedAt?.toDate ? t.approvedAt.toDate() : new Date(t.approvedAt);
+        const today = new Date();
+        return d && d.toDateString() === today.toDateString();
+      }).length,
+    };
+  }, [topups]);
 
   const handleApprove = async () => {
     if (!selectedTopup) return;
@@ -68,7 +82,7 @@ export default function RecargasPage({ adminData }) {
     if (!dateString) return '-';
     const date = dateString?.toDate ? dateString.toDate() : new Date(dateString);
     if (Number.isNaN(date.getTime())) return '-';
-    return date.toLocaleDateString('es-MX');
+    return date.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
   };
 
   const getProofUrl = (topup) => topup?.proofUrl || topup?.receiptUrl || null;
@@ -89,6 +103,30 @@ export default function RecargasPage({ adminData }) {
           <h1 className="page-title">{t('topups.title')}</h1>
           <p className="page-subtitle">{t('topups.subtitle')}</p>
         </div>
+        <button
+          className="btn-methods"
+          onClick={() => setMethodsModalOpen(true)}
+          type="button"
+        >
+          {t('topups.rechargeMethods')}
+        </button>
+      </div>
+
+      {/* Stats Row */}
+      <div className="recargas-stats">
+        <div className="rec-stat pending-bg">
+          <div className="rec-stat-label">{t('topups.pendingPlural')}</div>
+          <div className="rec-stat-value">{stats.pendingCount}</div>
+          <div className="rec-stat-sub">{formatCurrency(stats.pendingTotal)} {t('common.total')}</div>
+        </div>
+        <div className="rec-stat approved-bg">
+          <div className="rec-stat-label">{t('topups.approvedToday')}</div>
+          <div className="rec-stat-value">{stats.approvedToday}</div>
+        </div>
+        <div className="rec-stat total-bg">
+          <div className="rec-stat-label">{t('topups.totalTopups')}</div>
+          <div className="rec-stat-value">{topups.length}</div>
+        </div>
       </div>
 
       <div className="recargas-filters">
@@ -96,7 +134,7 @@ export default function RecargasPage({ adminData }) {
           <button
             key={f.value}
             className={`filter-btn ${filter === f.value ? 'active' : ''}`}
-            onClick={() => setFilter(f.value)}
+            onClick={() => { setFilter(f.value); setSelectedTopup(null); }}
           >
             {f.label}
             <span className="filter-count">
@@ -106,135 +144,149 @@ export default function RecargasPage({ adminData }) {
         ))}
       </div>
 
-      <div className="recargas-card">
-        <div className="card-header">
-          <div className="card-header-row">
-            <h3>{t('topups.totalTopups')}: {topups.length}</h3>
-            <button
-              className="btn-methods"
-              onClick={() => setMethodsModalOpen(true)}
-              type="button"
-            >
-              {t('topups.rechargeMethods')}
-            </button>
-          </div>
-        </div>
-
-        {loading ? (
-          <div className="loading-state">{t('topups.loadingTopups')}</div>
-        ) : topups.length === 0 ? (
-          <div className="empty-state">{t('topups.noTopups')}</div>
-        ) : (
-          <div className="table-wrapper">
-            <table className="recargas-table">
-              <thead>
-                <tr>
-                  <th>{t('topups.user')}</th>
-                  <th>{t('topups.amount')}</th>
-                  <th>{t('topups.method')}</th>
-                  <th>{t('topups.status')}</th>
-                  <th>{t('topups.date')}</th>
-                  <th>{t('topups.action')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {topups.map(topup => (
-                  <tr key={topup.id}>
-                    <td className="email-cell">{topup.userEmail || topup.userId || t('common.emailNotAvailable')}</td>
-                    <td className="amount-cell">{formatCurrency(topup.amount)}</td>
-                    <td>{topup.method || '-'}</td>
-                    <td>
-                      <span className={`status-badge status-${topup.status}`}>
-                        {getStatusLabel(topup.status)}
-                      </span>
-                    </td>
-                    <td>{formatDate(topup.createdAt)}</td>
-                    <td>
-                      <div className="action-buttons">
-                        {getProofUrl(topup) && (
-                          <button
-                            className="btn-action btn-proof"
-                            onClick={() => {
-                              setProofViewer({ isOpen: true, url: getProofUrl(topup) });
-                            }}
-                            title={t('topups.viewProof')}
-                          >
-                            <svg
-                              className="btn-icon"
-                              viewBox="0 0 24 24"
-                              width="16"
-                              height="16"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
-                              aria-hidden="true"
-                            >
-                              <path
-                                d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                              <path
-                                d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                            </svg>
-                          </button>
-                        )}
-
-                        {topup.status === 'pending' && (
-                          <>
-                            <button
-                              className="btn-action btn-approve"
-                              onClick={() => {
-                                setSelectedTopup(topup);
-                                setActionModal({ isOpen: true, type: 'approve' });
-                              }}
-                              title={t('common.approve')}
-                            >
-                              ✓
-                            </button>
-                            <button
-                              className="btn-action btn-reject"
-                              onClick={() => {
-                                setSelectedTopup(topup);
-                                setActionModal({ isOpen: true, type: 'reject' });
-                              }}
-                              title={t('common.reject')}
-                            >
-                              ✕
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    </td>
+      {/* Split Panel: Table + Detail */}
+      <div className="recargas-split">
+        <div className="recargas-card">
+          {loading ? (
+            <div className="loading-state">{t('topups.loadingTopups')}</div>
+          ) : topups.length === 0 ? (
+            <div className="empty-state">{t('topups.noTopups')}</div>
+          ) : (
+            <div className="table-wrapper">
+              <table className="recargas-table">
+                <thead>
+                  <tr>
+                    <th>{t('topups.user')}</th>
+                    <th>{t('topups.amount')}</th>
+                    <th>{t('topups.method')}</th>
+                    <th>{t('topups.status')}</th>
+                    <th>{t('topups.date')}</th>
+                    <th>{t('topups.action')}</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
-
-      {proofViewer.isOpen && (
-        <div
-          className="proof-viewer-overlay"
-          onClick={() => setProofViewer({ isOpen: false, url: null })}
-          role="button"
-          tabIndex={0}
-          aria-label={t('topups.closeProof')}
-        >
-          <img
-            className="proof-viewer-image"
-            src={proofViewer.url}
-            alt={t('topups.viewProof')}
-          />
+                </thead>
+                <tbody>
+                  {topups.map(topup => (
+                    <tr
+                      key={topup.id}
+                      className={selectedTopup?.id === topup.id ? 'row-selected' : ''}
+                      onClick={() => setSelectedTopup(topup)}
+                    >
+                      <td className="email-cell">{topup.userEmail || topup.userId || t('common.emailNotAvailable')}</td>
+                      <td className="amount-cell">{formatCurrency(topup.amount)}</td>
+                      <td>{topup.method || '-'}</td>
+                      <td>
+                        <span className={`status-badge status-${topup.status}`}>
+                          {getStatusLabel(topup.status)}
+                        </span>
+                      </td>
+                      <td>{formatDate(topup.createdAt)}</td>
+                      <td>
+                        <div className="action-buttons">
+                          {topup.status === 'pending' && (
+                            <>
+                              <button
+                                className="btn-action btn-approve"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedTopup(topup);
+                                  setActionModal({ isOpen: true, type: 'approve' });
+                                }}
+                                title={t('common.approve')}
+                              >
+                                ✓
+                              </button>
+                              <button
+                                className="btn-action btn-reject"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedTopup(topup);
+                                  setActionModal({ isOpen: true, type: 'reject' });
+                                }}
+                                title={t('common.reject')}
+                              >
+                                ✕
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
-      )}
+
+        {/* Detail Sidebar */}
+        <div className={`recargas-detail ${selectedTopup ? 'has-selection' : ''}`}>
+          {selectedTopup ? (
+            <>
+              <div className="detail-header">
+                <h3>{t('topups.depositDetail')}</h3>
+                <button className="detail-close" onClick={() => setSelectedTopup(null)}>✕</button>
+              </div>
+              <div className="detail-body">
+                <div className="detail-row">
+                  <span className="detail-label">{t('topups.user')}</span>
+                  <span className="detail-value">{selectedTopup.userEmail || selectedTopup.userId}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="detail-label">{t('topups.amount')}</span>
+                  <span className="detail-value accent">{formatCurrency(selectedTopup.amount)}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="detail-label">{t('topups.method')}</span>
+                  <span className="detail-value">{selectedTopup.method || '-'}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="detail-label">{t('topups.status')}</span>
+                  <span className={`status-badge status-${selectedTopup.status}`}>{getStatusLabel(selectedTopup.status)}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="detail-label">{t('topups.date')}</span>
+                  <span className="detail-value">{formatDate(selectedTopup.createdAt)}</span>
+                </div>
+                {selectedTopup.reference && (
+                  <div className="detail-row">
+                    <span className="detail-label">{t('topups.reference')}</span>
+                    <span className="detail-value mono">{selectedTopup.reference}</span>
+                  </div>
+                )}
+                {getProofUrl(selectedTopup) && (
+                  <div className="detail-proof">
+                    <span className="detail-label">{t('topups.receipt')}</span>
+                    <div className="proof-preview">
+                      <img src={getProofUrl(selectedTopup)} alt={t('topups.viewProof')} />
+                    </div>
+                  </div>
+                )}
+                {selectedTopup.status === 'pending' && (
+                  <div className="detail-actions">
+                    <button
+                      className="btn-detail-approve"
+                      onClick={() => setActionModal({ isOpen: true, type: 'approve' })}
+                    >
+                      ✓ {t('common.approve')}
+                    </button>
+                    <button
+                      className="btn-detail-reject"
+                      onClick={() => setActionModal({ isOpen: true, type: 'reject' })}
+                    >
+                      ✕ {t('common.reject')}
+                    </button>
+                  </div>
+                )}
+              </div>
+            </>
+          ) : (
+            <div className="detail-empty">
+              <span className="detail-empty-icon">📋</span>
+              <p>{t('topups.selectToView')}</p>
+            </div>
+          )}
+        </div>
+      </div>
 
       <ActionModal
         isOpen={actionModal.isOpen}

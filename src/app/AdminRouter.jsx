@@ -13,6 +13,8 @@ import RecargasPage from '../admin/pages/RecargasPage';
 import RetirosPage from '../admin/pages/RetirosPage';
 import InversionesPage from '../admin/pages/InversionesPage';
 import ProyectosPage from '../admin/pages/ProyectosPage';
+import DistributionPage from '../admin/pages/DistributionPage';
+import AuditLogsPage from '../admin/pages/AuditLogsPage';
 import './AdminRouter.css';
 
 export default function AdminRouter() {
@@ -86,6 +88,26 @@ export default function AdminRouter() {
         element={
           isAdmin ? (
             <AdminLayout admin={user}><ProyectosPage adminData={user} /></AdminLayout>
+          ) : (
+            <Navigate to="/admin/not-authorized" replace />
+          )
+        }
+      />
+      <Route
+        path="/admin/distribucion"
+        element={
+          isAdmin ? (
+            <AdminLayout admin={user}><DistributionPage adminData={user} /></AdminLayout>
+          ) : (
+            <Navigate to="/admin/not-authorized" replace />
+          )
+        }
+      />
+      <Route
+        path="/admin/auditoria"
+        element={
+          isAdmin ? (
+            <AdminLayout admin={user}><AuditLogsPage /></AdminLayout>
           ) : (
             <Navigate to="/admin/not-authorized" replace />
           )

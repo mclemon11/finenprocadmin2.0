@@ -38,8 +38,10 @@ export default function AdminSidebar({ isOpen, onClose }) {
         <Link to="/admin/operaciones/recargas" icon="💰">{t('nav.topups')}</Link>
         <Link to="/admin/operaciones/retiros" icon="🏦">{t('nav.withdrawals')}</Link>
         <Link to="/admin/operaciones/inversiones" icon="📈">{t('nav.investments')}</Link>
+        <Link to="/admin/distribucion" icon="💎">{t('nav.returns')}</Link>
         <div className="nav-section-title">{t('nav.others')}</div>
         <Link to="/admin/proyectos" icon="📁">{t('nav.projects')}</Link>
+        <Link to="/admin/auditoria" icon="🔒">{t('nav.audit')}</Link>
         <Link disabled icon="⚙️">{t('nav.settings')}</Link>
       </nav>
       <div className="sidebar-footer">{t('nav.adminPanel')}</div>

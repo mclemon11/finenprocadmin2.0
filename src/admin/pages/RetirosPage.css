@@ -1,27 +1,75 @@
-/* Reutiliza los mismos estilos de RecargasPage con nombre diferente */
+/* Retiros Page */
 .retiros-page {
   padding: var(--spacing-xl);
-  max-width: 1200px;
-  margin: 0 auto;
+  max-width: 1400px;
 }
 
-.page-header {
-  margin-bottom: var(--spacing-xl);
+.retiros-page .page-header {
+  margin-bottom: 28px;
 }
 
-.page-title {
-  font-size: 32px;
+.retiros-page .page-title {
+  font-size: 1.55rem;
   font-weight: 700;
   color: var(--fg);
-  margin: 0 0 8px 0;
+  margin: 0 0 4px;
 }
 
-.page-subtitle {
-  font-size: 14px;
+.retiros-page .page-subtitle {
+  font-size: 0.88rem;
   color: var(--fg-muted);
   margin: 0;
 }
 
+/* ── Stats Row ───────────────────────────────── */
+.retiros-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.ret-stat {
+  background: var(--card-bg);
+  border: var(--glass-border);
+  border-radius: var(--radius-sm);
+  padding: 18px 22px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.ret-stat-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+.ret-stat.amber .ret-stat-icon  { background: rgba(245,158,11,0.12); }
+.ret-stat.green .ret-stat-icon  { background: rgba(16,185,129,0.12); }
+.ret-stat.red .ret-stat-icon    { background: rgba(239,68,68,0.12); }
+.ret-stat-content { flex: 1; }
+.ret-stat-label {
+  font-size: 0.75rem;
+  color: var(--fg-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+.ret-stat-value {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--fg);
+}
+.ret-stat-sub {
+  font-size: 0.75rem;
+  color: var(--fg-subtle);
+  margin-top: 2px;
+}
+
+/* ── Filters ─────────────────────────────────── */
 .retiros-filters {
   display: flex;
   gap: var(--spacing-md);
@@ -245,6 +293,21 @@
   color: var(--bg);
 }
 
+.action-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 8px;
+}
+.completed-label {
+  color: var(--accent);
+  background: rgba(16,185,129,0.08);
+}
+.rejected-label {
+  color: var(--fg-subtle);
+  background: rgba(255,255,255,0.03);
+}
+
 .loading-state,
 .empty-state {
   padding: var(--spacing-xl);
@@ -258,7 +321,11 @@
     padding: var(--spacing-lg);
   }
 
-  .page-title {
+  .retiros-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .retiros-page .page-title {
     font-size: 24px;
   }
 
