@@ -3,6 +3,7 @@ import {
   collection,
   doc,
   getDocs,
+  increment,
   limit,
   query,
   runTransaction,
@@ -80,6 +81,19 @@ export default function useRejectInvestment() {
 
         // Create a NEW transaction record for history (do not update the pending one).
         const historyTxRef = doc(collection(db, 'transactions'));
+
+        // Refund the wallet — the user-side deducted the balance when creating
+        // the investment request, so we must return it on rejection.
+        if (userId && Number.isFinite(amount) && amount > 0) {
+          const walletRef = doc(db, 'users', userId, 'wallets', userId);
+          const walletSnap = await tx.get(walletRef);
+          if (walletSnap.exists()) {
+            tx.update(walletRef, {
+              balance: increment(amount),
+              updatedAt: serverTimestamp(),
+            });
+          }
+        }
 
         // All reads are done above; now perform writes.
 

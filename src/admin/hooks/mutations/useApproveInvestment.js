@@ -98,6 +98,9 @@ export default function useApproveInvestment() {
           }
         }
 
+        // Wallet balance was already deducted when the user created the
+        // investment request, so we only need to read the wallet to verify it
+        // exists (no balance check or deduction here).
         const walletRef = doc(db, 'users', userId, 'wallets', userId);
         const walletSnap = await tx.get(walletRef);
         if (!walletSnap.exists()) {
@@ -124,19 +127,9 @@ export default function useApproveInvestment() {
         // Create a NEW transaction record for history (do not update the pending one).
         const historyTxRef = doc(collection(db, 'transactions'));
 
-        const wallet = walletSnap.data() || {};
-        const balance = Number(wallet.balance || 0);
-        if (!Number.isFinite(balance)) {
-          throw new Error(t('errors.walletInvalidBalance'));
-        }
-        if (balance < amount) {
-          throw new Error(t('errors.insufficientBalance'));
-        }
-
-        tx.update(walletRef, {
-          balance: increment(-amount),
-          updatedAt: serverTimestamp()
-        });
+        // NOTE: No wallet deduction here — the user-side already deducted the
+        // balance atomically when the investment was created. We only update
+        // the project totals.
 
         tx.update(projectRef, {
           // Write to both nested (new) and flat (legacy) paths
