@@ -9,6 +9,8 @@ import './RecargasPage.css';
 
 export default function RecargasPage({ adminData }) {
   const [filter, setFilter] = useState('all');
+  const [pageSize, setPageSize] = useState(25);
+  const [currentPage, setCurrentPage] = useState(1);
   const [selectedTopup, setSelectedTopup] = useState(null);
   const [actionModal, setActionModal] = useState({ isOpen: false, type: null });
   const [methodsModalOpen, setMethodsModalOpen] = useState(false);
@@ -96,6 +98,17 @@ export default function RecargasPage({ adminData }) {
     }
   };
 
+  // Reset page when filter changes
+  useMemo(() => {
+    setCurrentPage(1);
+  }, [filter, topups.length]);
+
+  const totalPages = Math.max(1, Math.ceil(topups.length / pageSize));
+  const paginatedTopups = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return topups.slice(start, start + pageSize);
+  }, [topups, currentPage, pageSize]);
+
   return (
     <div className="recargas-page">
       <div className="page-header">
@@ -144,6 +157,45 @@ export default function RecargasPage({ adminData }) {
         ))}
       </div>
 
+      {/* Pagination Controls */}
+      <div className="recargas-controls">
+        <div className="recargas-control">
+          <span className="recargas-control-label">{t('common.show')}</span>
+          <select
+            className="recargas-page-size"
+            value={pageSize}
+            onChange={(e) => {
+              setPageSize(Number(e.target.value));
+              setCurrentPage(1);
+            }}
+          >
+            <option value={10}>10</option>
+            <option value={25}>25</option>
+            <option value={50}>50</option>
+            <option value={100}>100</option>
+          </select>
+          <span className="recargas-control-label">{t('common.perPage')}</span>
+        </div>
+
+        <div className="recargas-pagination">
+          <button
+            className="pagination-btn"
+            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+            disabled={loading || currentPage <= 1}
+          >
+            ← {t('common.previous')}
+          </button>
+          <span className="pagination-status">{t('common.page')} {currentPage} {t('common.of')} {totalPages}</span>
+          <button
+            className="pagination-btn"
+            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+            disabled={loading || currentPage >= totalPages}
+          >
+            {t('common.next')} →
+          </button>
+        </div>
+      </div>
+
       {/* Split Panel: Table + Detail */}
       <div className="recargas-split">
         <div className="recargas-card">
@@ -156,6 +208,7 @@ export default function RecargasPage({ adminData }) {
               <table className="recargas-table">
                 <thead>
                   <tr>
+                    <th></th>
                     <th>{t('topups.user')}</th>
                     <th>{t('topups.amount')}</th>
                     <th>{t('topups.method')}</th>
@@ -165,13 +218,29 @@ export default function RecargasPage({ adminData }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {topups.map(topup => (
+                  {paginatedTopups.map(topup => (
                     <tr
                       key={topup.id}
                       className={selectedTopup?.id === topup.id ? 'row-selected' : ''}
                       onClick={() => setSelectedTopup(topup)}
                     >
-                      <td className="email-cell">{topup.userEmail || topup.userId || t('common.emailNotAvailable')}</td>
+                      <td className="avatar-cell">
+                        {topup.userPhotoURL ? (
+                          <img
+                            src={topup.userPhotoURL}
+                            alt={topup.userName || topup.userEmail}
+                            className="rec-user-avatar"
+                          />
+                        ) : (
+                          <div className="rec-user-avatar-placeholder">
+                            {(topup.userName || topup.userEmail || '?').charAt(0).toUpperCase()}
+                          </div>
+                        )}
+                      </td>
+                      <td className="email-cell">
+                        <div className="cell-title">{topup.userName || '-'}</div>
+                        <div className="cell-subtle">{topup.userEmail || topup.userId || t('common.emailNotAvailable')}</div>
+                      </td>
                       <td className="amount-cell">{formatCurrency(topup.amount)}</td>
                       <td>{topup.method || '-'}</td>
                       <td>

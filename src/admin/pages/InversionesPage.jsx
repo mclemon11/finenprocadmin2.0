@@ -192,6 +192,7 @@ export default function InversionesPage({ adminData }) {
             <table className="inversiones-table">
               <thead>
                 <tr>
+                  <th></th>
                   <th>{t('investments.user')}</th>
                   <th>{t('investments.project')}</th>
                   <th>{t('investments.amount')}</th>
@@ -205,6 +206,19 @@ export default function InversionesPage({ adminData }) {
               <tbody>
                 {filteredInvestments.map(inv => (
                   <tr key={inv.id}>
+                    <td className="avatar-cell">
+                      {inv.userPhotoURL ? (
+                        <img
+                          src={inv.userPhotoURL}
+                          alt={inv.userName || inv.userEmail}
+                          className="inv-user-avatar"
+                        />
+                      ) : (
+                        <div className="inv-user-avatar-placeholder">
+                          {(inv.userName || inv.userEmail || '?').charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                    </td>
                     <td>
                       <div className="cell-title">{inv.userName || t('investments.userNoData')}</div>
                       <div className="cell-subtle">{inv.userEmail || t('common.emailNotAvailable')}</div>

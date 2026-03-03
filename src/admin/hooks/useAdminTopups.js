@@ -56,6 +56,7 @@ export default function useAdminTopups(filters = {}) {
           ...t,
           userEmail: t.userEmail || user?.email || null,
           userName: t.userName || user?.displayName || user?.fullName || null,
+          userPhotoURL: user?.photoURL || user?.photoUrl || null,
           createdAt: normalizeDate(t.createdAt) || t.createdAt,
         };
       });

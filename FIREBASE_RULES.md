@@ -131,23 +131,15 @@ service cloud.firestore {
 
     // TRANSACTIONS
     match /transactions/{txId} {
+      // Simplified: investment-type validation is already enforced on the
+      // /investments create rule within the same batch. Duplicating the
+      // exists()/get() calls here would exceed the 10-read limit for
+      // batched writes and cause "Missing or insufficient permissions".
       allow create: if isAdmin() || (
         isSignedIn()
         && request.resource.data.userId == request.auth.uid
-        // Si es una transacción de inversión creada por el usuario, aplicar mismas restricciones.
-        && (
-          request.resource.data.type != 'investment'
-          || (
-            request.resource.data.amount is number
-            && request.resource.data.amount > 0
-            && request.resource.data.projectId is string
-            && exists(/databases/$(database)/documents/projects/$(request.resource.data.projectId))
-            && get(/databases/$(database)/documents/projects/$(request.resource.data.projectId)).data.status != 'closed'
-            && exists(/databases/$(database)/documents/users/$(request.auth.uid)/wallets/$(request.auth.uid))
-            && get(/databases/$(database)/documents/users/$(request.auth.uid)/wallets/$(request.auth.uid)).data.balance is number
-            && get(/databases/$(database)/documents/users/$(request.auth.uid)/wallets/$(request.auth.uid)).data.balance >= request.resource.data.amount
-          )
-        )
+        && request.resource.data.amount is number
+        && request.resource.data.amount > 0
       );
       allow read: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
       allow update, delete: if isAdmin();

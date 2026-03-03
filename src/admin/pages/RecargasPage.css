@@ -184,6 +184,102 @@
   color: var(--fg);
 }
 
+/* ── User Avatar in Recargas ── */
+.avatar-cell {
+  width: 44px;
+  padding-right: 0 !important;
+}
+
+.rec-user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(16, 185, 129, 0.3);
+  flex-shrink: 0;
+}
+
+.rec-user-avatar-placeholder {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.1));
+  border: 2px solid rgba(16, 185, 129, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.cell-title {
+  font-weight: 600;
+  color: var(--fg);
+}
+
+.cell-subtle {
+  font-size: 12px;
+  color: var(--fg-muted);
+}
+
+/* ── Pagination Controls ── */
+.recargas-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+  flex-wrap: wrap;
+}
+
+.recargas-control {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.recargas-control-label {
+  font-size: 13px;
+  color: var(--fg-muted);
+}
+
+.recargas-page-size {
+  padding: 8px 10px;
+  border: var(--glass-border);
+  border-radius: var(--radius-sm);
+  background: var(--panel);
+  color: var(--fg);
+}
+
+.recargas-pagination {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.pagination-btn {
+  padding: 8px 12px;
+  border: var(--glass-border);
+  border-radius: var(--radius-sm);
+  background: var(--panel);
+  color: var(--fg);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-status {
+  font-size: 13px;
+  color: var(--fg-muted);
+}
+
 .status-badge {
   display: inline-block;
   padding: 4px 10px;
@@ -351,9 +447,24 @@
   .recargas-stats { grid-template-columns: 1fr; }
   .recargas-filters { flex-wrap: wrap; }
   .filter-btn { flex: 1 1 calc(50% - 8px); min-width: 120px; justify-content: center; }
+  .recargas-controls {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+  .recargas-pagination {
+    width: 100%;
+    justify-content: space-between;
+  }
 }
 @media (max-width: 480px) {
   .recargas-page { padding: 16px 10px; }
   .recargas-table th,
   .recargas-table td { padding: 8px 10px; font-size: 0.78rem; }
+  .recargas-page-size {
+    padding: 6px 8px;
+    font-size: 12px;
+  }
+  .pagination-status {
+    font-size: 12px;
+  }
 }

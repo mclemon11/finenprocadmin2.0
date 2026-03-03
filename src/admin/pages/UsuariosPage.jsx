@@ -11,6 +11,8 @@ export default function UsuariosPage({ adminData }) {
   const [searchParams] = useSearchParams();
   const [filters, setFilters] = useState({ status: 'all', search: '', chip: '' });
   const [selectedUserId, setSelectedUserId] = useState(null);
+  const [pageSize, setPageSize] = useState(25);
+  const [currentPage, setCurrentPage] = useState(1);
   const { users, loading, refetch: refetchUsers } = useAdminUsers(filters);
   const { user, wallet, investments, topups, withdrawals, transactions, loading: detailLoading, refetch: refetchDetail } = useUserDetail(selectedUserId);
   const { t } = useLanguage();
@@ -30,6 +32,17 @@ export default function UsuariosPage({ adminData }) {
     const totalBalance = users.reduce((s, u) => s + (u.walletBalance || 0), 0);
     return { totalUsers, activeUsers, totalCapital, totalBalance };
   }, [users]);
+
+  // Reset to page 1 when filters or users change
+  useMemo(() => {
+    setCurrentPage(1);
+  }, [filters.status, filters.search, filters.chip, users.length]);
+
+  const totalPages = Math.max(1, Math.ceil(users.length / pageSize));
+  const paginatedUsers = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return users.slice(start, start + pageSize);
+  }, [users, currentPage, pageSize]);
 
   const chipOptions = [
     { value: '', label: t('common.all') },
@@ -119,13 +132,52 @@ export default function UsuariosPage({ adminData }) {
         ))}
       </div>
 
+      {/* Pagination Controls */}
+      <div className="usuarios-controls">
+        <div className="usuarios-control">
+          <span className="usuarios-control-label">{t('common.show')}</span>
+          <select
+            className="usuarios-page-size"
+            value={pageSize}
+            onChange={(e) => {
+              setPageSize(Number(e.target.value));
+              setCurrentPage(1);
+            }}
+          >
+            <option value={10}>10</option>
+            <option value={25}>25</option>
+            <option value={50}>50</option>
+            <option value={100}>100</option>
+          </select>
+          <span className="usuarios-control-label">{t('common.perPage')}</span>
+        </div>
+
+        <div className="usuarios-pagination">
+          <button
+            className="pagination-btn"
+            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+            disabled={loading || currentPage <= 1}
+          >
+            ← {t('common.previous')}
+          </button>
+          <span className="pagination-status">{t('common.page')} {currentPage} {t('common.of')} {totalPages}</span>
+          <button
+            className="pagination-btn"
+            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+            disabled={loading || currentPage >= totalPages}
+          >
+            {t('common.next')} →
+          </button>
+        </div>
+      </div>
+
       {/* Users Table Card */}
       <div className="usuarios-card">
         <div className="card-header">
           <h3>{t('nav.users')} ({users.length})</h3>
         </div>
         <UsuariosTable
-          users={users}
+          users={paginatedUsers}
           loading={loading}
           onSelectUser={setSelectedUserId}
         />

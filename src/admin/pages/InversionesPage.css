@@ -165,6 +165,36 @@
   color: var(--fg-muted);
 }
 
+/* ── User Avatar in Investments ── */
+.avatar-cell {
+  width: 44px;
+  padding-right: 0 !important;
+}
+
+.inv-user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(16, 185, 129, 0.3);
+  flex-shrink: 0;
+}
+
+.inv-user-avatar-placeholder {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.1));
+  border: 2px solid rgba(16, 185, 129, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
 .inversiones-table tbody tr:hover {
   background: rgba(16, 185, 129, 0.03);
 }

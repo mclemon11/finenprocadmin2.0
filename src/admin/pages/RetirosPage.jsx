@@ -199,6 +199,7 @@ export default function RetirosPage({ adminData }) {
             <table className="retiros-table">
               <thead>
                 <tr>
+                  <th></th>
                   <th>{t('withdrawals.user')}</th>
                   <th>{t('withdrawals.amount')}</th>
                   <th>{t('withdrawals.method')}</th>
@@ -210,7 +211,23 @@ export default function RetirosPage({ adminData }) {
               <tbody>
                 {withdrawals.map(withdrawal => (
                   <tr key={withdrawal.id}>
-                    <td className="email-cell">{withdrawal.userEmail || withdrawal.userId || t('common.emailNotAvailable')}</td>
+                    <td className="avatar-cell">
+                      {withdrawal.userPhotoURL ? (
+                        <img
+                          src={withdrawal.userPhotoURL}
+                          alt={withdrawal.userName || withdrawal.userEmail}
+                          className="ret-user-avatar"
+                        />
+                      ) : (
+                        <div className="ret-user-avatar-placeholder">
+                          {(withdrawal.userName || withdrawal.userEmail || '?').charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                    </td>
+                    <td className="email-cell">
+                      <div className="cell-title">{withdrawal.userName || '-'}</div>
+                      <div className="cell-subtle">{withdrawal.userEmail || withdrawal.userId || t('common.emailNotAvailable')}</div>
+                    </td>
                     <td className="amount-cell">{formatCurrency(withdrawal.amount)}</td>
                     <td>{withdrawal.method || '-'}</td>
                     <td>

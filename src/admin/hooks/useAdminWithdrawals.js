@@ -119,6 +119,7 @@ export default function useAdminWithdrawals(filters = {}) {
           ...w,
           userEmail: w.userEmail || user?.email || null,
           userName: w.userName || user?.displayName || user?.fullName || null,
+          userPhotoURL: user?.photoURL || user?.photoUrl || null,
           createdAt: normalizeDate(w.createdAt) || w.createdAt,
         };
       });
