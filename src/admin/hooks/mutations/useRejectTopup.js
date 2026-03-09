@@ -135,10 +135,10 @@ export default function useRejectTopup() {
         });
       });
 
-      console.log('✓ Recarga rechazada:', topupId);
+      console.log(' Recarga rechazada:', topupId);
       return true;
     } catch (err) {
-      console.error('✗ Error al rechazar recarga:', err);
+      console.error(' Error al rechazar recarga:', err);
       setError(err?.message || String(err));
       return false;
     } finally {

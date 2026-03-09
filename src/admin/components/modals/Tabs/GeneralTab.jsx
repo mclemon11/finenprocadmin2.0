@@ -13,11 +13,11 @@ export default function GeneralTab({
 }) {
   return (
     <div className="tab-content-section">
-      <h3 className="section-title">🧾 Información General</h3>
+      <h3 className="section-title"> Información General</h3>
 
       {/* Images Section */}
       <div className="images-section">
-        <h4 className="subsection-title">🖼️ Imágenes del Proyecto</h4>
+        <h4 className="subsection-title"> Imágenes del Proyecto</h4>
 
         <div className="form-field">
           <label htmlFor="project-images">Agregar imágenes</label>
@@ -54,7 +54,7 @@ export default function GeneralTab({
                       onClick={() => removeExistingAt(idx)}
                       aria-label="Eliminar imagen"
                     >
-                      ✕
+                      
                     </button>
                   </div>
                 </SwiperSlide>
@@ -71,7 +71,7 @@ export default function GeneralTab({
                       onClick={() => removeNewAt(idx)}
                       aria-label="Eliminar imagen"
                     >
-                      ✕
+                      
                     </button>
                   </div>
                 </SwiperSlide>
@@ -137,8 +137,8 @@ export default function GeneralTab({
             value={form.general.type}
             onChange={(e) => updateField('general', 'type', e.target.value)}
           >
-            <option value="fixed">🎯 Fijo</option>
-            <option value="variable">📊 Variable</option>
+            <option value="fixed"> Fijo</option>
+            <option value="variable"> Variable</option>
           </select>
         </div>
       </div>
@@ -150,11 +150,11 @@ export default function GeneralTab({
           value={form.general.status}
           onChange={(e) => updateField('general', 'status', e.target.value)}
         >
-          <option value="draft">📝 Borrador</option>
-          <option value="active">🟢 Activo</option>
-          <option value="paused">⏸️ Pausado</option>
-          <option value="funded">✅ Fondeado</option>
-          <option value="closed">🔒 Cerrado</option>
+          <option value="draft"> Borrador</option>
+          <option value="active">Activo</option>
+          <option value="paused"> Pausado</option>
+          <option value="funded"> Fondeado</option>
+          <option value="closed"> Cerrado</option>
         </select>
       </div>
 

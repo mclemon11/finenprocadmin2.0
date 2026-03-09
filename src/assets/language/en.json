@@ -170,9 +170,7 @@
     "pendingIn": "Pending In",
     "pendingOut": "Pending Out",
     "activeInvestors": "Active Investors",
-    "liquidityObligations": "Liquidity & Obligations",
     "liquidity": "Liquidity",
-    "obligations": "Obligations",
     "upcomingPayments": "Upcoming Payments",
     "noUpcomingPayments": "No upcoming payments",
     "recentActivity": "Recent Activity",
@@ -305,6 +303,7 @@
     "investor": "Investor",
     "amountInvested": "Amount Invested",
     "projectPercent": "% of Project",
+    "shareOfProject": "Share of Project",
     "overview": "Overview",
     "financial": "Financial",
     "audit": "Audit",
@@ -868,5 +867,21 @@
     "project": "Project",
     "totalReturn": "Total Return",
     "recipients": "Recipients"
+  },
+  "settings": {
+    "subtitle": "Configure the general platform settings.",
+    "advisorTitle": "Main Advisor",
+    "advisorPhoto": "Advisor Photo",
+    "changePhoto": "Change photo",
+    "uploading": "Uploading...",
+    "advisorName": "Name",
+    "advisorNamePlaceholder": "Advisor name",
+    "advisorPhone": "Phone",
+    "advisorPhonePlaceholder": "+1 234 567 8900",
+    "save": "Save changes",
+    "saving": "Saving...",
+    "savedSuccess": "Advisor data saved successfully.",
+    "photoUpdated": "Advisor photo updated.",
+    "nameRequired": "Advisor name is required."
   }
 }

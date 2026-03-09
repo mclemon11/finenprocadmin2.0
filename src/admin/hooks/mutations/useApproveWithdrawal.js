@@ -138,10 +138,10 @@ export default function useApproveWithdrawal() {
         });
       });
 
-      console.log('✓ Retiro aprobado:', withdrawalId);
+      console.log(' Retiro aprobado:', withdrawalId);
       return true;
     } catch (err) {
-      console.error('✗ Error al aprobar retiro:', err);
+      console.error(' Error al aprobar retiro:', err);
       setError(err?.message || String(err));
       return false;
     } finally {

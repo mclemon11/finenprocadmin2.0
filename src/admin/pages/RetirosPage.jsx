@@ -116,26 +116,17 @@ export default function RetirosPage({ adminData }) {
       {/* Stats Row */}
       <div className="retiros-stats">
         <div className="ret-stat amber">
-          <div className="ret-stat-icon">⏳</div>
-          <div className="ret-stat-content">
-            <div className="ret-stat-label">{t('withdrawals.totalPending')}</div>
-            <div className="ret-stat-value">{formatCurrency(stats.pendingTotal)}</div>
-            <div className="ret-stat-sub">{stats.pendingCount} {t('withdrawals.requests')}</div>
-          </div>
+          <div className="ret-stat-label">{t('withdrawals.totalPending')}</div>
+          <div className="ret-stat-value">{formatCurrency(stats.pendingTotal)}</div>
+          <div className="ret-stat-sub">{stats.pendingCount} {t('withdrawals.requests')}</div>
         </div>
         <div className="ret-stat green">
-          <div className="ret-stat-icon">✓</div>
-          <div className="ret-stat-content">
-            <div className="ret-stat-label">{t('withdrawals.todayApprovals')}</div>
-            <div className="ret-stat-value">{stats.approvedToday}</div>
-          </div>
+          <div className="ret-stat-label">{t('withdrawals.todayApprovals')}</div>
+          <div className="ret-stat-value">{stats.approvedToday}</div>
         </div>
         <div className="ret-stat red">
-          <div className="ret-stat-icon">✕</div>
-          <div className="ret-stat-content">
-            <div className="ret-stat-label">{t('withdrawals.rejectedCount')}</div>
-            <div className="ret-stat-value">{stats.rejectedCount}</div>
-          </div>
+          <div className="ret-stat-label">{t('withdrawals.rejectedCount')}</div>
+          <div className="ret-stat-value">{stats.rejectedCount}</div>
         </div>
       </div>
 
@@ -248,7 +239,7 @@ export default function RetirosPage({ adminData }) {
                               }}
                               title={t('common.approve')}
                             >
-                              ✓ {t('common.approve')}
+                               {t('common.approve')}
                             </button>
                             <button
                               className="btn-action btn-reject"
@@ -258,12 +249,12 @@ export default function RetirosPage({ adminData }) {
                               }}
                               title={t('common.reject')}
                             >
-                              ✕
+                              
                             </button>
                           </>
                         )}
                         {withdrawal.status === 'approved' && (
-                          <span className="action-label completed-label">✓ {t('withdrawals.processed')}</span>
+                          <span className="action-label completed-label"> {t('withdrawals.processed')}</span>
                         )}
                         {withdrawal.status === 'rejected' && (
                           <span className="action-label rejected-label">— {t('withdrawals.rejected')}</span>

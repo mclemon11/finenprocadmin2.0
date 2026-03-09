@@ -169,7 +169,7 @@ export default function DistributionPage({ adminData }) {
 
           {numericReturn > 0 && (
             <div className="distribution-warning">
-              ⚠️ {t('distribution.warning')}
+               {t('distribution.warning')}
             </div>
           )}
         </div>

@@ -126,24 +126,17 @@ export default function useInvestmentDetail(investmentId) {
 
   const enrichInvestmentData = (inv, project) => {
     const amount = Number(inv.amount || 0);
-    const expectedReturn = Number(inv.expectedReturn || 0);
     const actualReturn = Number(inv.actualReturn || inv.realizedReturn || inv.payout || 0);
     const projectTotal = Number(project?.totalInvested || 0);
 
-    const expectedROI = amount > 0 ? ((expectedReturn - amount) / amount * 100).toFixed(2) : null;
     const actualROI = amount > 0 && actualReturn > 0 ? ((actualReturn - amount) / amount * 100).toFixed(2) : null;
-
     const projectionOfTotal = projectTotal > 0 ? ((amount / projectTotal) * 100).toFixed(2) : null;
-
-    const expectedGain = expectedReturn - amount;
     const actualGain = actualReturn > 0 ? actualReturn - amount : null;
 
     return {
       ...inv,
-      expectedROI: Number(expectedROI),
       actualROI: actualROI ? Number(actualROI) : null,
       projectionOfTotal: Number(projectionOfTotal),
-      expectedGain,
       actualGain,
     };
   };

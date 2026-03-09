@@ -3,7 +3,7 @@ import React from 'react';
 export default function MetricsTab({ form, updateField }) {
   return (
     <div className="tab-content-section">
-      <h3 className="section-title">📈 Retorno & Métricas</h3>
+      <h3 className="section-title"> Retorno & Métricas</h3>
 
       <div className="form-row-2">
         <div className="form-field">

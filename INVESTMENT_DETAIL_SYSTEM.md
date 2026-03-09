@@ -218,13 +218,13 @@ Cada cambio es inmutable e histórico.
 
 ## Características Clave
 
-✅ **Control Fino:** Cambio de estado, actualización de retorno, registro de eventos
-✅ **Trazabilidad Total:** Audit log completo con timestamps y quién hizo qué
-✅ **Contexto:** Usuario, proyecto, eventos proyecto integrados
-✅ **UX Profesional:** Drawer fluido, modales claros, animaciones suave
-✅ **Financiero Real:** Cálculos de ROI, ganancia/pérdida, proyecciones
-✅ **No Duplicado:** Reutiliza hooks de proyecto y usuario
-✅ **Escalable:** Arquitectura preparada para nuevas acciones y eventos
+ **Control Fino:** Cambio de estado, actualización de retorno, registro de eventos
+ **Trazabilidad Total:** Audit log completo con timestamps y quién hizo qué
+ **Contexto:** Usuario, proyecto, eventos proyecto integrados
+ **UX Profesional:** Drawer fluido, modales claros, animaciones suave
+ **Financiero Real:** Cálculos de ROI, ganancia/pérdida, proyecciones
+ **No Duplicado:** Reutiliza hooks de proyecto y usuario
+ **Escalable:** Arquitectura preparada para nuevas acciones y eventos
 
 ## Estados de Inversión
 

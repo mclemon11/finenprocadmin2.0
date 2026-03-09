@@ -70,15 +70,15 @@ export default function ProjectDetailPage({ adminData }) {
         </button>
         <div className="header-actions">
           {computedMode === 'readonly' && (
-            <span className="locked-badge">🔒 {t('projectDetail.projectLocked')}</span>
+            <span className="locked-badge"> {t('projectDetail.projectLocked')}</span>
           )}
           {computedMode !== 'readonly' && (
             <>
               <button className="ghost-btn" onClick={() => setActiveTab('timeline')}>
-                📢 {t('projectDetail.publishEvent')}
+                 {t('projectDetail.publishEvent')}
               </button>
               <button className="edit-btn" onClick={() => setIsEditOpen(true)}>
-                ✏️ {t('projectDetail.editProject')}
+                 {t('projectDetail.editProject')}
               </button>
             </>
           )}
@@ -91,29 +91,29 @@ export default function ProjectDetailPage({ adminData }) {
           <h1 className="project-name">{project.name}</h1>
           <div className="project-badges">
             <span className={`type-badge type-${project.type}`}>
-              {project.type === 'variable' ? `📊 ${t('projectDetail.variable')}` : `🎯 ${t('projectDetail.fixed')}`}
+              {project.type === 'variable' ? ` ${t('projectDetail.variable')}` : ` ${t('projectDetail.fixed')}`}
             </span>
             <span className={`risk-badge risk-${project.riskLevel}`}>
-              {project.riskLevel === 'low' && `🟢 ${t('projectDetail.riskLow')}`}
+              {project.riskLevel === 'low' && `${t('projectDetail.riskLow')}`}
               {project.riskLevel === 'medium' && `🟡 ${t('projectDetail.riskMedium')}`}
-              {project.riskLevel === 'high' && `🔴 ${t('projectDetail.riskHigh')}`}
+              {project.riskLevel === 'high' && ` ${t('projectDetail.riskHigh')}`}
             </span>
             <span className={`status-badge status-${project.computedStatus}`}>
-              {project.computedStatus === 'funded' && `✅ ${t('projectDetail.statusFunded')}`}
-              {project.computedStatus === 'active' && `🟢 ${t('projectDetail.statusActive')}`}
-              {project.computedStatus === 'paused' && `⏸️ ${t('projectDetail.statusPaused')}`}
-              {project.computedStatus === 'closed' && `🔒 ${t('projectDetail.statusClosed')}`}
-              {project.computedStatus === 'draft' && `📝 ${t('projectDetail.statusDraft')}`}
+              {project.computedStatus === 'funded' && ` ${t('projectDetail.statusFunded')}`}
+              {project.computedStatus === 'active' && `${t('projectDetail.statusActive')}`}
+              {project.computedStatus === 'paused' && ` ${t('projectDetail.statusPaused')}`}
+              {project.computedStatus === 'closed' && ` ${t('projectDetail.statusClosed')}`}
+              {project.computedStatus === 'draft' && ` ${t('projectDetail.statusDraft')}`}
             </span>
           </div>
-          {project.category && <div className="project-category">📁 {project.category}</div>}
+          {project.category && <div className="project-category"> {project.category}</div>}
         </div>
 
         {/* Barra de progreso para proyectos FIJOS */}
         {project.type === 'fixed' && project.targetAmount && (
           <div className="progress-card">
             <div className="progress-header">
-              <span className="progress-label">💰 {t('projectDetail.capitalRaised')}</span>
+              <span className="progress-label"> {t('projectDetail.capitalRaised')}</span>
               <span className="progress-percentage">{project.progress || 0}%</span>
             </div>
             <div className="progress-bar-large">
@@ -139,19 +139,19 @@ export default function ProjectDetailPage({ adminData }) {
           className={`tab ${activeTab === 'overview' ? 'active' : ''}`}
           onClick={() => setActiveTab('overview')}
         >
-          📊 {t('projectDetail.overview')}
+           {t('projectDetail.overview')}
         </button>
         <button
           className={`tab ${activeTab === 'investments' ? 'active' : ''}`}
           onClick={() => setActiveTab('investments')}
         >
-          💼 {t('projectDetail.investments')} ({investments.length})
+           {t('projectDetail.investments')} ({investments.length})
         </button>
         <button
           className={`tab ${activeTab === 'timeline' ? 'active' : ''}`}
           onClick={() => setActiveTab('timeline')}
         >
-          📅 {t('projectDetail.timeline')}
+           {t('projectDetail.timeline')}
         </button>
       </div>
 
@@ -162,28 +162,28 @@ export default function ProjectDetailPage({ adminData }) {
             {/* KPI Cards */}
             <div className="kpi-section">
               <div className="kpi-card">
-                <div className="kpi-icon">💰</div>
+                <div className="kpi-icon"></div>
                 <div className="kpi-content">
                   <div className="kpi-label">{t('projectDetail.totalInvested')}</div>
                   <div className="kpi-value">{formatCurrency(project.totalInvested || 0)}</div>
                 </div>
               </div>
               <div className="kpi-card">
-                <div className="kpi-icon">👥</div>
+                <div className="kpi-icon"></div>
                 <div className="kpi-content">
                   <div className="kpi-label">{t('projectDetail.investors')}</div>
                   <div className="kpi-value">{investments.length}</div>
                 </div>
               </div>
               <div className="kpi-card">
-                <div className="kpi-icon">📈</div>
+                <div className="kpi-icon"></div>
                 <div className="kpi-content">
                   <div className="kpi-label">{t('projectDetail.expectedROI')}</div>
                   <div className="kpi-value">{project.expectedROI ? `${project.expectedROI}%` : '—'}</div>
                 </div>
               </div>
               <div className="kpi-card">
-                <div className="kpi-icon">⏱️</div>
+                <div className="kpi-icon"></div>
                 <div className="kpi-content">
                   <div className="kpi-label">{t('projectDetail.duration')}</div>
                   <div className="kpi-value">{project.duration ? `${project.duration}m` : '—'}</div>
@@ -195,7 +195,7 @@ export default function ProjectDetailPage({ adminData }) {
             <div className="info-grid">
               {/* Información General */}
               <div className="info-card">
-                <h3>📋 {t('projectDetail.generalInfo')}</h3>
+                <h3> {t('projectDetail.generalInfo')}</h3>
                 <div className="info-content">
                   <div className="info-row">
                     <span className="info-label">{t('projectDetail.expectedROI')}</span>
@@ -215,7 +215,7 @@ export default function ProjectDetailPage({ adminData }) {
                   </div>
                   <div className="info-row">
                     <span className="info-label">{t('projectDetail.baseCurrency')}</span>
-                    <span className="info-value">USD 🇺🇸</span>
+                    <span className="info-value">USD </span>
                   </div>
                   {project.category && (
                     <div className="info-row">
@@ -229,7 +229,7 @@ export default function ProjectDetailPage({ adminData }) {
               {/* Configuración según tipo */}
               {project.type === 'fixed' && (
                 <div className="info-card">
-                  <h3>⚙️ {t('projectDetail.fixedConfig')}</h3>
+                  <h3> {t('projectDetail.fixedConfig')}</h3>
                   <div className="info-content">
                     <div className="info-row">
                       <span className="info-label">{t('projectDetail.targetCapital')}</span>
@@ -253,7 +253,7 @@ export default function ProjectDetailPage({ adminData }) {
                       <span className="info-label">{t('projectDetail.autoLockOnTarget')}</span>
                       <span className="info-value">
                         <span className={`pill ${project.autoLockOnTarget ? 'pill-on' : 'pill-off'}`}>
-                          {project.autoLockOnTarget ? `✓ ${t('common.enabled')}` : `✗ ${t('common.disabled')}`}
+                          {project.autoLockOnTarget ? ` ${t('common.enabled')}` : ` ${t('common.disabled')}`}
                         </span>
                       </span>
                     </div>
@@ -263,7 +263,7 @@ export default function ProjectDetailPage({ adminData }) {
 
               {project.type === 'variable' && (
                 <div className="info-card">
-                  <h3>📊 {t('projectDetail.variableMetrics')}</h3>
+                  <h3> {t('projectDetail.variableMetrics')}</h3>
                   <div className="info-content">
                     <div className="info-row">
                       <span className="info-label">{t('projectDetail.performance')}</span>
@@ -279,7 +279,7 @@ export default function ProjectDetailPage({ adminData }) {
                       <span className="info-label">{t('projectDetail.manualControl')}</span>
                       <span className="info-value">
                         <span className={`pill ${project.manualControl ? 'pill-on' : 'pill-off'}`}>
-                          {project.manualControl ? `✓ ${t('common.enabled')}` : `✗ ${t('common.disabled')}`}
+                          {project.manualControl ? ` ${t('common.enabled')}` : ` ${t('common.disabled')}`}
                         </span>
                       </span>
                     </div>
@@ -301,10 +301,10 @@ export default function ProjectDetailPage({ adminData }) {
         {activeTab === 'investments' && (
           <div className="investments-section">
             {invLoading ? (
-              <div className="loading-state">⏳ {t('projectDetail.loadingInvestments')}</div>
+              <div className="loading-state"> {t('projectDetail.loadingInvestments')}</div>
             ) : investments.length === 0 ? (
               <div className="empty-state">
-                <div className="empty-icon">📭</div>
+                <div className="empty-icon"></div>
                 <p>{t('projectDetail.noInvestments')}</p>
               </div>
             ) : (
@@ -334,9 +334,9 @@ export default function ProjectDetailPage({ adminData }) {
                         </td>
                         <td>
                           <span className={`status-badge status-${inv.status}`}>
-                            {inv.status === 'active' && `🟢 ${t('projectDetail.invActive')}`}
-                            {inv.status === 'completed' && `✅ ${t('projectDetail.invCompleted')}`}
-                            {inv.status === 'cancelled' && `❌ ${t('projectDetail.invCancelled')}`}
+                            {inv.status === 'active' && `${t('projectDetail.invActive')}`}
+                            {inv.status === 'completed' && ` ${t('projectDetail.invCompleted')}`}
+                            {inv.status === 'cancelled' && ` ${t('projectDetail.invCancelled')}`}
                           </span>
                         </td>
                         <td className="date-cell">{formatDate(inv.createdAt)}</td>

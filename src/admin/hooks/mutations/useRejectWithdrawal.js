@@ -120,10 +120,10 @@ export default function useRejectWithdrawal() {
         });
       });
 
-      console.log('✓ Retiro rechazado:', withdrawalId);
+      console.log(' Retiro rechazado:', withdrawalId);
       return true;
     } catch (err) {
-      console.error('✗ Error al rechazar retiro:', err);
+      console.error(' Error al rechazar retiro:', err);
       setError(err?.message || String(err));
       return false;
     } finally {

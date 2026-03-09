@@ -45,12 +45,12 @@ export default function AdminDashboardPage() {
   }
 
   const metrics = [
-    { label: t('adminDash.totalCapital'), value: formatCurrency(kpis.totalCapital), icon: '🏦', trend: null },
-    { label: t('adminDash.capitalInvested'), value: formatCurrency(kpis.capitalInvested), icon: '📊', trend: null },
-    { label: t('adminDash.availableLiquidity'), value: formatCurrency(kpis.availableLiquidity), icon: '💧', trend: null },
-    { label: t('adminDash.pendingIn'), value: formatCurrency(kpis.pendingDepositAmount), icon: '📥', count: kpis.pendingDeposits },
-    { label: t('adminDash.pendingOut'), value: formatCurrency(kpis.pendingWithdrawalAmount), icon: '📤', count: kpis.pendingWithdrawals },
-    { label: t('adminDash.activeInvestors'), value: kpis.activeInvestors.toLocaleString(), icon: '👥', trend: null },
+    { label: t('adminDash.totalCapital'), value: formatCurrency(kpis.totalCapital), icon: '', trend: null },
+    { label: t('adminDash.capitalInvested'), value: formatCurrency(kpis.capitalInvested), icon: '', trend: null },
+    { label: t('adminDash.availableLiquidity'), value: formatCurrency(kpis.availableLiquidity), icon: '', trend: null },
+    { label: t('adminDash.pendingIn'), value: formatCurrency(kpis.pendingDepositAmount), icon: '', count: kpis.pendingDeposits },
+    { label: t('adminDash.pendingOut'), value: formatCurrency(kpis.pendingWithdrawalAmount), icon: '', count: kpis.pendingWithdrawals },
+    { label: t('adminDash.activeInvestors'), value: kpis.activeInvestors.toLocaleString(), icon: '', trend: null },
   ];
 
   const getTypeBadgeClass = (type) => {
@@ -65,9 +65,9 @@ export default function AdminDashboardPage() {
 
   const getStatusIcon = (status) => {
     switch (status) {
-      case 'approved': case 'completed': return { icon: '✓', cls: 'status-success' };
-      case 'pending': return { icon: '⏳', cls: 'status-pending' };
-      case 'rejected': return { icon: '✕', cls: 'status-danger' };
+      case 'approved': case 'completed': return { icon: '', cls: 'status-success' };
+      case 'pending': return { icon: '', cls: 'status-pending' };
+      case 'rejected': return { icon: '', cls: 'status-danger' };
       default: return { icon: '•', cls: 'status-default' };
     }
   };
@@ -82,7 +82,7 @@ export default function AdminDashboardPage() {
         </div>
         <div className="dashboard-actions">
           <button className="btn-outline-sm" onClick={() => navigate('/admin/operaciones/recargas')}>
-            📋 {t('adminDash.pendingOps')}
+             {t('adminDash.pendingOps')}
           </button>
         </div>
       </div>
@@ -107,7 +107,7 @@ export default function AdminDashboardPage() {
         <div className="chart-panel">
           <div className="chart-header">
             <div>
-              <h3 className="panel-title">{t('adminDash.liquidityObligations')}</h3>
+              <h3 className="panel-title">{t('adminDash.liquidity')}</h3>
             </div>
             <div className="chart-period-btns">
               {['7D', '30D', '90D'].map(p => (
@@ -120,11 +120,6 @@ export default function AdminDashboardPage() {
               <span className="chart-summary-label">{t('adminDash.availableLiquidity')}</span>
               <span className="chart-summary-value">{formatCurrency(kpis.availableLiquidity)}</span>
             </div>
-            <span className="chart-summary-vs">vs</span>
-            <div>
-              <span className="chart-summary-label">{t('adminDash.obligations')}</span>
-              <span className="chart-summary-value">{formatCurrency(kpis.pendingWithdrawalAmount)}</span>
-            </div>
           </div>
           <div className="chart-container">
             <ResponsiveContainer width="100%" height={250}>
@@ -134,16 +129,11 @@ export default function AdminDashboardPage() {
                     <stop offset="0%" stopColor="#10b981" stopOpacity={0.3} />
                     <stop offset="100%" stopColor="#10b981" stopOpacity={0} />
                   </linearGradient>
-                  <linearGradient id="oblGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#f59e0b" stopOpacity={0.2} />
-                    <stop offset="100%" stopColor="#f59e0b" stopOpacity={0} />
-                  </linearGradient>
                 </defs>
                 <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fill: '#5a6270', fontSize: 12 }} />
                 <YAxis hide />
                 <Tooltip contentStyle={{ background: '#0a0e14', border: '1px solid rgba(16,185,129,0.3)', borderRadius: 8, color: '#e6eef8' }} formatter={(v) => formatCurrency(v)} />
                 <Area type="monotone" dataKey="liquidity" stroke="#10b981" fill="url(#liqGrad)" strokeWidth={2} dot={false} name={t('adminDash.liquidity')} />
-                <Area type="monotone" dataKey="obligations" stroke="#f59e0b" fill="url(#oblGrad)" strokeWidth={2} strokeDasharray="5 3" dot={false} name={t('adminDash.obligations')} />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -158,7 +148,7 @@ export default function AdminDashboardPage() {
             {kpis.upcomingPayments.length > 0 ? (
               kpis.upcomingPayments.map((p, i) => (
                 <div className="payment-item" key={p.id || i}>
-                  <div className="payment-icon">💼</div>
+                  <div className="payment-icon"></div>
                   <div className="payment-info">
                     <p className="payment-project">{p.projectName}</p>
                     <p className="payment-user">{p.userName}</p>
@@ -222,21 +212,21 @@ export default function AdminDashboardPage() {
         <div className="alerts-container">
           {kpis.pendingTopups > 0 && (
             <div className="alert-item alert-warning" onClick={() => navigate('/admin/operaciones/recargas')}>
-              <span className="alert-icon">⚠️</span>
+              <span className="alert-icon"></span>
               <span className="alert-text">{kpis.pendingTopups} {t('adminDash.pendingDeposits')}</span>
               <span className="alert-action">→</span>
             </div>
           )}
           {kpis.pendingWithdrawals > 0 && (
             <div className="alert-item alert-warning" onClick={() => navigate('/admin/operaciones/retiros')}>
-              <span className="alert-icon">⚠️</span>
+              <span className="alert-icon"></span>
               <span className="alert-text">{kpis.pendingWithdrawals} {t('adminDash.pendingWithdrawals')}</span>
               <span className="alert-action">→</span>
             </div>
           )}
           {kpis.pendingTopups === 0 && kpis.pendingWithdrawals === 0 && (
             <div className="alert-item alert-success">
-              <span className="alert-icon">✓</span>
+              <span className="alert-icon"></span>
               <span className="alert-text">{t('adminDash.noAlerts')}</span>
             </div>
           )}

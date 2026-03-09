@@ -88,6 +88,14 @@ service firebase.storage {
       allow write: if isSignedIn() && request.auth.uid == uid;
     }
 
+    //  ADVISOR PHOTOS
+    match /advisors/{allPaths=**} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin()
+        && request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+
     //  DEFAULT DENY
     match /{allPaths=**} {
       allow read, write: if false;

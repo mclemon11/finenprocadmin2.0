@@ -46,7 +46,7 @@ export default function AdminHeader({ admin, onToggleSidebar }) {
           aria-label={t('common.menu') || 'Menu'}
           onClick={onToggleSidebar}
         >
-          ☰
+          
         </button>
         <h1>
           <span className="header-title-main">FINENPROC</span>
@@ -60,7 +60,7 @@ export default function AdminHeader({ admin, onToggleSidebar }) {
             onClick={() => setLanguageDropdownOpen(!languageDropdownOpen)}
             title={t('header.language')}
           >
-            🌐 {availableLanguages.find(l => l.code === currentLanguage)?.name || 'Español'}
+             {availableLanguages.find(l => l.code === currentLanguage)?.name || 'Español'}
           </button>
           {languageDropdownOpen && (
             <div className="language-dropdown">

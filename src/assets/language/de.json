@@ -173,9 +173,7 @@
     "depositsLabel": "Einzahlungen",
     "withdrawalsLabel": "Auszahlungen",
     "requests": "Anfrage(n)",
-    "liquidityObligations": "Liquidität & Verpflichtungen",
     "liquidity": "Liquidität",
-    "obligations": "Verpflichtungen",
     "upcomingPayments": "Anstehende Zahlungen",
     "project": "Projekt",
     "investor": "Investor",
@@ -370,6 +368,7 @@
     "investor": "Investor",
     "amountInvested": "Investierter Betrag",
     "projectPercent": "% des Projekts",
+    "shareOfProject": "Projektanteil",
     "overview": "Übersicht",
     "financial": "Finanzen",
     "audit": "Audit",
@@ -868,5 +867,21 @@
     "project": "Projekt",
     "totalReturn": "Gesamtrendite",
     "recipients": "Empfänger"
+  },
+  "settings": {
+    "subtitle": "Konfigurieren Sie die allgemeinen Plattformeinstellungen.",
+    "advisorTitle": "Hauptberater",
+    "advisorPhoto": "Beraterfoto",
+    "changePhoto": "Foto ändern",
+    "uploading": "Hochladen...",
+    "advisorName": "Name",
+    "advisorNamePlaceholder": "Name des Beraters",
+    "advisorPhone": "Telefon",
+    "advisorPhonePlaceholder": "+49 123 456 7890",
+    "save": "Änderungen speichern",
+    "saving": "Speichern...",
+    "savedSuccess": "Beraterdaten erfolgreich gespeichert.",
+    "photoUpdated": "Beraterfoto aktualisiert.",
+    "nameRequired": "Der Beratername ist erforderlich."
   }
 }

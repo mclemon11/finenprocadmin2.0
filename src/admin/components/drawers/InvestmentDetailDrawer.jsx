@@ -189,10 +189,10 @@ export default function InvestmentDetailDrawer({ investmentId, isOpen, onClose, 
 
         {/* Mensajes de estado */}
         {successMessage && (
-          <div className="success-message">✅ {successMessage}</div>
+          <div className="success-message"> {successMessage}</div>
         )}
         {actionError && (
-          <div className="error-message">❌ {actionError}</div>
+          <div className="error-message"> {actionError}</div>
         )}
 
         {/* Contenido */}
@@ -391,10 +391,6 @@ function FinancialTab({ investment, project, formatCurrency, onUpdateReturn, t }
               <span className="value bold">{formatCurrency(investment.amount)}</span>
             </div>
             <div className="fin-item">
-              <span className="label">{t('investments.expectedReturn')}</span>
-              <span className="value">{formatCurrency(investment.expectedReturn)}</span>
-            </div>
-            <div className="fin-item">
               <span className="label">{t('investments.realizedReturn')}</span>
               <span className="value">{formatCurrency(investment.realizedReturn || investment.payout || 0)}</span>
             </div>
@@ -443,7 +439,7 @@ function ProjectTab({ projectEvents, formatDateTime, t }) {
     <div className="tab-content project-tab">
       {relevantEvents.length === 0 ? (
         <div className="empty-state">
-          <div className="empty-icon">📭</div>
+          <div className="empty-icon"></div>
           <div className="empty-title">{t('investments.noProjectEvents')}</div>
           <div className="empty-subtitle">{t('investments.noRelatedUpdates')}</div>
         </div>
@@ -478,7 +474,7 @@ function AuditTab({ auditLog, formatDateTime, formatCurrency, t }) {
     <div className="tab-content audit-tab">
       {auditLog.length === 0 ? (
         <div className="empty-state">
-          <div className="empty-icon">📋</div>
+          <div className="empty-icon"></div>
           <div className="empty-title">{t('investments.noChangeHistory')}</div>
           <div className="empty-subtitle">{t('investments.noChangesRecorded')}</div>
         </div>

@@ -98,10 +98,10 @@ export default function ProjectDetailDrawer({
             </button>
             <div className="drawer-actions">
               <button className="action-btn secondary" onClick={() => setIsEditOpen(true)}>
-                ✏️ {t('common.edit')}
+                 {t('common.edit')}
               </button>
               <button className="action-btn primary" onClick={() => setActiveTab('timeline')}>
-                📢 {t('projects.publishEvent')}
+                 {t('projects.publishEvent')}
               </button>
             </div>
           </div>
@@ -109,11 +109,11 @@ export default function ProjectDetailDrawer({
           {/* <div className="drawer-header-content">
             <h1 className="drawer-title">{project.name}</h1>
             <span className={`badge status-badge status-${project.computedStatus}`}>
-              {project.computedStatus === 'funded' && `✅ ${t('status.funded')}`}
-              {project.computedStatus === 'active' && `🟢 ${t('status.active')}`}
-              {project.computedStatus === 'paused' && `⏸️ ${t('status.paused')}`}
-              {project.computedStatus === 'closed' && `🔒 ${t('status.closed')}`}
-              {project.computedStatus === 'draft' && `📝 ${t('status.draft')}`}
+              {project.computedStatus === 'funded' && ` ${t('status.funded')}`}
+              {project.computedStatus === 'active' && `${t('status.active')}`}
+              {project.computedStatus === 'paused' && ` ${t('status.paused')}`}
+              {project.computedStatus === 'closed' && ` ${t('status.closed')}`}
+              {project.computedStatus === 'draft' && ` ${t('status.draft')}`}
             </span>
           </div> */}
 
@@ -123,25 +123,25 @@ export default function ProjectDetailDrawer({
               className={`drawer-tab ${activeTab === 'overview' ? 'active' : ''}`}
               onClick={() => setActiveTab('overview')}
             >
-              📊 {t('projects.overview')}
+               {t('projects.overview')}
             </button>
             <button
               className={`drawer-tab ${activeTab === 'investments' ? 'active' : ''}`}
               onClick={() => setActiveTab('investments')}
             >
-              💼 {t('nav.investments')} ({investmentStats.total})
+               {t('nav.investments')} ({investmentStats.total})
             </button>
             <button
               className={`drawer-tab ${activeTab === 'timeline' ? 'active' : ''}`}
               onClick={() => setActiveTab('timeline')}
             >
-              📅 {t('projects.timeline')} ({events.length})
+               {t('projects.timeline')} ({events.length})
             </button>
             <button
               className={`drawer-tab ${activeTab === 'activity' ? 'active' : ''}`}
               onClick={() => setActiveTab('activity')}
             >
-              ⚙️ {t('projects.activity')} ({activityEvents.length})
+               {t('projects.activity')} ({activityEvents.length})
             </button>
           </div>
         </div>
@@ -198,28 +198,28 @@ export default function ProjectDetailDrawer({
                     </span>
                     {project.expectedROI && (
                       <div className="meta-chip">
-                        📈 ROI: <strong>{project.expectedROI}%</strong>
+                         ROI: <strong>{project.expectedROI}%</strong>
                       </div>
                     )}
                     {project.duration && (
                       <div className="meta-chip">
-                        ⏱️ {t('projects.duration')}: <strong>{project.duration}m</strong>
+                         {t('projects.duration')}: <strong>{project.duration}m</strong>
                       </div>
                     )}
                     {project.category && (
                       <div className="meta-chip">
-                        📁 {project.category}
+                         {project.category}
                       </div>
                     )}
                   </div>
                   <div className="overview-badges">
                     <span className={`badge type-badge type-${project.type}`}>
-                      {project.type === 'variable' ? `📊 ${t('projects.variable')}` : `🎯 ${t('projects.fixed')}`}
+                      {project.type === 'variable' ? ` ${t('projects.variable')}` : ` ${t('projects.fixed')}`}
                     </span>
                     <span className={`badge risk-badge risk-${project.riskLevel}`}>
-                      {project.riskLevel === 'low' && `🟢 ${t('projects.riskLow')}`}
+                      {project.riskLevel === 'low' && `${t('projects.riskLow')}`}
                       {project.riskLevel === 'medium' && `🟡 ${t('projects.riskMedium')}`}
-                      {project.riskLevel === 'high' && `🔴 ${t('projects.riskHigh')}`}
+                      {project.riskLevel === 'high' && ` ${t('projects.riskHigh')}`}
                     </span>
                   </div>
                 </div>
@@ -232,7 +232,7 @@ export default function ProjectDetailDrawer({
                   {/* About Section */}
                   {(project.description || project.body) && (
                     <section className="about-section">
-                      <h3>📋 {t('projects.generalInfo')}</h3>
+                      <h3> {t('projects.generalInfo')}</h3>
                       {project.description && <p className="about-text">{project.description}</p>}
                       {project.body && <p className="about-text">{project.body}</p>}
                     </section>
@@ -241,14 +241,14 @@ export default function ProjectDetailDrawer({
                   {/* Key Highlights */}
                   <div className="highlights-grid">
                     <div className="highlight-card">
-                      <div className="highlight-icon-wrap">💰</div>
+                      <div className="highlight-icon-wrap"></div>
                       <div className="highlight-content">
                         <h4>{t('projects.totalInvested')}</h4>
                         <p>{formatCurrency(investmentStats.totalAmount)}</p>
                       </div>
                     </div>
                     <div className="highlight-card">
-                      <div className="highlight-icon-wrap">👥</div>
+                      <div className="highlight-icon-wrap"></div>
                       <div className="highlight-content">
                         <h4>{t('projects.investors')}</h4>
                         <p>{investmentStats.total}</p>
@@ -256,14 +256,14 @@ export default function ProjectDetailDrawer({
                       </div>
                     </div>
                     <div className="highlight-card">
-                      <div className="highlight-icon-wrap">📈</div>
+                      <div className="highlight-icon-wrap"></div>
                       <div className="highlight-content">
                         <h4>{t('projects.expectedROI')}</h4>
                         <p>{project.expectedROI ? `${project.expectedROI}%` : '—'}</p>
                       </div>
                     </div>
                     <div className="highlight-card">
-                      <div className="highlight-icon-wrap">⏱️</div>
+                      <div className="highlight-icon-wrap"></div>
                       <div className="highlight-content">
                         <h4>{t('projects.duration')}</h4>
                         <p>{project.duration ? `${project.duration}m` : '—'}</p>
@@ -274,7 +274,7 @@ export default function ProjectDetailDrawer({
                   {/* Info Sections */}
                   <div className="info-sections">
                     <div className="info-section">
-                      <h3 className="section-title">📋 {t('projects.generalInfo')}</h3>
+                      <h3 className="section-title"> {t('projects.generalInfo')}</h3>
                       <div className="info-grid">
                         <div className="info-item">
                           <span className="info-key">{t('projects.creationDate')}</span>
@@ -286,12 +286,12 @@ export default function ProjectDetailDrawer({
                         </div>
                         <div className="info-item">
                           <span className="info-key">{t('projects.baseCurrency')}</span>
-                          <span className="info-val">USD 🇺🇸</span>
+                          <span className="info-val">USD </span>
                         </div>
                         <div className="info-item">
                           <span className="info-key">{t('projects.investmentStatus')}</span>
                           <span className="info-val">
-                            {project.investable ? `✅ ${t('projects.openInvestment')}` : `🔒 ${t('projects.closedInvestment')}`}
+                            {project.investable ? ` ${t('projects.openInvestment')}` : ` ${t('projects.closedInvestment')}`}
                           </span>
                         </div>
                       </div>
@@ -299,7 +299,7 @@ export default function ProjectDetailDrawer({
 
                     {project.type === 'fixed' && (
                       <div className="info-section">
-                        <h3 className="section-title">⚙️ {t('projects.fixedConfig')}</h3>
+                        <h3 className="section-title"> {t('projects.fixedConfig')}</h3>
                         <div className="info-grid">
                           <div className="info-item">
                             <span className="info-key">{t('projects.targetCapital')}</span>
@@ -319,7 +319,7 @@ export default function ProjectDetailDrawer({
                             <span className="info-key">{t('projects.autoLockOnTarget')}</span>
                             <span className="info-val">
                               <span className={`pill ${project.autoLockOnTarget ? 'pill-on' : 'pill-off'}`}>
-                                {project.autoLockOnTarget ? `✓ ${t('projects.activated')}` : `✗ ${t('projects.deactivated')}`}
+                                {project.autoLockOnTarget ? ` ${t('projects.activated')}` : ` ${t('projects.deactivated')}`}
                               </span>
                             </span>
                           </div>
@@ -329,17 +329,17 @@ export default function ProjectDetailDrawer({
 
                     {project.type === 'variable' && (
                       <div className="info-section">
-                        <h3 className="section-title">📊 {t('projects.variableMetrics')}</h3>
+                        <h3 className="section-title"> {t('projects.variableMetrics')}</h3>
                         <div className="metrics-cards">
                           <div className="metric-card performance">
-                            <div className="metric-icon">📈</div>
+                            <div className="metric-icon"></div>
                             <div className="metric-label">{t('projects.performance')}</div>
                             <div className="metric-value positive">
                               {project.performance !== undefined ? `${project.performance}%` : '—'}
                             </div>
                           </div>
                           <div className="metric-card drawdown">
-                            <div className="metric-icon">📉</div>
+                            <div className="metric-icon"></div>
                             <div className="metric-label">{t('projects.drawdown')}</div>
                             <div className="metric-value negative">
                               {project.drawdown !== undefined ? `${project.drawdown}%` : '—'}
@@ -448,12 +448,12 @@ export default function ProjectDetailDrawer({
                       </div>
                       <div className="quick-info-item">
                         <span>{t('projects.baseCurrency')}</span>
-                        <strong>USD 🇺🇸</strong>
+                        <strong>USD </strong>
                       </div>
                       <div className="quick-info-item">
                         <span>{t('projects.investmentStatus')}</span>
                         <strong>
-                          {project.investable ? `✅ ${t('projects.openInvestment')}` : `🔒 ${t('projects.closedInvestment')}`}
+                          {project.investable ? ` ${t('projects.openInvestment')}` : ` ${t('projects.closedInvestment')}`}
                         </strong>
                       </div>
                     </div>
@@ -469,7 +469,7 @@ export default function ProjectDetailDrawer({
                 <div className="loading-state">{t('investments.loadingInvestments')}</div>
               ) : investments.length === 0 ? (
                 <div className="empty-state">
-                  <div className="empty-icon">💼</div>
+                  <div className="empty-icon"></div>
                   <div className="empty-title">{t('projects.noInvestmentsTitle')}</div>
                   <div className="empty-subtitle">{t('projects.noInvestmentsSubtitle')}</div>
                 </div>
@@ -502,9 +502,9 @@ export default function ProjectDetailDrawer({
                           </td>
                           <td>
                             <span className={`badge status-badge status-${inv.status}`}>
-                              {inv.status === 'active' && `🟢 ${t('investments.active')}`}
-                              {inv.status === 'completed' && `✅ ${t('investments.completed')}`}
-                              {inv.status === 'cancelled' && `❌ ${t('investments.cancelled')}`}
+                              {inv.status === 'active' && `${t('investments.active')}`}
+                              {inv.status === 'completed' && ` ${t('investments.completed')}`}
+                              {inv.status === 'cancelled' && ` ${t('investments.cancelled')}`}
                             </span>
                           </td>
                           <td className="date-cell">{formatDate(inv.createdAt)}</td>
@@ -527,7 +527,7 @@ export default function ProjectDetailDrawer({
             <div className="activity-section">
               {activityEvents.length === 0 ? (
                 <div className="empty-state">
-                  <div className="empty-icon">⚙️</div>
+                  <div className="empty-icon"></div>
                   <div className="empty-title">{t('projects.noActivityTitle')}</div>
                   <div className="empty-subtitle">{t('projects.noActivitySubtitle')}</div>
                 </div>
@@ -536,7 +536,7 @@ export default function ProjectDetailDrawer({
                   {activityEvents.map((event) => (
                     <div key={event.id} className="activity-item">
                       <div className="activity-icon">
-                        {event.type === 'system' ? '⚙️' : '📋'}
+                        {event.type === 'system' ? '' : ''}
                       </div>
                       <div className="activity-content">
                         <div className="activity-header">

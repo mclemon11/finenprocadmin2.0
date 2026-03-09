@@ -173,9 +173,7 @@
     "depositsLabel": "充值",
     "withdrawalsLabel": "提款",
     "requests": "个请求",
-    "liquidityObligations": "流动性与义务",
     "liquidity": "流动性",
-    "obligations": "义务",
     "upcomingPayments": "即将到期付款",
     "project": "项目",
     "investor": "投资者",
@@ -370,6 +368,7 @@
     "investor": "投资者",
     "amountInvested": "投资金额",
     "projectPercent": "项目占比",
+    "shareOfProject": "项目份额",
     "overview": "概览",
     "financial": "财务",
     "audit": "审计",
@@ -868,5 +867,21 @@
     "project": "项目",
     "totalReturn": "总收益",
     "recipients": "接收者"
+  },
+  "settings": {
+    "subtitle": "配置平台的常规设置。",
+    "advisorTitle": "主顾问",
+    "advisorPhoto": "顾问照片",
+    "changePhoto": "更换照片",
+    "uploading": "上传中...",
+    "advisorName": "姓名",
+    "advisorNamePlaceholder": "顾问姓名",
+    "advisorPhone": "电话",
+    "advisorPhonePlaceholder": "+86 123 4567 8900",
+    "save": "保存更改",
+    "saving": "保存中...",
+    "savedSuccess": "顾问数据已成功保存。",
+    "photoUpdated": "顾问照片已更新。",
+    "nameRequired": "顾问姓名为必填项。"
   }
 }

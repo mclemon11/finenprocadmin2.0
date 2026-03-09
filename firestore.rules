@@ -195,6 +195,12 @@ service cloud.firestore {
       allow read, write: if isAdmin();
     }
 
+    // ADVISORS
+    match /advisors/{advisorId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
     // TIERS
     match /tiers/{tierId} {
       allow read, write: if isAdmin();

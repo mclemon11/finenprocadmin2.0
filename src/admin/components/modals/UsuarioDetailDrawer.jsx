@@ -101,7 +101,7 @@ export default function UsuarioDetailDrawer({
               <span className="role-badge">{user?.role || 'Investor'}</span>
             </div>
           </div>
-          <button className="btn-close" onClick={onClose} aria-label={t('common.close')}>✕</button>
+          <button className="btn-close" onClick={onClose} aria-label={t('common.close')}></button>
         </div>
 
         {loading ? (
@@ -113,37 +113,37 @@ export default function UsuarioDetailDrawer({
                 className={`tab-btn ${activeTab === 'perfil' ? 'active' : ''}`}
                 onClick={() => setActiveTab('perfil')}
               >
-                📊 {t('users.tabs.summary')}
+                 {t('users.tabs.summary')}
               </button>
               <button
                 className={`tab-btn ${activeTab === 'wallet' ? 'active' : ''}`}
                 onClick={() => setActiveTab('wallet')}
               >
-                💰 {t('users.tabs.wallet')}
+                 {t('users.tabs.wallet')}
               </button>
               <button
                 className={`tab-btn ${activeTab === 'inversiones' ? 'active' : ''}`}
                 onClick={() => setActiveTab('inversiones')}
               >
-                📈 {t('users.tabs.investments')}
+                 {t('users.tabs.investments')}
               </button>
               <button
                 className={`tab-btn ${activeTab === 'recargas' ? 'active' : ''}`}
                 onClick={() => setActiveTab('recargas')}
               >
-                🔄 {t('users.tabs.topups')}
+                 {t('users.tabs.topups')}
               </button>
               <button
                 className={`tab-btn ${activeTab === 'retiros' ? 'active' : ''}`}
                 onClick={() => setActiveTab('retiros')}
               >
-                💸 {t('users.tabs.withdrawals')}
+                 {t('users.tabs.withdrawals')}
               </button>
               <button
                 className={`tab-btn ${activeTab === 'transacciones' ? 'active' : ''}`}
                 onClick={() => setActiveTab('transacciones')}
               >
-                📋 {t('users.tabs.transactions')}
+                 {t('users.tabs.transactions')}
               </button>
             </div>
 
@@ -212,7 +212,7 @@ export default function UsuarioDetailDrawer({
                     </div>
                   ) : (
                     <div className="empty-state">
-                      <div className="empty-state-icon">💰</div>
+                      <div className="empty-state-icon"></div>
                       <div className="empty-state-message">{t('users.noWalletInfo')}</div>
                     </div>
                   )}
@@ -247,7 +247,7 @@ export default function UsuarioDetailDrawer({
                     </div>
                   ) : (
                     <div className="empty-state">
-                      <div className="empty-state-icon">📈</div>
+                      <div className="empty-state-icon"></div>
                       <div className="empty-state-message">{t('users.noInvestments')}</div>
                     </div>
                   )}
@@ -284,7 +284,7 @@ export default function UsuarioDetailDrawer({
                                         setActionModal({ isOpen: true, type: 'approve' });
                                       }}
                                     >
-                                      ✓
+                                      
                                     </button>
                                     <button
                                       className="btn-action btn-reject"
@@ -293,7 +293,7 @@ export default function UsuarioDetailDrawer({
                                         setActionModal({ isOpen: true, type: 'reject' });
                                       }}
                                     >
-                                      ✕
+                                      
                                     </button>
                                   </>
                                 )}
@@ -305,7 +305,7 @@ export default function UsuarioDetailDrawer({
                     </div>
                   ) : (
                     <div className="empty-state">
-                      <div className="empty-state-icon">🔄</div>
+                      <div className="empty-state-icon"></div>
                       <div className="empty-state-message">{t('users.noTopups')}</div>
                     </div>
                   )}
@@ -338,7 +338,7 @@ export default function UsuarioDetailDrawer({
                     </div>
                   ) : (
                     <div className="empty-state">
-                      <div className="empty-state-icon">💸</div>
+                      <div className="empty-state-icon"></div>
                       <div className="empty-state-message">{t('users.noWithdrawals')}</div>
                     </div>
                   )}
@@ -371,7 +371,7 @@ export default function UsuarioDetailDrawer({
                     </div>
                   ) : (
                     <div className="empty-state">
-                      <div className="empty-state-icon">📋</div>
+                      <div className="empty-state-icon"></div>
                       <div className="empty-state-message">{t('users.noTransactions')}</div>
                     </div>
                   )}

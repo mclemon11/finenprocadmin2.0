@@ -75,8 +75,8 @@ export default function AdminRegister(){
 
       console.log(
         createdNewAuthUser
-          ? '✓ Usuario creado en Auth:'
-          : '✓ Usuario ya existía en Auth (sign-in OK):',
+          ? ' Usuario creado en Auth:'
+          : ' Usuario ya existía en Auth (sign-in OK):',
         user.uid
       );
       
@@ -91,7 +91,7 @@ export default function AdminRegister(){
           updatedAt: new Date().toISOString()
         }, { merge: true });
         
-        console.log('✓ Documento Firestore creado exitosamente');
+        console.log(' Documento Firestore creado exitosamente');
         setSuccess(true);
 
         // Redirigir al dashboard después del registro exitoso
@@ -99,13 +99,13 @@ export default function AdminRegister(){
         
       } catch (firestoreError) {
         // Si Firestore falla, eliminar el usuario de Auth (rollback)
-        console.error('✗ Error al crear documento Firestore:', firestoreError);
+        console.error(' Error al crear documento Firestore:', firestoreError);
         try {
           if (createdNewAuthUser) {
             await deleteUser(user);
           }
         } catch (deleteErr) {
-          console.error('✗ Error al eliminar usuario recién creado:', deleteErr);
+          console.error(' Error al eliminar usuario recién creado:', deleteErr);
         }
         throw new Error('Error al crear perfil en Firestore. Revisa permisos/reglas.');
       }

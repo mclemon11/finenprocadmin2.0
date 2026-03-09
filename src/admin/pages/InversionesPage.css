@@ -32,21 +32,33 @@
   background: var(--card-bg);
   border: var(--glass-border);
   border-radius: var(--radius-sm);
-  padding: var(--spacing-lg);
-  text-align: center;
+  padding: 18px 22px;
+  position: relative;
+  overflow: hidden;
 }
+.summary-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 4px; height: 100%;
+  border-radius: 4px 0 0 4px;
+}
+.summary-card.accent-green::before  { background: var(--accent); }
+.summary-card.accent-blue::before   { background: #3b82f6; }
+.summary-card.accent-purple::before { background: #8b5cf6; }
 
 .summary-label {
-  font-size: 12px;
+  font-size: 0.78rem;
   color: var(--fg-muted);
   text-transform: uppercase;
-  margin-bottom: 8px;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
 }
 
 .summary-value {
-  font-size: 28px;
+  font-size: 1.5rem;
   font-weight: 700;
-  color: var(--accent);
+  color: var(--fg);
 }
 
 .inversiones-filters {
@@ -266,6 +278,15 @@
   padding: 0;
   cursor: pointer;
   text-align: left;
+}
+
+.link-btn-yellow {
+  color: #f59e0b;
+  transition: color 0.2s ease;
+}
+
+.link-btn-yellow:hover {
+  color: #fbbf24;
 }
 
 .link-btn:disabled {

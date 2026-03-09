@@ -285,17 +285,17 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSuccess, 
         {/* Header */}
         <div className="modal-header">
           <div className="modal-header-content">
-            <h2>✏️ {t('projectEdit.title')}</h2>
+            <h2> {t('projectEdit.title')}</h2>
             <p className="modal-subtitle">{t('projectEdit.subtitle')}</p>
           </div>
-          <button className="close-btn" onClick={handleClose} aria-label={t('common.close')}>✕</button>
+          <button className="close-btn" onClick={handleClose} aria-label={t('common.close')}></button>
         </div>
 
         {/* Form */}
         <form className="modal-form" onSubmit={handleSubmit}>
           {/* Imágenes */}
           <div className="form-section">
-            <h3 className="section-title">🖼️ {t('projectEdit.images')}</h3>
+            <h3 className="section-title"> {t('projectEdit.images')}</h3>
 
             <div className="form-field">
               <label htmlFor="project-images">{t('projectEdit.addImages')}</label>
@@ -332,7 +332,7 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSuccess, 
                           onClick={() => removeExistingAt(idx)}
                           aria-label="Eliminar imagen"
                         >
-                          ✕
+                          
                         </button>
                       </div>
                     </SwiperSlide>
@@ -348,7 +348,7 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSuccess, 
                           onClick={() => removeNewAt(idx)}
                           aria-label="Eliminar imagen"
                         >
-                          ✕
+                          
                         </button>
                       </div>
                     </SwiperSlide>
@@ -360,7 +360,7 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSuccess, 
 
           {/* Información General */}
           <div className="form-section">
-            <h3 className="section-title">📋 {t('projectEdit.generalInfo')}</h3>
+            <h3 className="section-title"> {t('projectEdit.generalInfo')}</h3>
             
             <div className="form-field">
               <label htmlFor="project-name">
@@ -416,7 +416,7 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSuccess, 
 
           {/* Métricas Financieras */}
           <div className="form-section">
-            <h3 className="section-title">💰 {t('projectEdit.financialMetrics')}</h3>
+            <h3 className="section-title"> {t('projectEdit.financialMetrics')}</h3>
             
             <div className="form-row-2">
               <div className="form-field">
@@ -455,7 +455,7 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSuccess, 
           {/* Métricas Variables (solo para tipo variable) */}
           {project.type === 'variable' && (
             <div className="form-section variable-section">
-              <h3 className="section-title">📊 {t('projectEdit.variableMetrics')}</h3>
+              <h3 className="section-title"> {t('projectEdit.variableMetrics')}</h3>
               
               <div className="form-row-2">
                 <div className="form-field">
@@ -495,7 +495,7 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSuccess, 
 
           {/* Info Box */}
           <div className="info-box">
-            <div className="info-icon">ℹ️</div>
+            <div className="info-icon">ℹ</div>
             <div className="info-content">
               <strong>{t('projectEdit.nonEditableFields')}</strong>
               <p>{t('projectEdit.nonEditableDesc')}</p>
@@ -506,7 +506,7 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSuccess, 
           {/* Error Message */}
           {error && (
             <div className="form-error">
-              <span className="error-icon">⚠️</span>
+              <span className="error-icon"></span>
               <span>{error}</span>
             </div>
           )}
@@ -533,7 +533,7 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSuccess, 
                 </>
               ) : (
                 <>
-                  <span>💾</span>
+                  <span></span>
                   {t('projectEdit.saveChanges')}
                 </>
               )}

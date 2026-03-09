@@ -32,17 +32,17 @@ export default function AdminSidebar({ isOpen, onClose }) {
     <aside className={`admin-sidebar ${isOpen ? 'open' : ''}`}>
       <div className="brand">FINENPROC</div>
       <nav>
-        <Link to="/admin" icon="📊">{t('nav.dashboard')}</Link>
-        <Link to="/admin/usuarios" icon="👥">{t('nav.users')}</Link>
+        <Link to="/admin" icon="">{t('nav.dashboard')}</Link>
+        <Link to="/admin/usuarios" icon="">{t('nav.users')}</Link>
         <div className="nav-section-title">{t('nav.operations')}</div>
-        <Link to="/admin/operaciones/recargas" icon="💰">{t('nav.topups')}</Link>
-        <Link to="/admin/operaciones/retiros" icon="🏦">{t('nav.withdrawals')}</Link>
-        <Link to="/admin/operaciones/inversiones" icon="📈">{t('nav.investments')}</Link>
-        <Link to="/admin/distribucion" icon="💎">{t('nav.returns')}</Link>
+        <Link to="/admin/operaciones/recargas" icon="">{t('nav.topups')}</Link>
+        <Link to="/admin/operaciones/retiros" icon="">{t('nav.withdrawals')}</Link>
+        <Link to="/admin/operaciones/inversiones" icon="">{t('nav.investments')}</Link>
+        <Link to="/admin/distribucion" icon="">{t('nav.returns')}</Link>
         <div className="nav-section-title">{t('nav.others')}</div>
-        <Link to="/admin/proyectos" icon="📁">{t('nav.projects')}</Link>
-        <Link to="/admin/auditoria" icon="🔒">{t('nav.audit')}</Link>
-        <Link disabled icon="⚙️">{t('nav.settings')}</Link>
+        <Link to="/admin/proyectos" icon="">{t('nav.projects')}</Link>
+        <Link to="/admin/auditoria" icon="">{t('nav.audit')}</Link>
+        <Link to="/admin/configuracion" icon="">{t('nav.settings')}</Link>
       </nav>
       <div className="sidebar-footer">{t('nav.adminPanel')}</div>
     </aside>

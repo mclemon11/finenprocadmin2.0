@@ -21,7 +21,7 @@ export default function DocumentsTab({
 
   return (
     <div className="tab-content-section">
-      <h3 className="section-title">📄 Documentos</h3>
+      <h3 className="section-title"> Documentos</h3>
 
       <div className="documents-uploader">
         <div className="form-field">
@@ -43,7 +43,7 @@ export default function DocumentsTab({
 
       {(existingDocuments.length === 0 && newDocumentItems.length === 0) ? (
         <div className="documents-placeholder">
-          <div className="placeholder-icon">📁</div>
+          <div className="placeholder-icon"></div>
           <p>Aún no hay documentos para este proyecto.</p>
         </div>
       ) : (
@@ -110,7 +110,7 @@ export default function DocumentsTab({
                   className="document-remove-btn"
                   onClick={() => removeExistingDocumentAt(idx)}
                 >
-                  ✕ Eliminar
+                   Eliminar
                 </button>
               </div>
             </div>
@@ -173,7 +173,7 @@ export default function DocumentsTab({
                   className="document-remove-btn"
                   onClick={() => removeNewDocumentAt(idx)}
                 >
-                  ✕ Quitar
+                   Quitar
                 </button>
               </div>
             </div>

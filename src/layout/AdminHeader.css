@@ -118,7 +118,7 @@
 }
 
 .language-option.active::before {
-  content: '✓ ';
+  content: ' ';
   color: var(--accent);
 }
 

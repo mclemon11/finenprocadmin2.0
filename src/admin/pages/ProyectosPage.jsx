@@ -154,19 +154,19 @@ export default function ProyectosPage({ adminData }) {
       </div>
 
       <div className="kpis-section">
-        <div className="kpi-card">
+        <div className="kpi-card accent-blue">
           <div className="kpi-label">{t('projects.totalProjects')}</div>
           <div className="kpi-value">{kpis.total}</div>
         </div>
-        <div className="kpi-card">
+        <div className="kpi-card accent-green">
           <div className="kpi-label">{t('projects.activeProjects')}</div>
           <div className="kpi-value kpi-success">{kpis.active}</div>
         </div>
-        <div className="kpi-card">
+        <div className="kpi-card accent-cyan">
           <div className="kpi-label">{t('projects.fundedProjects')}</div>
           <div className="kpi-value kpi-info">{kpis.funded}</div>
         </div>
-        <div className="kpi-card">
+        <div className="kpi-card accent-amber">
           <div className="kpi-label">{t('projects.totalCapital')}</div>
           <div className="kpi-value kpi-currency">{formatCurrency(kpis.totalCapital)}</div>
         </div>
@@ -323,13 +323,6 @@ export default function ProyectosPage({ adminData }) {
                       </td>
                       <td className="actions-cell">
                         <div className="actions-wrapper">
-                          <button
-                            className="action-btn-icon"
-                            onClick={() => openDetail(p)}
-                            title={t('projects.viewDetail')}
-                          >
-                            👁️
-                          </button>
                           <div className="action-menu-wrapper">
                             <button
                               className="action-menu-btn"
@@ -340,6 +333,15 @@ export default function ProyectosPage({ adminData }) {
                             </button>
                             {actionMenuOpen === p.id && (
                               <div className="action-menu">
+                                <button
+                                  className="action-menu-item"
+                                  onClick={() => {
+                                    openDetail(p);
+                                    setActionMenuOpen(null);
+                                  }}
+                                >
+                                  {t('projects.viewDetail')}
+                                </button>
                                 <button
                                   className="action-menu-item"
                                   onClick={() => {
@@ -358,7 +360,7 @@ export default function ProyectosPage({ adminData }) {
                                       setActionMenuOpen(null);
                                     }}
                                   >
-                                    ✓ {t('projects.activate')}
+                                     {t('projects.activate')}
                                   </button>
                                 )}
                                 {p.computedStatus === 'active' && (
@@ -371,7 +373,7 @@ export default function ProyectosPage({ adminData }) {
                                         setActionMenuOpen(null);
                                       }}
                                     >
-                                      ⏸ {t('projects.pause')}
+                                       {t('projects.pause')}
                                     </button>
                                     <button
                                       className="action-menu-item danger"
@@ -381,7 +383,7 @@ export default function ProyectosPage({ adminData }) {
                                         setActionMenuOpen(null);
                                       }}
                                     >
-                                      🔒 {t('projects.close')}
+                                       {t('projects.close')}
                                     </button>
                                   </>
                                 )}
@@ -394,7 +396,7 @@ export default function ProyectosPage({ adminData }) {
                                       setActionMenuOpen(null);
                                     }}
                                   >
-                                    ▶ {t('projects.resume')}
+                                     {t('projects.resume')}
                                   </button>
                                 )}
                                 {p.computedStatus === 'funded' && (
@@ -406,7 +408,7 @@ export default function ProyectosPage({ adminData }) {
                                       setActionMenuOpen(null);
                                     }}
                                   >
-                                    🔒 {t('projects.close')}
+                                     {t('projects.close')}
                                   </button>
                                 )}
                               </div>

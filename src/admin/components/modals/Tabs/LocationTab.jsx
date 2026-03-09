@@ -12,7 +12,7 @@ export default function LocationTab({ form, updateField }) {
 
   return (
     <div className="tab-content-section">
-      <h3 className="section-title">📍 Ubicación & Activo</h3>
+      <h3 className="section-title"> Ubicación & Activo</h3>
 
       <div className="form-row-2">
         <div className="form-field">

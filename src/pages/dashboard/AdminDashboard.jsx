@@ -13,7 +13,7 @@ export default function AdminDashboard(){
       id: 'pending_topups',
       label: t('dashboard.pendingTopups') || 'Recargas pendientes',
       value: String(kpis.pendingTopups ?? 0),
-      icon: '⏳',
+      icon: '',
       change: null,
       changeType: 'positive'
     },
@@ -21,7 +21,7 @@ export default function AdminDashboard(){
       id: 'approved_topups',
       label: t('dashboard.approvedTopups') || 'Recargas aprobadas',
       value: String(kpis.approvedTopups ?? 0),
-      icon: '✓',
+      icon: '',
       change: null,
       changeType: 'positive'
     },
@@ -29,7 +29,7 @@ export default function AdminDashboard(){
       id: 'rejected_topups',
       label: t('dashboard.rejectedTopups') || 'Recargas rechazadas',
       value: String(kpis.rejectedTopups ?? 0),
-      icon: '✕',
+      icon: '',
       change: null,
       changeType: 'negative'
     },
@@ -37,7 +37,7 @@ export default function AdminDashboard(){
       id: 'total_users',
       label: t('dashboard.totalUsers'),
       value: String(kpis.totalUsers ?? 0),
-      icon: '👥',
+      icon: '',
       change: null,
       changeType: 'positive'
     },
@@ -126,7 +126,7 @@ export default function AdminDashboard(){
             </div>
           ) : (
             <div className="empty-state">
-              <div className="empty-state-icon">📊</div>
+              <div className="empty-state-icon"></div>
               <div className="empty-state-title">{t('dashboard.noRecentActivity') || 'Sin actividad reciente'}</div>
               <div className="empty-state-text">{t('dashboard.noTransactions') || 'No hay transacciones recientes'}</div>
             </div>

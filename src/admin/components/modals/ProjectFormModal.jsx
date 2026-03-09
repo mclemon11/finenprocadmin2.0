@@ -346,7 +346,7 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
       <div className="project-modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h2>{t('projectForm.title')}</h2>
-          <button className="close-btn" onClick={handleClose}>✕</button>
+          <button className="close-btn" onClick={handleClose}></button>
         </div>
         
         <form className="modal-form" onSubmit={(e) => handleSubmit(e, 'draft')}>
@@ -358,7 +358,7 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
 
             <div className="form-section">
               <div className="form-section-header">
-                <h3>🖼️ {t('projectForm.images')}</h3>
+                <h3> {t('projectForm.images')}</h3>
                 <p>{t('projectForm.imagesDesc')}</p>
               </div>
 
@@ -397,7 +397,7 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
                             onClick={() => removeImageAt(idx)}
                             aria-label="Eliminar imagen"
                           >
-                            ✕
+                            
                           </button>
                         </div>
                       </SwiperSlide>
@@ -499,7 +499,7 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
                             setShowCreateInline(true);
                           }}
                         >
-                          ➕ {t('projectForm.createCategory')}
+                           {t('projectForm.createCategory')}
                         </button>
 
                         {showCreateInline && (
@@ -584,7 +584,7 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
             {form.type === 'fixed' && (
               <div className="form-section form-section-financial">
                 <div className="form-section-header">
-                  <h3>⚙️ {t('projectForm.fixedConfig')}</h3>
+                  <h3> {t('projectForm.fixedConfig')}</h3>
                   <p>{t('projectForm.fixedConfigDesc')}</p>
                 </div>
                 <div className="form-row form-row-3">
@@ -622,7 +622,7 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
             {form.type === 'variable' && (
               <div className="form-section form-section-financial">
                 <div className="form-section-header">
-                  <h3>📊 {t('projectForm.variableConfig')}</h3>
+                  <h3> {t('projectForm.variableConfig')}</h3>
                   <p>{t('projectForm.variableConfigDesc')}</p>
                 </div>
                 <div className="form-row form-row-2">
@@ -660,7 +660,7 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
 
             <div className="form-section form-section-advanced">
               <div className="form-section-header">
-                <h3>🛰️ {t('projectForm.advancedConfig')}</h3>
+                <h3> {t('projectForm.advancedConfig')}</h3>
                 <p>{t('projectForm.advancedConfigDesc')}</p>
               </div>
               <div className="placeholder-box">

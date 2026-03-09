@@ -170,9 +170,7 @@
     "pendingIn": "Entradas Pendientes",
     "pendingOut": "Salidas Pendientes",
     "activeInvestors": "Inversionistas Activos",
-    "liquidityObligations": "Liquidez y Obligaciones",
     "liquidity": "Liquidez",
-    "obligations": "Obligaciones",
     "upcomingPayments": "Próximos Pagos",
     "noUpcomingPayments": "Sin pagos próximos",
     "recentActivity": "Actividad Reciente",
@@ -305,6 +303,7 @@
     "investor": "Inversionista",
     "amountInvested": "Monto Invertido",
     "projectPercent": "% del Proyecto",
+    "shareOfProject": "Participación en Proyecto",
     "overview": "Resumen",
     "financial": "Financiero",
     "audit": "Audit",
@@ -867,5 +866,21 @@
     "project": "Proyecto",
     "totalReturn": "Rendimiento Total",
     "recipients": "Destinatarios"
+  },
+  "settings": {
+    "subtitle": "Configura los parámetros generales de la plataforma.",
+    "advisorTitle": "Asesor Principal",
+    "advisorPhoto": "Foto del Asesor",
+    "changePhoto": "Cambiar foto",
+    "uploading": "Subiendo...",
+    "advisorName": "Nombre",
+    "advisorNamePlaceholder": "Nombre del asesor",
+    "advisorPhone": "Teléfono",
+    "advisorPhonePlaceholder": "+52 123 456 7890",
+    "save": "Guardar cambios",
+    "saving": "Guardando...",
+    "savedSuccess": "Datos del asesor guardados correctamente.",
+    "photoUpdated": "Foto del asesor actualizada.",
+    "nameRequired": "El nombre del asesor es obligatorio."
   }
 }

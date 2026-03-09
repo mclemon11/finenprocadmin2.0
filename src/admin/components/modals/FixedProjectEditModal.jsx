@@ -661,11 +661,11 @@ export default function FixedProjectEditModal({ project, isOpen, onClose, onSucc
         {/* Header with tabs */}
         <div className="fixed-edit-header">
           <div className="fixed-edit-title">
-            <h2>✏️ {t('fixedProjectEdit.title')}</h2>
+            <h2> {t('fixedProjectEdit.title')}</h2>
             <span className="project-name-badge">{project.name}</span>
           </div>
           <button className="fixed-edit-close" onClick={handleClose} aria-label={t('common.close')} disabled={saving}>
-            ✕
+            
           </button>
         </div>
 
@@ -691,7 +691,7 @@ export default function FixedProjectEditModal({ project, isOpen, onClose, onSucc
         {/* Error message */}
         {error && (
           <div className="fixed-edit-error">
-            <span className="error-icon">⚠️</span>
+            <span className="error-icon"></span>
             <span>{error}</span>
           </div>
         )}
@@ -705,7 +705,7 @@ export default function FixedProjectEditModal({ project, isOpen, onClose, onSucc
           onClick={handleClose}
           disabled={saving}
         >
-          ✕ {t('common.cancel')}
+           {t('common.cancel')}
         </button>
         {hasChanges && (
           <button
@@ -721,7 +721,7 @@ export default function FixedProjectEditModal({ project, isOpen, onClose, onSucc
               </>
             ) : (
               <>
-                💾 {t('fixedProjectEdit.saveChanges')}
+                 {t('fixedProjectEdit.saveChanges')}
               </>
             )}
           </button>

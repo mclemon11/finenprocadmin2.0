@@ -262,7 +262,7 @@ export default function RecargasPage({ adminData }) {
                                 }}
                                 title={t('common.approve')}
                               >
-                                ✓
+                                
                               </button>
                               <button
                                 className="btn-action btn-reject"
@@ -273,7 +273,7 @@ export default function RecargasPage({ adminData }) {
                                 }}
                                 title={t('common.reject')}
                               >
-                                ✕
+                                
                               </button>
                             </>
                           )}
@@ -293,7 +293,7 @@ export default function RecargasPage({ adminData }) {
             <>
               <div className="detail-header">
                 <h3>{t('topups.depositDetail')}</h3>
-                <button className="detail-close" onClick={() => setSelectedTopup(null)}>✕</button>
+                <button className="detail-close" onClick={() => setSelectedTopup(null)}></button>
               </div>
               <div className="detail-body">
                 <div className="detail-row">
@@ -336,13 +336,13 @@ export default function RecargasPage({ adminData }) {
                       className="btn-detail-approve"
                       onClick={() => setActionModal({ isOpen: true, type: 'approve' })}
                     >
-                      ✓ {t('common.approve')}
+                       {t('common.approve')}
                     </button>
                     <button
                       className="btn-detail-reject"
                       onClick={() => setActionModal({ isOpen: true, type: 'reject' })}
                     >
-                      ✕ {t('common.reject')}
+                       {t('common.reject')}
                     </button>
                   </div>
                 )}
@@ -350,7 +350,7 @@ export default function RecargasPage({ adminData }) {
             </>
           ) : (
             <div className="detail-empty">
-              <span className="detail-empty-icon">📋</span>
+              <span className="detail-empty-icon"></span>
               <p>{t('topups.selectToView')}</p>
             </div>
           )}

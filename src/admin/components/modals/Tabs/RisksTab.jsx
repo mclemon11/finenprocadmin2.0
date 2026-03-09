@@ -3,7 +3,7 @@ import React from 'react';
 export default function RisksTab({ form, updateField }) {
   return (
     <div className="tab-content-section">
-      <h3 className="section-title">⚠️ Riesgos & Garantías</h3>
+      <h3 className="section-title"> Riesgos & Garantías</h3>
 
       <div className="form-row-2">
         <div className="form-field">
@@ -13,9 +13,9 @@ export default function RisksTab({ form, updateField }) {
             value={form.risk.riskLevel}
             onChange={(e) => updateField('risk', 'riskLevel', e.target.value)}
           >
-            <option value="low">🟢 Bajo</option>
+            <option value="low">Bajo</option>
             <option value="medium">🟡 Medio</option>
-            <option value="high">🔴 Alto</option>
+            <option value="high"> Alto</option>
           </select>
         </div>
 

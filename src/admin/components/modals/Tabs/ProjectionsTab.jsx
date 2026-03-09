@@ -3,7 +3,7 @@ import React from 'react';
 export default function ProjectionsTab({ form, updateField }) {
   return (
     <div className="tab-content-section">
-      <h3 className="section-title">📊 Proyección Financiera (Interno)</h3>
+      <h3 className="section-title"> Proyección Financiera (Interno)</h3>
       <p className="section-hint">Esta información es solo para referencia interna del administrador.</p>
 
       <div className="form-row-2">
@@ -75,8 +75,8 @@ export default function ProjectionsTab({ form, updateField }) {
           value={form.projections.scenario}
           onChange={(e) => updateField('projections', 'scenario', e.target.value)}
         >
-          <option value="conservative">🔵 Conservador</option>
-          <option value="base">🟢 Base</option>
+          <option value="conservative"> Conservador</option>
+          <option value="base">Base</option>
           <option value="optimistic">🟡 Optimista</option>
         </select>
       </div>

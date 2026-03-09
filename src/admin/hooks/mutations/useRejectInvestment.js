@@ -136,7 +136,7 @@ export default function useRejectInvestment() {
 
       return true;
     } catch (err) {
-      console.error('✗ Error al rechazar inversión:', err);
+      console.error(' Error al rechazar inversión:', err);
       setError(err?.message || String(err));
       return false;
     } finally {

@@ -177,10 +177,10 @@ export default function useApproveTopup() {
         });
       });
 
-      console.log('✓ Recarga aprobada:', topupId);
+      console.log(' Recarga aprobada:', topupId);
       return true;
     } catch (err) {
-      console.error('✗ Error al aprobar recarga:', err);
+      console.error(' Error al aprobar recarga:', err);
       setError(err?.message || String(err));
       return false;
     } finally {

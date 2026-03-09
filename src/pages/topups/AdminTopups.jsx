@@ -76,13 +76,13 @@ export default function AdminTopups(){
       <Card className="topups-table-card">
         {loading ? (
           <div className="empty-state">
-            <div className="empty-state-icon">⏳</div>
+            <div className="empty-state-icon"></div>
             <div className="empty-state-title">Cargando recargas…</div>
             <div className="empty-state-text">Obteniendo datos de Firestore</div>
           </div>
         ) : error ? (
           <div className="empty-state">
-            <div className="empty-state-icon">⚠️</div>
+            <div className="empty-state-icon"></div>
             <div className="empty-state-title">Error al cargar</div>
             <div className="empty-state-text">{error}</div>
           </div>
@@ -113,7 +113,7 @@ export default function AdminTopups(){
                     </td>
                     <td>
                       <div className="method-cell">
-                        <span className="method-icon">{topup.method?.icon || '💳'}</span>
+                        <span className="method-icon">{topup.method?.icon || ''}</span>
                         {topup.method?.name || 'Método no disponible'}
                       </div>
                     </td>
@@ -135,7 +135,7 @@ export default function AdminTopups(){
           </div>
         ) : (
           <div className="empty-state">
-            <div className="empty-state-icon">💰</div>
+            <div className="empty-state-icon"></div>
             <div className="empty-state-title">No hay recargas</div>
             <div className="empty-state-text">
               No se encontraron recargas con el filtro seleccionado

@@ -1,10 +1,10 @@
 # Sistema de Detalle de Inversión - Implementación Completada
 
-## ✅ Qué se Implementó
+##  Qué se Implementó
 
 Un sistema profesional, completo y trazable para análisis y control detallado de inversiones en el admin panel.
 
-## 📁 Archivos Creados
+##  Archivos Creados
 
 ### 1. **Hook de Datos**
 - **[src/admin/hooks/useInvestmentDetail.js](src/admin/hooks/useInvestmentDetail.js)**
@@ -57,42 +57,42 @@ Un sistema profesional, completo y trazable para análisis y control detallado d
   - Estructura de audit log
   - Próximos pasos opcionales
 
-## 🎯 Características Implementadas
+##  Características Implementadas
 
 ### Control Fino de Inversiones
-- ✅ Cambiar estado (active → paused → completed → cancelled)
-- ✅ Actualizar retorno realizado con cálculo automático de ROI
-- ✅ Registrar eventos de sistema para auditoría
-- ✅ Toda acción incluye timestamp y quién la realizó
+-  Cambiar estado (active → paused → completed → cancelled)
+-  Actualizar retorno realizado con cálculo automático de ROI
+-  Registrar eventos de sistema para auditoría
+-  Toda acción incluye timestamp y quién la realizó
 
 ### Análisis Financiero
-- ✅ ROI esperado y real (auto-calculado)
-- ✅ Ganancia/pérdida esperada y realizada
-- ✅ Porcentaje del capital total del proyecto
-- ✅ Preview en vivo al actualizar retorno
+-  ROI esperado y real (auto-calculado)
+-  Ganancia/pérdida esperada y realizada
+-  Porcentaje del capital total del proyecto
+-  Preview en vivo al actualizar retorno
 
 ### Trazabilidad Total
-- ✅ Audit log inmutable con timestamps
-- ✅ Historial de cambios de estado con razón
-- ✅ Registro de eventos de sistema con notas
-- ✅ Acceso a todos los datos en tab "Audit"
+-  Audit log inmutable con timestamps
+-  Historial de cambios de estado con razón
+-  Registro de eventos de sistema con notas
+-  Acceso a todos los datos en tab "Audit"
 
 ### Contexto Integrado
-- ✅ Datos del inversionista (email, nombre)
-- ✅ Información del proyecto (riesgo, tipo, estado)
-- ✅ Timeline de eventos del proyecto
-- ✅ Relación de la inversión con el proyecto
+-  Datos del inversionista (email, nombre)
+-  Información del proyecto (riesgo, tipo, estado)
+-  Timeline de eventos del proyecto
+-  Relación de la inversión con el proyecto
 
 ### UX Profesional
-- ✅ Drawer fluido (side panel)
-- ✅ Modales claros para acciones
-- ✅ Estados visuales (badges, colores)
-- ✅ Mensajes de éxito/error
-- ✅ Loading states
-- ✅ Animaciones suaves
-- ✅ Responsive mobile
+-  Drawer fluido (side panel)
+-  Modales claros para acciones
+-  Estados visuales (badges, colores)
+-  Mensajes de éxito/error
+-  Loading states
+-  Animaciones suaves
+-  Responsive mobile
 
-## 🚀 Cómo Usarlo
+##  Cómo Usarlo
 
 ### Acceder al Detalle de Inversión
 1. Abre un Proyecto (click en tabla de Proyectos)
@@ -129,7 +129,7 @@ Un sistema profesional, completo y trazable para análisis y control detallado d
   - Timestamp (cuándo)
   - Detalles específicos (valores, razones, etc.)
 
-## 💾 Almacenamiento en Firebase
+##  Almacenamiento en Firebase
 
 ```
 /investments/{investmentId}/
@@ -142,7 +142,7 @@ Un sistema profesional, completo y trazable para análisis y control detallado d
 
 Cada cambio es inmutable e histórico.
 
-## 🔄 Flujo de Datos
+##  Flujo de Datos
 
 ```
 Usuario click en inversión
@@ -166,34 +166,34 @@ UI se actualiza + mensaje de éxito
 onUpdate() → ProjectDetailDrawer refetch (opcional)
 ```
 
-## 🎨 Estados Visuales
+##  Estados Visuales
 
 ### Estados de Inversión
-- **Active** 🟢 (verde) - Activa, en espera de retorno
+- **Active** (verde) - Activa, en espera de retorno
 - **Paused** 🟡 (amarillo) - Pausada
-- **Completed** 🔵 (azul) - Completada
-- **Cancelled** 🔴 (rojo) - Cancelada
+- **Completed**  (azul) - Completada
+- **Cancelled**  (rojo) - Cancelada
 
 ### Financiero
-- **ROI/Ganancia Positiva** 🟢 (verde)
-- **ROI/Ganancia Negativa** 🔴 (rojo)
-- **Pendiente** ⚪ (gris) - Sin dato aún
+- **ROI/Ganancia Positiva** (verde)
+- **ROI/Ganancia Negativa**  (rojo)
+- **Pendiente**  (gris) - Sin dato aún
 
-## 🔐 Validaciones
+##  Validaciones
 
-- ✅ Campo retorno: numérico, positivo
-- ✅ Evento: título requerido
-- ✅ Cambio estado: todos los estados disponibles
-- ✅ Todas las acciones validadas antes de enviar a Firebase
+-  Campo retorno: numérico, positivo
+-  Evento: título requerido
+-  Cambio estado: todos los estados disponibles
+-  Todas las acciones validadas antes de enviar a Firebase
 
-## 📱 Responsive
+##  Responsive
 
 - Desktop: Drawer 500px desde derecha
 - Mobile: Full-width (100%)
 - Tablet: Drawer 80% del ancho
 - Grid de cards → 1 columna en mobile
 
-## 🧪 Testing Manual
+##  Testing Manual
 
 ```bash
 1. Ir a http://localhost:5173/
@@ -206,17 +206,17 @@ onUpdate() → ProjectDetailDrawer refetch (opcional)
 8. Ver que aparecen en audit log
 ```
 
-## ✨ Diferenciadores
+##  Diferenciadores
 
-✅ **No hay duplicación de lógica** - Reutiliza hooks de proyecto y usuario
-✅ **Totalmente trazable** - Audit log inmutable
-✅ **Profesional** - UX tipo fintech
-✅ **Completo** - Control fino + análisis + auditoría
-✅ **Escalable** - Arquitectura lista para nuevas acciones
-✅ **Performante** - Load de datos optimizado
-✅ **Seguro** - Validaciones en cliente
+ **No hay duplicación de lógica** - Reutiliza hooks de proyecto y usuario
+ **Totalmente trazable** - Audit log inmutable
+ **Profesional** - UX tipo fintech
+ **Completo** - Control fino + análisis + auditoría
+ **Escalable** - Arquitectura lista para nuevas acciones
+ **Performante** - Load de datos optimizado
+ **Seguro** - Validaciones en cliente
 
-## 📊 Métricas que Maneja
+##  Métricas que Maneja
 
 - ROI esperado / real
 - Ganancia / pérdida esperada / realizada
@@ -224,7 +224,7 @@ onUpdate() → ProjectDetailDrawer refetch (opcional)
 - Relación con proyecto (tipo, riesgo, estado)
 - Historial completo de cambios
 
-## 🎓 Ejemplo de Flujo Real
+##  Ejemplo de Flujo Real
 
 ```
 Admin: "¿Cuál es el estado de la inversión de Juan?"
@@ -241,14 +241,14 @@ Click "Cambiar Estado" → Selecciona "paused"
     ↓
 Ingresa razón: "Proyecto en riesgo alto - esperar estabilización"
     ↓
-Confirma → ✅ "Inversión actualizada a paused"
+Confirma →  "Inversión actualizada a paused"
     ↓
 Tab Audit: Aparece el cambio con timestamp
     ↓
 próxima vez que se vea esta inversión, se ve estado "paused"
 ```
 
-## 🚀 Próximos Pasos Opcionales
+##  Próximos Pasos Opcionales
 
 1. **Notificaciones:** Enviar email al inversionista cuando su inversión cambia estado
 2. **Reportes:** Exportar audit log a PDF/Excel
@@ -257,22 +257,22 @@ próxima vez que se vea esta inversión, se ve estado "paused"
 5. **Webhook:** Integración con sistemas externos
 6. **Aprobaciones:** Workflow de cambios que requieren aprobación
 
-## 📍 Localización de Archivos
+##  Localización de Archivos
 
 ```
 src/admin/
 ├── components/
 │   └── drawers/
-│       ├── ProjectDetailDrawer.jsx (modificado ✏️)
-│       ├── InvestmentDetailDrawer.jsx (nuevo ✨)
-│       └── InvestmentDetailDrawer.css (nuevo ✨)
+│       ├── ProjectDetailDrawer.jsx (modificado )
+│       ├── InvestmentDetailDrawer.jsx (nuevo )
+│       └── InvestmentDetailDrawer.css (nuevo )
 ├── hooks/
-│   ├── useInvestmentDetail.js (nuevo ✨)
+│   ├── useInvestmentDetail.js (nuevo )
 │   └── mutations/
-│       └── useInvestmentMutations.js (nuevo ✨)
+│       └── useInvestmentMutations.js (nuevo )
 ```
 
-## ✅ Verificación
+##  Verificación
 
 - [x] Código compila sin errores
 - [x] Servidor corre sin warnings
@@ -281,7 +281,7 @@ src/admin/
 - [x] Estilos CSS completos
 - [x] Documentación extensiva
 
-## 🎉 Conclusión
+##  Conclusión
 
 Sistema completamente funcional, profesional y listo para producción. Proporciona:
 
@@ -295,6 +295,6 @@ El admin puede ahora analizar, controlar y auditar cada inversión en contexto d
 
 ---
 
-**Status:** ✅ Completado y funcionando
+**Status:**  Completado y funcionando
 **Servidor:** http://localhost:5173/
 **Documentación:** [INVESTMENT_DETAIL_SYSTEM.md](INVESTMENT_DETAIL_SYSTEM.md)

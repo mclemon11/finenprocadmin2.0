@@ -38,7 +38,7 @@ export default function AdminLogin(){
     
     // Redirigir al dashboard después del login exitoso
     navigate('/admin', { replace: true });
-    console.log('✓ Login exitoso:', { uid: user.uid, role, status });
+    console.log(' Login exitoso:', { uid: user.uid, role, status });
   };
 
   const handleLogin = async (e) => {

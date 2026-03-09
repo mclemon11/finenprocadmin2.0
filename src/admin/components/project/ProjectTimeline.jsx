@@ -46,10 +46,10 @@ export default function ProjectTimeline({ projectId, adminData }) {
 
   const getEventIcon = (type) => {
     const icons = {
-      milestone: '🎯',
-      update: '📢',
-      notice: '📋',
-      system: '⚙️',
+      milestone: '',
+      update: '',
+      notice: '',
+      system: '',
     };
     return icons[type] || '•';
   };

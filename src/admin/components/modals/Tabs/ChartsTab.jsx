@@ -52,12 +52,12 @@ export default function ChartsTab({ form, setForm, updateField }) {
 
   return (
     <div className="tab-content-section charts-section">
-      <h3 className="section-title">📉 Datos para Gráficas (Usuario)</h3>
+      <h3 className="section-title"> Datos para Gráficas (Usuario)</h3>
       <p className="section-hint">Estos datos serán visibles para los usuarios en las gráficas del proyecto.</p>
 
       {/* Chart 1: Progress */}
       <div className="chart-config-card">
-        <h4>📊 Gráfica 1 – Progreso del Proyecto</h4>
+        <h4> Gráfica 1 – Progreso del Proyecto</h4>
         <div className="form-row-2">
           <div className="form-field">
             <label>Capital Objetivo</label>
@@ -88,7 +88,7 @@ export default function ChartsTab({ form, setForm, updateField }) {
 
       {/* Chart 2: ROI */}
       <div className="chart-config-card">
-        <h4>📈 Gráfica 2 – Retorno Esperado</h4>
+        <h4> Gráfica 2 – Retorno Esperado</h4>
         <div className="form-row-3">
           <div className="form-field">
             <label>ROI Anual (%)</label>
@@ -130,7 +130,7 @@ export default function ChartsTab({ form, setForm, updateField }) {
 
       {/* Chart 3: Capital Distribution */}
       <div className="chart-config-card">
-        <h4>🥧 Gráfica 3 – Distribución del Capital</h4>
+        <h4> Gráfica 3 – Distribución del Capital</h4>
         <p className="chart-hint">
           La suma debe ser 100%. Actual:{' '}
           <span className={distributionTotal === 100 ? 'valid' : 'invalid'}>{distributionTotal}%</span>
@@ -189,7 +189,7 @@ export default function ChartsTab({ form, setForm, updateField }) {
 
       {/* Chart 4: Payment Calendar */}
       <div className="chart-config-card">
-        <h4>📅 Gráfica 4 – Calendario de Pagos</h4>
+        <h4> Gráfica 4 – Calendario de Pagos</h4>
         <div className="payment-calendar-list">
           {(form.paymentCalendar || []).map((payment, idx) => (
             <div key={payment.id} className="payment-item">
@@ -229,15 +229,15 @@ export default function ChartsTab({ form, setForm, updateField }) {
                 value={payment.status}
                 onChange={(e) => updatePayment(payment.id, 'status', e.target.value)}
               >
-                <option value="estimated">📋 Estimado</option>
-                <option value="paid">✅ Pagado</option>
+                <option value="estimated"> Estimado</option>
+                <option value="paid"> Pagado</option>
               </select>
               <button
                 type="button"
                 className="remove-payment-btn"
                 onClick={() => removePayment(payment.id)}
               >
-                ✕
+                
               </button>
             </div>
           ))}
@@ -249,7 +249,7 @@ export default function ChartsTab({ form, setForm, updateField }) {
 
       {/* Chart 5: Risk vs Return */}
       <div className="chart-config-card">
-        <h4>⚡ Gráfica 5 – Riesgo vs Retorno</h4>
+        <h4> Gráfica 5 – Riesgo vs Retorno</h4>
         <div className="form-row-2">
           <div className="form-field">
             <label>Nivel de Riesgo (1-5)</label>

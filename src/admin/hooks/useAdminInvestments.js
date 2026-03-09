@@ -84,7 +84,7 @@ export default function useAdminInvestments(filters = {}) {
           userName: user.displayName || user.fullName || '—',
           userPhotoURL: user.photoURL || user.photoUrl || null,
           projectName: project.general?.name || project.name || '—',
-          expectedROI: calcROI(inv.amount, inv.expectedReturn),
+
           actualROI: calcROI(inv.amount, inv.actualReturn || inv.realizedReturn || inv.payout)
         };
       });

@@ -304,7 +304,7 @@ export default function RechargeMethodsModal({ isOpen, onClose }) {
         <div className="rm-header">
           <h2 className="rm-title">{t('rechargeMethods.title')}</h2>
           <button className="rm-close" onClick={onClose} aria-label={t('common.close')}>
-            ✕
+            
           </button>
         </div>
 

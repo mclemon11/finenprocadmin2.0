@@ -15,6 +15,7 @@ import InversionesPage from '../admin/pages/InversionesPage';
 import ProyectosPage from '../admin/pages/ProyectosPage';
 import DistributionPage from '../admin/pages/DistributionPage';
 import AuditLogsPage from '../admin/pages/AuditLogsPage';
+import SettingsPage from '../admin/pages/SettingsPage';
 import './AdminRouter.css';
 
 export default function AdminRouter() {
@@ -118,6 +119,16 @@ export default function AdminRouter() {
         element={
           isAdmin ? (
             <AdminLayout admin={user}><AdminTopups /></AdminLayout>
+          ) : (
+            <Navigate to="/admin/not-authorized" replace />
+          )
+        }
+      />
+      <Route
+        path="/admin/configuracion"
+        element={
+          isAdmin ? (
+            <AdminLayout admin={user}><SettingsPage /></AdminLayout>
           ) : (
             <Navigate to="/admin/not-authorized" replace />
           )

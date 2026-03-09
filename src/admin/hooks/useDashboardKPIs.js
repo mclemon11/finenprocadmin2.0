@@ -62,13 +62,11 @@ function buildLiquidityTimeline(topups, withdrawals, investments, daysBack) {
     if (bucket) bucket.outflow += (inv.amount || 0);
   });
 
-  // Convert to cumulative liquidity / obligations
+  // Convert to cumulative liquidity
   let cumulativeLiq = 0;
-  let cumulativeObl = 0;
   return buckets.map(b => {
     cumulativeLiq += b.inflow;
-    cumulativeObl += b.outflow;
-    return { label: b.label, liquidity: cumulativeLiq, obligations: cumulativeObl };
+    return { label: b.label, liquidity: cumulativeLiq };
   });
 }
 

@@ -196,7 +196,7 @@ export default function useApproveInvestment() {
 
       return true;
     } catch (err) {
-      console.error('✗ Error al aprobar inversión:', err);
+      console.error(' Error al aprobar inversión:', err);
       setError(err?.message || String(err));
       return false;
     } finally {

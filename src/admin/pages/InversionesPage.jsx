@@ -52,9 +52,11 @@ export default function InversionesPage({ adminData }) {
     maximumFractionDigits: 2,
   }).format(amount || 0);
 
-  const formatDate = (dateString) => {
-    if (!dateString) return '—';
-    return new Date(dateString).toLocaleDateString('es-MX');
+  const formatDate = (timestamp) => {
+    if (!timestamp) return '\u2014';
+    const date = timestamp?.toDate ? timestamp.toDate() : new Date(timestamp);
+    if (isNaN(date.getTime())) return '\u2014';
+    return date.toLocaleDateString('es-MX');
   };
 
   const formatROI = (roiValue) => {
@@ -130,15 +132,15 @@ export default function InversionesPage({ adminData }) {
       </div>
 
       <div className="inversiones-summary">
-        <div className="summary-card">
+        <div className="summary-card accent-green">
           <div className="summary-label">{t('investments.totalInvested')}</div>
           <div className="summary-value">{formatCurrency(totalAmount)}</div>
         </div>
-        <div className="summary-card">
+        <div className="summary-card accent-blue">
           <div className="summary-label">{t('investments.activeInvestments')}</div>
           <div className="summary-value">{investments.filter(i => i.status === 'active').length}</div>
         </div>
-        <div className="summary-card">
+        <div className="summary-card accent-purple">
           <div className="summary-label">{t('investments.totalInvestments')}</div>
           <div className="summary-value">{investments.length}</div>
         </div>
@@ -196,7 +198,6 @@ export default function InversionesPage({ adminData }) {
                   <th>{t('investments.user')}</th>
                   <th>{t('investments.project')}</th>
                   <th>{t('investments.amount')}</th>
-                  <th>{t('investments.expectedROI')}</th>
                   <th>{t('investments.actualROI')}</th>
                   <th>{t('investments.status')}</th>
                   <th>{t('investments.date')}</th>
@@ -225,14 +226,8 @@ export default function InversionesPage({ adminData }) {
                     </td>
                     <td>
                       <div className="cell-title">{inv.projectName || t('investments.projectNoName')}</div>
-                      <div className="cell-subtle">{inv.expectedReturn ? t('investments.withExpectedReturn') : t('investments.noExpectedReturn')}</div>
                     </td>
                     <td className="amount-cell">{formatCurrency(inv.amount)}</td>
-                    <td>
-                      <span className={`roi-badge ${Number(inv.expectedROI) >= 0 ? 'roi-positive' : 'roi-negative'}`}>
-                        {formatROI(inv.expectedROI)}
-                      </span>
-                    </td>
                     <td>
                       <span className={`roi-badge ${Number(inv.actualROI) >= 0 ? 'roi-positive' : 'roi-negative'}`}>
                         {formatROI(inv.actualROI)}
@@ -243,9 +238,9 @@ export default function InversionesPage({ adminData }) {
                         {getStatusLabel(inv.status)}
                       </span>
                     </td>
-                    <td>{formatDate(inv.createdAt)}</td>
+                    <td>{formatDate(inv.approvedAt || inv.createdAt)}</td>
                     <td className="actions-cell">
-                      <button className="link-btn" onClick={() => goToUser(inv.userId)}>{t('investments.viewUser')}</button>
+                      <button className="link-btn link-btn-yellow" onClick={() => goToUser(inv.userId)}>{t('investments.viewUser')}</button>
                       <button className="link-btn" onClick={() => goToProject(inv.projectId)} disabled={!inv.projectId}>{t('investments.viewProject')}</button>
                       {inv.status === 'pending' && (
                         <>

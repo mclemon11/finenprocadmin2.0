@@ -173,9 +173,7 @@
     "depositsLabel": "Depositi",
     "withdrawalsLabel": "Prelievi",
     "requests": "richiesta/e",
-    "liquidityObligations": "Liquidità e Obblighi",
     "liquidity": "Liquidità",
-    "obligations": "Obblighi",
     "upcomingPayments": "Pagamenti in Scadenza",
     "project": "Progetto",
     "investor": "Investitore",
@@ -370,6 +368,7 @@
     "investor": "Investitore",
     "amountInvested": "Importo Investito",
     "projectPercent": "% del Progetto",
+    "shareOfProject": "Quota del Progetto",
     "overview": "Panoramica",
     "financial": "Finanziario",
     "audit": "Audit",
@@ -868,5 +867,21 @@
     "project": "Progetto",
     "totalReturn": "Rendimento Totale",
     "recipients": "Destinatari"
+  },
+  "settings": {
+    "subtitle": "Configura le impostazioni generali della piattaforma.",
+    "advisorTitle": "Consulente Principale",
+    "advisorPhoto": "Foto del Consulente",
+    "changePhoto": "Cambia foto",
+    "uploading": "Caricamento...",
+    "advisorName": "Nome",
+    "advisorNamePlaceholder": "Nome del consulente",
+    "advisorPhone": "Telefono",
+    "advisorPhonePlaceholder": "+39 123 456 7890",
+    "save": "Salva modifiche",
+    "saving": "Salvataggio...",
+    "savedSuccess": "Dati del consulente salvati con successo.",
+    "photoUpdated": "Foto del consulente aggiornata.",
+    "nameRequired": "Il nome del consulente è obbligatorio."
   }
 }
