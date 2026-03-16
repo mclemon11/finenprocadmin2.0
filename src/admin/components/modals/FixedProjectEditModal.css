@@ -206,6 +206,45 @@
   animation: fadeIn 0.2s ease;
 }
 
+/* Advisor row inside edit content */
+.fixed-edit-advisor-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  background: rgba(99, 102, 241, 0.06);
+  border: 1px solid rgba(99, 102, 241, 0.15);
+  border-radius: 10px;
+}
+
+.fixed-edit-advisor-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--fg, #fff);
+  white-space: nowrap;
+}
+
+.fixed-edit-advisor-select {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--glass-border, rgba(255,255,255,0.1));
+  border-radius: 8px;
+  color: var(--fg, #fff);
+  font-size: 0.88rem;
+  outline: none;
+}
+
+.fixed-edit-advisor-select:focus {
+  border-color: var(--accent, #6366f1);
+}
+
+.fixed-edit-advisor-select option {
+  background: #1a1a2e;
+  color: #fff;
+}
+
 .section-title {
   margin: 0 0 0.5rem 0;
   font-size: 1.1rem;

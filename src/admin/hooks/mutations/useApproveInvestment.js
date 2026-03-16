@@ -192,6 +192,52 @@ export default function useApproveInvestment() {
           read: false,
           createdAt: serverTimestamp(),
         });
+
+        // ─── Referral Earnings ──────────────────────────
+        // If this investment was referred, create a referralEarnings doc
+        const isReferred = inv?.referred === true && inv?.referredBy;
+        if (isReferred) {
+          const referrerId = inv.referredBy;
+          const rewardType = project?.referral?.referralRewardType || project?.referralRewardType || 'percentage';
+          const rewardValue = Number(project?.referral?.referralRewardValue || project?.referralRewardValue || 0);
+
+          let rewardAmount = 0;
+          if (rewardType === 'percentage' && rewardValue > 0) {
+            rewardAmount = Math.round((amount * rewardValue / 100) * 100) / 100;
+          } else if (rewardType === 'fixed' && rewardValue > 0) {
+            rewardAmount = rewardValue;
+          }
+
+          if (rewardAmount > 0) {
+            const referralEarningRef = doc(collection(db, 'referralEarnings'));
+            tx.set(referralEarningRef, {
+              userId: referrerId,
+              investorId: userId,
+              projectId,
+              investmentId: investmentId,
+              investmentAmount: amount,
+              rewardType,
+              rewardValue,
+              amount: rewardAmount,
+              status: 'pending',
+              createdAt: serverTimestamp(),
+            });
+
+            // Notify the referrer about their earned commission
+            const referrerNotifRef = doc(collection(db, 'users', referrerId, 'notifications'));
+            tx.set(referrerNotifRef, {
+              userId: referrerId,
+              type: 'referral_earning',
+              title: 'Comisión por referido',
+              message: `Has ganado ${formatMoney(rewardAmount)} ${currency} por referir una inversión en ${projectName}.`,
+              projectId,
+              investmentId: investmentId,
+              amount: rewardAmount,
+              read: false,
+              createdAt: serverTimestamp(),
+            });
+          }
+        }
       });
 
       return true;

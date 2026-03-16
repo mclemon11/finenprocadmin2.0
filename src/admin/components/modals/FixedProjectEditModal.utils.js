@@ -79,6 +79,8 @@ export const getInitialForm = (project) => {
       paybackPeriod: project?.returns?.paybackPeriod || project?.metrics?.paybackPeriod || '',
       paymentFrequency: project?.returns?.paymentFrequency || project?.metrics?.paymentFrequency || 'monthly',
       returnExpected: project?.returns?.returnExpected || project?.charts?.returnExpected || '',
+      expectedReturn: project?.returns?.expectedReturn || '',
+      returnPeriod: project?.returns?.returnPeriod || 'monthly',
     },
 
     // ─── Risk ─────────────────────────────────────
@@ -139,5 +141,12 @@ export const getInitialForm = (project) => {
 
     // ─── Payment Calendar ─────────────────────────
     paymentCalendar: project?.paymentCalendar || project?.charts?.paymentCalendar || [],
+
+    // ─── External Investors / Referrals ───────────
+    referral: {
+      allowExternalInvestors: project?.referral?.allowExternalInvestors ?? project?.allowExternalInvestors ?? false,
+      referralRewardType: project?.referral?.referralRewardType || project?.referralRewardType || 'percentage',
+      referralRewardValue: project?.referral?.referralRewardValue || project?.referralRewardValue || '',
+    },
   };
 };

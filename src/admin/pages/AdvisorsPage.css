@@ -1,0 +1,200 @@
+.advisors-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 0.5rem;
+}
+
+.advisors-page .page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  gap: 1rem;
+}
+
+.advisors-create-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.25rem;
+  background: var(--accent, #6366f1);
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 0.2s;
+}
+
+.advisors-create-btn:hover {
+  opacity: 0.9;
+}
+
+/* Loading / Empty */
+.advisors-loading {
+  text-align: center;
+  color: var(--fg-muted, #888);
+  padding: 3rem 0;
+  font-size: 0.95rem;
+}
+
+.advisors-empty {
+  text-align: center;
+  padding: 4rem 1rem;
+  color: var(--fg-muted, #888);
+}
+
+.advisors-empty-icon {
+  font-size: 3.5rem;
+  opacity: 0.3;
+  margin-bottom: 1rem;
+}
+
+.advisors-empty p {
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+}
+
+/* Grid */
+.advisors-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1rem;
+}
+
+/* Card */
+.advisor-card-item {
+  background: var(--card-bg, #1a1a2e);
+  border: 1px solid var(--glass-border, rgba(255,255,255,0.08));
+  border-radius: var(--radius-sm, 12px);
+  padding: 1.25rem;
+  transition: border-color 0.2s;
+}
+
+.advisor-card-item:hover {
+  border-color: rgba(255,255,255,0.15);
+}
+
+.advisor-card-top {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.advisor-card-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 2px solid var(--glass-border, rgba(255,255,255,0.1));
+}
+
+.advisor-card-avatar-placeholder {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: var(--fg-muted, #888);
+  flex-shrink: 0;
+  border: 2px dashed var(--glass-border, rgba(255,255,255,0.1));
+}
+
+.advisor-card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.advisor-card-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--fg, #fff);
+  margin: 0 0 0.2rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.advisor-card-specialty {
+  font-size: 0.8rem;
+  color: var(--accent, #6366f1);
+  background: rgba(99, 102, 241, 0.12);
+  padding: 0.15rem 0.6rem;
+  border-radius: 20px;
+  display: inline-block;
+}
+
+.advisor-card-actions {
+  display: flex;
+  gap: 0.3rem;
+  flex-shrink: 0;
+}
+
+.advisor-action-btn {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 1.05rem;
+  transition: background 0.2s, color 0.2s;
+}
+
+.advisor-action-btn.edit {
+  background: rgba(99, 102, 241, 0.12);
+  color: #818cf8;
+}
+
+.advisor-action-btn.edit:hover {
+  background: rgba(99, 102, 241, 0.25);
+}
+
+.advisor-action-btn.delete {
+  background: rgba(239, 68, 68, 0.12);
+  color: #f87171;
+}
+
+.advisor-action-btn.delete:hover {
+  background: rgba(239, 68, 68, 0.25);
+}
+
+.advisor-card-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--glass-border, rgba(255,255,255,0.06));
+}
+
+.advisor-detail-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--fg-muted, #bbb);
+}
+
+.advisor-detail-icon {
+  font-size: 1rem;
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  .advisors-page .page-header {
+    flex-direction: column;
+  }
+  .advisors-grid {
+    grid-template-columns: 1fr;
+  }
+}

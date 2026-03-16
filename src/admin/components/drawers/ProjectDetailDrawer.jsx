@@ -458,6 +458,24 @@ export default function ProjectDetailDrawer({
                       </div>
                     </div>
                   </div>
+
+                  {/* Contacts Card */}
+                  {Array.isArray(project.contacts) && project.contacts.length > 0 && (
+                    <div className="quick-info-card contacts-card">
+                      <h4>👥 {t('projects.involvedContacts')}</h4>
+                      <div className="project-contacts-list">
+                        {project.contacts.map((c, idx) => (
+                          <div key={idx} className="project-contact-item">
+                            <div className="pc-avatar">{(c.displayName || '?')[0].toUpperCase()}</div>
+                            <div className="pc-info">
+                              <span className="pc-name">{c.displayName || '—'}</span>
+                              <span className="pc-detail">{c.expertise || c.email || '—'}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

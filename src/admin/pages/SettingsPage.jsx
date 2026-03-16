@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import { getAdvisor, saveAdvisor, uploadAdvisorPhoto } from '../services/advisor.service';
+import { getPlatformSettings, savePlatformSettings } from '../services/platform.service';
 import { MdPerson, MdSave, MdUpload } from 'react-icons/md';
 import './SettingsPage.css';
 
@@ -18,13 +19,23 @@ export default function SettingsPage() {
   const [phone, setPhone] = useState('');
   const [photoUrl, setPhotoUrl] = useState('');
 
+  // Platform T&C
+  const [platformTerms, setPlatformTerms] = useState('');
+  const [savingTerms, setSavingTerms] = useState(false);
+
   useEffect(() => {
     (async () => {
-      const res = await getAdvisor();
-      if (res.success && res.data) {
-        setName(res.data.name || '');
-        setPhone(res.data.phone || '');
-        setPhotoUrl(res.data.photoUrl || '');
+      const [advisorRes, platformRes] = await Promise.all([
+        getAdvisor(),
+        getPlatformSettings(),
+      ]);
+      if (advisorRes.success && advisorRes.data) {
+        setName(advisorRes.data.name || '');
+        setPhone(advisorRes.data.phone || '');
+        setPhotoUrl(advisorRes.data.photoUrl || '');
+      }
+      if (platformRes.success && platformRes.data) {
+        setPlatformTerms(platformRes.data.termsAndConditions || '');
       }
       setLoading(false);
     })();
@@ -68,6 +79,19 @@ export default function SettingsPage() {
     }
     // Reset input so the same file can be selected again
     e.target.value = '';
+  };
+
+  const handleSaveTerms = async () => {
+    clearMessages();
+    setSavingTerms(true);
+    const res = await savePlatformSettings({ termsAndConditions: platformTerms.trim() });
+    setSavingTerms(false);
+    if (res.success) {
+      setSuccess(t('settings.termsSaved'));
+      setTimeout(() => setSuccess(''), 3000);
+    } else {
+      setError(res.error);
+    }
   };
 
   if (loading) {
@@ -150,6 +174,37 @@ export default function SettingsPage() {
             >
               <MdSave />
               {saving ? t('settings.saving') : t('settings.save')}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Platform Terms & Conditions */}
+      <div className="advisor-card">
+        <h2 className="advisor-card-title">📄 {t('settings.platformTerms')}</h2>
+        <p className="terms-description">{t('settings.platformTermsDesc')}</p>
+
+        {success && <div className="advisor-success">{success}</div>}
+
+        <div className="advisor-form">
+          <div className="form-group">
+            <textarea
+              className="terms-textarea"
+              value={platformTerms}
+              onChange={(e) => setPlatformTerms(e.target.value)}
+              placeholder={t('settings.platformTermsPlaceholder')}
+              rows={8}
+            />
+          </div>
+
+          <div className="advisor-actions">
+            <button
+              className="btn-save"
+              onClick={handleSaveTerms}
+              disabled={savingTerms}
+            >
+              <MdSave />
+              {savingTerms ? t('settings.saving') : t('settings.save')}
             </button>
           </div>
         </div>

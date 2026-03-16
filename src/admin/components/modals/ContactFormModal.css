@@ -1,0 +1,385 @@
+/* ─── Contact Form Modal ───────────────────────────────── */
+
+.contact-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: var(--spacing-lg);
+  animation: contactFadeIn 0.2s ease;
+}
+
+@keyframes contactFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.contact-modal {
+  background: var(--card-bg);
+  border: var(--glass-border);
+  border-radius: var(--radius);
+  width: 100%;
+  max-width: 640px;
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+  animation: contactSlideUp 0.3s ease;
+}
+
+@keyframes contactSlideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.contact-modal .modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-lg) var(--spacing-xl);
+  border-bottom: var(--glass-border);
+  background: linear-gradient(180deg, rgba(16, 185, 129, 0.08), rgba(16, 185, 129, 0.02));
+  position: sticky;
+  top: 0;
+  backdrop-filter: blur(10px);
+  z-index: 1;
+}
+
+.contact-modal .modal-header h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--fg);
+}
+
+.contact-modal .close-btn {
+  background: none;
+  border: none;
+  color: var(--fg-muted);
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.contact-modal .close-btn:hover {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.contact-modal .modal-body {
+  padding: var(--spacing-xl);
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  background: radial-gradient(circle at 20% 20%, rgba(16, 185, 129, 0.06), transparent 35%),
+    radial-gradient(circle at 80% 0%, rgba(59, 130, 246, 0.04), transparent 30%),
+    rgba(14, 24, 36, 0.7);
+}
+
+.contact-modal .form-section {
+  background: rgba(16, 185, 129, 0.03);
+  border: var(--glass-border);
+  border-radius: var(--radius-sm);
+  padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.contact-modal .form-section-header {
+  margin-bottom: 8px;
+}
+
+.contact-modal .form-section-header h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent);
+  margin: 0 0 4px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.contact-modal .form-section-header p {
+  font-size: 12px;
+  color: var(--fg-muted);
+  margin: 0;
+}
+
+.contact-modal .form-row {
+  display: grid;
+  gap: var(--spacing-md);
+  margin-bottom: 0;
+}
+
+.contact-modal .form-row-2 {
+  grid-template-columns: 1fr 1fr;
+}
+
+.contact-modal label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fg);
+}
+
+.contact-modal input,
+.contact-modal textarea,
+.contact-modal select {
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-sm);
+  background: rgba(0, 0, 0, 0.3);
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 14px;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+.contact-modal input::placeholder,
+.contact-modal textarea::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.contact-modal input:focus,
+.contact-modal textarea:focus,
+.contact-modal select:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.contact-modal textarea {
+  resize: vertical;
+  line-height: 1.5;
+}
+
+/* ─── User Search Dropdown ─────────────────────────────── */
+
+.user-search-wrapper {
+  position: relative;
+}
+
+.user-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: rgba(30, 30, 45, 0.98);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 10;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(12px);
+  margin-top: 4px;
+}
+
+.user-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.user-option:hover {
+  background: rgba(16, 185, 129, 0.08);
+}
+
+.user-option.selected {
+  background: rgba(16, 185, 129, 0.12);
+}
+
+.user-option-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(16, 185, 129, 0.1));
+  border: 2px solid rgba(16, 185, 129, 0.4);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 12px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.user-option-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.user-option-name {
+  font-size: 13px;
+  color: var(--fg);
+  font-weight: 500;
+}
+
+.user-option-email {
+  font-size: 12px;
+  color: var(--fg-muted);
+}
+
+/* ─── Tags Selector ────────────────────────────────────── */
+
+.tags-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag-option {
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--fg-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tag-option:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.tag-option.selected {
+  border-width: 2px;
+}
+
+.tag-option.add-new {
+  border-style: dashed;
+}
+
+.tag-option.add-new:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.inline-tag-create {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.inline-tag-create input {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--fg);
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  width: 140px;
+}
+
+.mini-confirm,
+.mini-cancel {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.mini-confirm {
+  color: var(--accent);
+}
+
+.mini-cancel {
+  color: #ef4444;
+}
+
+/* ─── Error ────────────────────────────────────────────── */
+
+.contact-modal .form-error {
+  background: var(--danger-bg);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  color: #fca5a5;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-top: 10px;
+}
+
+/* ─── Actions ──────────────────────────────────────────── */
+
+.contact-modal .modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: var(--spacing-md) var(--spacing-xl);
+  border-top: var(--glass-border);
+  background: rgba(255, 255, 255, 0.01);
+}
+
+.contact-modal .cancel-btn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--fg);
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.contact-modal .cancel-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.contact-modal .submit-btn {
+  background: var(--accent);
+  color: var(--bg);
+  border: none;
+  padding: 10px 24px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.contact-modal .submit-btn:hover {
+  background: #0ea472;
+  transform: translateY(-1px);
+}
+
+.contact-modal .submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+@media (max-width: 640px) {
+  .contact-modal .form-row-2 {
+    grid-template-columns: 1fr;
+  }
+}

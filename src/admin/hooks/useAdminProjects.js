@@ -78,8 +78,16 @@ export default function useAdminProjects() {
           manualControl: p.controls?.manualControl ?? p.manualControl ?? true,
           performance: p.performance ?? null,
           drawdown: p.drawdown ?? null,
+          expectedReturn: p.returns?.expectedReturn || null,
+          returnPeriod: p.returns?.returnPeriod || null,
           createdAt: p.general?.createdAt || p.createdAt || null,
           updatedAt: p.general?.updatedAt || p.updatedAt || null,
+          // Referral / External Investors
+          allowExternalInvestors: p.referral?.allowExternalInvestors ?? p.allowExternalInvestors ?? false,
+          referralRewardType: p.referral?.referralRewardType || p.referralRewardType || null,
+          referralRewardValue: p.referral?.referralRewardValue || p.referralRewardValue || null,
+          // Advisor
+          advisorId: p.advisorId || null,
           // Computed
           computedStatus,
           progress: target > 0 ? Math.min(100, Number(((invested / target) * 100).toFixed(2))) : null,

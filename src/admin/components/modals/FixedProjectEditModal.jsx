@@ -6,6 +6,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { FreeMode } from 'swiper/modules';
 import Swal from 'sweetalert2';
 import { useLanguage } from '../../../context/LanguageContext';
+import { getAllAdvisors } from '../../services/advisor.service';
 import 'swiper/css';
 import 'swiper/css/free-mode';
 import './FixedProjectEditModal.css';
@@ -36,6 +37,8 @@ export default function FixedProjectEditModal({ project, isOpen, onClose, onSucc
   const [originalForm, setOriginalForm] = useState(() => getInitialForm(project));
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
+  const [advisorsList, setAdvisorsList] = useState([]);
+  const [selectedAdvisorId, setSelectedAdvisorId] = useState(project?.advisorId || '');
 
   // Image states
   const [existingImages, setExistingImages] = useState([]);
@@ -57,6 +60,7 @@ export default function FixedProjectEditModal({ project, isOpen, onClose, onSucc
       setOriginalForm(initial);
       setActiveTab('general');
       setError(null);
+      setSelectedAdvisorId(project.advisorId || '');
 
       // Initialize images — support new nested format + legacy flat format
       const newFmtCover = project.images?.cover;
@@ -122,6 +126,12 @@ export default function FixedProjectEditModal({ project, isOpen, onClose, onSucc
       setNewDocumentItems([]);
     }
   }, [project]);
+
+  useEffect(() => {
+    getAllAdvisors().then(res => {
+      if (res.success) setAdvisorsList(res.data || []);
+    });
+  }, []);
 
   // Check if there are changes (form + images)
   const hasChanges = useMemo(() => {
@@ -456,6 +466,8 @@ export default function FixedProjectEditModal({ project, isOpen, onClose, onSucc
           paybackPeriod: form.returns.paybackPeriod ? Number(form.returns.paybackPeriod) : null,
           paymentFrequency: form.returns.paymentFrequency || 'monthly',
           returnExpected: form.returns.returnExpected ? Number(form.returns.returnExpected) : null,
+          expectedReturn: form.returns.expectedReturn ? Number(form.returns.expectedReturn) : null,
+          returnPeriod: form.returns.returnPeriod || 'monthly',
         },
 
         // ─── Risk ─────────────────────────────────────
@@ -523,6 +535,13 @@ export default function FixedProjectEditModal({ project, isOpen, onClose, onSucc
           maxPercentPerInvestor: form.restrictions.maxPercentPerInvestor ? Number(form.restrictions.maxPercentPerInvestor) : null,
         },
 
+        // ─── External Investors / Referrals ───────────
+        referral: {
+          allowExternalInvestors: form.referral?.allowExternalInvestors || false,
+          referralRewardType: form.referral?.allowExternalInvestors ? (form.referral?.referralRewardType || 'percentage') : null,
+          referralRewardValue: form.referral?.allowExternalInvestors ? Number(form.referral?.referralRewardValue || 0) : null,
+        },
+
         // ─── Optional top-level ───────────────────────
         performance: null,
         drawdown: null,
@@ -530,6 +549,9 @@ export default function FixedProjectEditModal({ project, isOpen, onClose, onSucc
         charts: {},
         finance: {},
         metrics: {},
+
+        // ─── Advisor ──────────────────────────────────────
+        advisorId: selectedAdvisorId || null,
 
         updatedAt: serverTimestamp(),
       };
@@ -685,6 +707,22 @@ export default function FixedProjectEditModal({ project, isOpen, onClose, onSucc
 
         {/* Tab content */}
         <div className="fixed-edit-content">
+          {/* Advisor selector (above tab content) */}
+          <div className="fixed-edit-advisor-row">
+            <label className="fixed-edit-advisor-label">🧑‍💼 {t('projectEdit.assignAdvisor')}</label>
+            <select
+              className="fixed-edit-advisor-select"
+              value={selectedAdvisorId}
+              onChange={(e) => setSelectedAdvisorId(e.target.value)}
+            >
+              <option value="">{t('projectEdit.noAdvisor')}</option>
+              {advisorsList.map((adv) => (
+                <option key={adv.id} value={adv.id}>
+                  {adv.name}{adv.specialty ? ` — ${adv.specialty}` : ''}
+                </option>
+              ))}
+            </select>
+          </div>
           {renderTabContent()}
         </div>
 

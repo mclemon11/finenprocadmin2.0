@@ -16,6 +16,10 @@ import ProyectosPage from '../admin/pages/ProyectosPage';
 import DistributionPage from '../admin/pages/DistributionPage';
 import AuditLogsPage from '../admin/pages/AuditLogsPage';
 import SettingsPage from '../admin/pages/SettingsPage';
+import ContactosPage from '../admin/pages/ContactosPage';
+import ProjectDetailPage from '../admin/pages/ProjectDetailPage';
+import ChatsPage from '../admin/pages/ChatsPage';
+import AdvisorsPage from '../admin/pages/AdvisorsPage';
 import './AdminRouter.css';
 
 export default function AdminRouter() {
@@ -49,6 +53,16 @@ export default function AdminRouter() {
         element={
           isAdmin ? (
             <AdminLayout admin={user}><UsuariosPage adminData={user} /></AdminLayout>
+          ) : (
+            <Navigate to="/admin/not-authorized" replace />
+          )
+        }
+      />
+      <Route
+        path="/admin/contactos"
+        element={
+          isAdmin ? (
+            <AdminLayout admin={user}><ContactosPage adminData={user} /></AdminLayout>
           ) : (
             <Navigate to="/admin/not-authorized" replace />
           )
@@ -95,6 +109,26 @@ export default function AdminRouter() {
         }
       />
       <Route
+        path="/admin/proyectos/:projectId"
+        element={
+          isAdmin ? (
+            <AdminLayout admin={user}><ProjectDetailPage adminData={user} /></AdminLayout>
+          ) : (
+            <Navigate to="/admin/not-authorized" replace />
+          )
+        }
+      />
+      <Route
+        path="/admin/chats"
+        element={
+          isAdmin ? (
+            <AdminLayout admin={user}><ChatsPage adminData={user} /></AdminLayout>
+          ) : (
+            <Navigate to="/admin/not-authorized" replace />
+          )
+        }
+      />
+      <Route
         path="/admin/distribucion"
         element={
           isAdmin ? (
@@ -119,6 +153,16 @@ export default function AdminRouter() {
         element={
           isAdmin ? (
             <AdminLayout admin={user}><AdminTopups /></AdminLayout>
+          ) : (
+            <Navigate to="/admin/not-authorized" replace />
+          )
+        }
+      />
+      <Route
+        path="/admin/asesores"
+        element={
+          isAdmin ? (
+            <AdminLayout admin={user}><AdvisorsPage adminData={user} /></AdminLayout>
           ) : (
             <Navigate to="/admin/not-authorized" replace />
           )

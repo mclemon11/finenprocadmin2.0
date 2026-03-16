@@ -61,7 +61,8 @@ export default function useAdminUsers(filters = {}) {
         const search = filters.search.toLowerCase();
         filtered = enriched.filter(u =>
           (u.email?.toLowerCase().includes(search)) ||
-          (u.displayName?.toLowerCase().includes(search))
+          (u.displayName?.toLowerCase().includes(search)) ||
+          (u.fullName?.toLowerCase().includes(search))
         );
       }
 

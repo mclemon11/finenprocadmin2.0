@@ -650,3 +650,124 @@
     font-size: 28px;
   }
 }
+
+/* ─── KYC Tab Styles ─── */
+
+.kyc-pending-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: #f59e0b;
+  border-radius: 50%;
+  margin-left: 6px;
+  animation: kycPulse 1.5s infinite;
+}
+
+@keyframes kycPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.kyc-review-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.kyc-status-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  border: 1px solid var(--border-color, rgba(255,255,255,0.08));
+}
+
+.kyc-rejection-reason {
+  padding: 0.75rem 1rem;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 8px;
+  color: #fca5a5;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.kyc-documents-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 0.75rem;
+}
+
+.kyc-doc-item {
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-color, rgba(255,255,255,0.08));
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.kyc-doc-link {
+  color: var(--primary-color, #6366f1);
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: opacity 0.2s;
+}
+
+.kyc-doc-link:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+.kyc-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color, rgba(255,255,255,0.08));
+}
+
+.kyc-action-btn {
+  padding: 0.6rem 1.2rem !important;
+  font-size: 0.9rem !important;
+  border-radius: 8px !important;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.kyc-action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.kyc-reject-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.kyc-reject-textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color, rgba(255,255,255,0.15));
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-color, #fff);
+  font-size: 0.85rem;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.kyc-reject-textarea:focus {
+  outline: none;
+  border-color: var(--primary-color, #6366f1);
+}
+
+.kyc-reject-buttons {
+  display: flex;
+  gap: 0.5rem;
+}

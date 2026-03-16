@@ -180,6 +180,58 @@ export default function GeneralTab({
             <span className="checkbox-text">Abierto a inversión</span>
           </label>
         </div>      </div>
+
+      {/* ─── External Investors / Referrals ───────────── */}
+      <div className="form-divider"></div>
+      <h3 className="section-title">🔗 Inversión Externa</h3>
+      <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '1rem' }}>
+        Permite que los usuarios inviten a otros inversionistas y ganen comisión.
+      </p>
+
+      <div className="form-field checkbox-field">
+        <label className="checkbox-label">
+          <input
+            type="checkbox"
+            checked={form.referral?.allowExternalInvestors || false}
+            onChange={(e) => updateField('referral', 'allowExternalInvestors', e.target.checked)}
+          />
+          <span className="checkbox-text">Buscar inversión externa</span>
+        </label>
+      </div>
+
+      {form.referral?.allowExternalInvestors && (
+        <div className="form-row-2" style={{ marginTop: '0.75rem' }}>
+          <div className="form-field">
+            <label>
+              Tipo de ganancia <span className="required">*</span>
+            </label>
+            <select
+              className="form-input"
+              value={form.referral?.referralRewardType || 'percentage'}
+              onChange={(e) => updateField('referral', 'referralRewardType', e.target.value)}
+            >
+              <option value="percentage">Porcentual (%)</option>
+              <option value="fixed">Fijo ($)</option>
+            </select>
+          </div>
+
+          <div className="form-field">
+            <label>
+              {form.referral?.referralRewardType === 'fixed' ? 'Ganancia ($)' : 'Ganancia (%)'}{' '}
+              <span className="required">*</span>
+            </label>
+            <input
+              type="number"
+              className="form-input"
+              step="0.01"
+              min="0"
+              value={form.referral?.referralRewardValue || ''}
+              onChange={(e) => updateField('referral', 'referralRewardValue', e.target.value)}
+              placeholder={form.referral?.referralRewardType === 'fixed' ? '100.00' : '5'}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

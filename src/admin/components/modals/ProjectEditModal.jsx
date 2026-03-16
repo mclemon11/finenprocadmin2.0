@@ -6,6 +6,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { FreeMode } from 'swiper/modules';
 import Swal from 'sweetalert2';
 import { useLanguage } from '../../../context/LanguageContext';
+import { getAllAdvisors } from '../../services/advisor.service';
 import 'swiper/css';
 import 'swiper/css/free-mode';
 import './ProjectEditModal.css';
@@ -21,12 +22,16 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSuccess, 
     duration: (typeof project?.duration === 'object' ? project?.duration?.months : null) || project?.duration || '',
     drawdown: project?.drawdown || '',
     performance: project?.performance || '',
+    expectedReturn: project?.returns?.expectedReturn || '',
+    returnPeriod: project?.returns?.returnPeriod || 'monthly',
   });
   const [existingImages, setExistingImages] = useState([]);
   const [newImageItems, setNewImageItems] = useState([]);
   const [deletedImagePaths, setDeletedImagePaths] = useState([]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
+  const [advisorsList, setAdvisorsList] = useState([]);
+  const [selectedAdvisorId, setSelectedAdvisorId] = useState(project?.advisorId || '');
 
   useEffect(() => {
     if (project) {
@@ -39,7 +44,10 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSuccess, 
         duration: (typeof project.duration === 'object' ? project.duration?.months : null) || project.duration || '',
         drawdown: project.drawdown || '',
         performance: project.performance || '',
+        expectedReturn: project.returns?.expectedReturn || '',
+        returnPeriod: project.returns?.returnPeriod || 'monthly',
       });
+      setSelectedAdvisorId(project.advisorId || '');
 
       // Initialize images — support new nested format + legacy flat format
       const newFmtCover = project.images?.cover;
@@ -77,6 +85,12 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSuccess, 
       });
     }
   }, [project]);
+
+  useEffect(() => {
+    getAllAdvisors().then(res => {
+      if (res.success) setAdvisorsList(res.data || []);
+    });
+  }, []);
 
   const addImagesFromFiles = (files) => {
     const maxBytes = 5 * 1024 * 1024;
@@ -163,7 +177,12 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSuccess, 
       if (project.type === 'variable') {
         payload.drawdown = form.drawdown ? Number(form.drawdown) : null;
         payload.performance = form.performance ? Number(form.performance) : null;
+        payload['returns.expectedReturn'] = form.expectedReturn ? Number(form.expectedReturn) : null;
+        payload['returns.returnPeriod'] = form.returnPeriod || 'monthly';
       }
+
+      // Advisor assignment
+      payload.advisorId = selectedAdvisorId || null;
 
       // Handle image deletions (best-effort)
       if (deletedImagePaths.length > 0) {
@@ -490,8 +509,60 @@ export default function ProjectEditModal({ project, isOpen, onClose, onSuccess, 
                   </div>
                 </div>
               </div>
+
+              <div className="form-row-2">
+                <div className="form-field">
+                  <label htmlFor="project-expectedReturn">{t('projectEdit.expectedReturn')}</label>
+                  <div className="input-with-icon">
+                    <input
+                      id="project-expectedReturn"
+                      type="number"
+                      className="form-input"
+                      step="0.01"
+                      value={form.expectedReturn}
+                      onChange={(e) => setForm({ ...form, expectedReturn: e.target.value })}
+                      placeholder="10"
+                    />
+                    <span className="input-icon">%</span>
+                  </div>
+                </div>
+                <div className="form-field">
+                  <label htmlFor="project-returnPeriod">{t('projectEdit.returnPeriod')}</label>
+                  <select
+                    id="project-returnPeriod"
+                    className="form-input"
+                    value={form.returnPeriod}
+                    onChange={(e) => setForm({ ...form, returnPeriod: e.target.value })}
+                  >
+                    <option value="monthly">{t('projectEdit.periodMonthly')}</option>
+                    <option value="quarterly">{t('projectEdit.periodQuarterly')}</option>
+                    <option value="yearly">{t('projectEdit.periodYearly')}</option>
+                  </select>
+                </div>
+              </div>
             </div>
           )}
+
+          {/* Advisor Assignment */}
+          <div className="form-section">
+            <h3 className="section-title">🧑‍💼 {t('projectEdit.assignAdvisor')}</h3>
+            <div className="form-field">
+              <label htmlFor="project-advisor">{t('projectEdit.advisor')}</label>
+              <select
+                id="project-advisor"
+                className="form-input"
+                value={selectedAdvisorId}
+                onChange={(e) => setSelectedAdvisorId(e.target.value)}
+              >
+                <option value="">{t('projectEdit.noAdvisor')}</option>
+                {advisorsList.map((adv) => (
+                  <option key={adv.id} value={adv.id}>
+                    {adv.name}{adv.specialty ? ` — ${adv.specialty}` : ''}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
 
           {/* Info Box */}
           <div className="info-box">

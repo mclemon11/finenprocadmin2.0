@@ -34,6 +34,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
       <nav>
         <Link to="/admin" icon="">{t('nav.dashboard')}</Link>
         <Link to="/admin/usuarios" icon="">{t('nav.users')}</Link>
+        <Link to="/admin/contactos" icon="">{t('nav.contacts')}</Link>
         <div className="nav-section-title">{t('nav.operations')}</div>
         <Link to="/admin/operaciones/recargas" icon="">{t('nav.topups')}</Link>
         <Link to="/admin/operaciones/retiros" icon="">{t('nav.withdrawals')}</Link>
@@ -41,6 +42,8 @@ export default function AdminSidebar({ isOpen, onClose }) {
         <Link to="/admin/distribucion" icon="">{t('nav.returns')}</Link>
         <div className="nav-section-title">{t('nav.others')}</div>
         <Link to="/admin/proyectos" icon="">{t('nav.projects')}</Link>
+        <Link to="/admin/chats" icon="">{t('nav.chats')}</Link>
+        <Link to="/admin/asesores" icon="">{t('nav.advisors')}</Link>
         <Link to="/admin/auditoria" icon="">{t('nav.audit')}</Link>
         <Link to="/admin/configuracion" icon="">{t('nav.settings')}</Link>
       </nav>

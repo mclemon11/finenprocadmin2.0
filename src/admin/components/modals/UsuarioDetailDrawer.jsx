@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import useApproveTopup from '../../hooks/mutations/useApproveTopup';
 import useRejectTopup from '../../hooks/mutations/useRejectTopup';
 import ActionModal from './ActionModal';
 import { useLanguage } from '../../../context/LanguageContext';
+import { getFullKycProfile, approveKyc, rejectKyc } from '../../../services/kyc.service';
 import './UsuarioDetailDrawer.css';
 
 export default function UsuarioDetailDrawer({
@@ -24,6 +25,53 @@ export default function UsuarioDetailDrawer({
   const { approve: approveTopup, loading: approveLoading } = useApproveTopup();
   const { reject: rejectTopup, loading: rejectLoading } = useRejectTopup();
   const { t } = useLanguage();
+
+  // KYC state
+  const [kycProfile, setKycProfile] = useState(null);
+  const [kycLoading, setKycLoading] = useState(false);
+  const [kycActionLoading, setKycActionLoading] = useState(false);
+  const [kycRejectReason, setKycRejectReason] = useState('');
+  const [showKycRejectInput, setShowKycRejectInput] = useState(false);
+
+  useEffect(() => {
+    if (isOpen && user?.uid && activeTab === 'kyc') {
+      loadKycProfile();
+    }
+  }, [isOpen, user?.uid, activeTab]);
+
+  const loadKycProfile = async () => {
+    if (!user?.uid) return;
+    setKycLoading(true);
+    const result = await getFullKycProfile(user.uid);
+    if (result.success) {
+      setKycProfile(result.data);
+    }
+    setKycLoading(false);
+  };
+
+  const handleApproveKyc = async () => {
+    if (!user?.uid) return;
+    setKycActionLoading(true);
+    const result = await approveKyc(user.uid);
+    if (result.success) {
+      await loadKycProfile();
+      onActionComplete?.();
+    }
+    setKycActionLoading(false);
+  };
+
+  const handleRejectKyc = async () => {
+    if (!user?.uid || !kycRejectReason.trim()) return;
+    setKycActionLoading(true);
+    const result = await rejectKyc(user.uid, kycRejectReason.trim());
+    if (result.success) {
+      setKycRejectReason('');
+      setShowKycRejectInput(false);
+      await loadKycProfile();
+      onActionComplete?.();
+    }
+    setKycActionLoading(false);
+  };
 
   if (!isOpen) return null;
 
@@ -144,6 +192,13 @@ export default function UsuarioDetailDrawer({
                 onClick={() => setActiveTab('transacciones')}
               >
                  {t('users.tabs.transactions')}
+              </button>
+              <button
+                className={`tab-btn ${activeTab === 'kyc' ? 'active' : ''}`}
+                onClick={() => setActiveTab('kyc')}
+              >
+                 {t('users.tabs.kyc') || 'KYC'}
+                {user?.kycStatus === 'pending' && <span className="kyc-pending-dot" />}
               </button>
             </div>
 
@@ -373,6 +428,184 @@ export default function UsuarioDetailDrawer({
                     <div className="empty-state">
                       <div className="empty-state-icon"></div>
                       <div className="empty-state-message">{t('users.noTransactions')}</div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* KYC */}
+              {activeTab === 'kyc' && (
+                <div className="tab-pane">
+                  {kycLoading ? (
+                    <div className="drawer-loading">{t('common.loading') || 'Loading...'}...</div>
+                  ) : kycProfile ? (
+                    <div className="kyc-review-section">
+                      {/* KYC Status Badge */}
+                      <div className="kyc-status-header">
+                        <span className="tech-label">{t('users.kyc.status') || 'KYC Status'}</span>
+                        <span className={`status-badge status-${kycProfile.kycStatus}`}>
+                          {kycProfile.kycStatus === 'approved' ? (t('users.kyc.approved') || 'Approved') :
+                           kycProfile.kycStatus === 'rejected' ? (t('users.kyc.rejected') || 'Rejected') :
+                           kycProfile.kycStatus === 'pending' ? (t('users.kyc.pending') || 'Pending') :
+                           (t('users.kyc.notSubmitted') || 'Not Submitted')}
+                        </span>
+                      </div>
+
+                      {kycProfile.kycRejectionReason && (
+                        <div className="kyc-rejection-reason">
+                          <strong>{t('users.kyc.rejectionReason') || 'Rejection Reason'}:</strong> {kycProfile.kycRejectionReason}
+                        </div>
+                      )}
+
+                      {/* Account Type */}
+                      <div className="section-title">{t('users.kyc.profileInfo') || 'Profile Info'}</div>
+                      <div className="summary-cards">
+                        <div className="summary-card">
+                          <div className="card-label">{t('users.kyc.accountType') || 'Account Type'}</div>
+                          <div className="card-value">{kycProfile.type === 'company' ? (t('kyc.company') || 'Company') : (t('kyc.individual') || 'Individual')}</div>
+                        </div>
+                        <div className="summary-card">
+                          <div className="card-label">{t('users.kyc.fullName') || 'Full Name'}</div>
+                          <div className="card-value">{kycProfile.fullName || '—'}</div>
+                        </div>
+                        <div className="summary-card">
+                          <div className="card-label">{t('users.kyc.documentType') || 'Document Type'}</div>
+                          <div className="card-value">{kycProfile.documentType || '—'}</div>
+                        </div>
+                        <div className="summary-card">
+                          <div className="card-label">{t('users.kyc.documentNumber') || 'Document Number'}</div>
+                          <div className="card-value">{kycProfile.documentNumber || '—'}</div>
+                        </div>
+                        <div className="summary-card">
+                          <div className="card-label">{t('users.kyc.country') || 'Country'}</div>
+                          <div className="card-value">{kycProfile.country || '—'}</div>
+                        </div>
+                        <div className="summary-card">
+                          <div className="card-label">{t('users.kyc.address') || 'Address'}</div>
+                          <div className="card-value">{kycProfile.address || '—'}</div>
+                        </div>
+                        {kycProfile.type === 'company' && (
+                          <>
+                            <div className="summary-card">
+                              <div className="card-label">{t('users.kyc.companyName') || 'Company Name'}</div>
+                              <div className="card-value">{kycProfile.companyName || '—'}</div>
+                            </div>
+                            <div className="summary-card">
+                              <div className="card-label">{t('users.kyc.taxId') || 'Tax ID'}</div>
+                              <div className="card-value">{kycProfile.taxId || '—'}</div>
+                            </div>
+                            <div className="summary-card">
+                              <div className="card-label">{t('users.kyc.legalRep') || 'Legal Rep.'}</div>
+                              <div className="card-value">{kycProfile.legalRepresentative || '—'}</div>
+                            </div>
+                          </>
+                        )}
+                      </div>
+
+                      {/* KYC Documents */}
+                      <div className="section-title">{t('users.kyc.documents') || 'Documents'}</div>
+                      <div className="kyc-documents-grid">
+                        {kycProfile.documents?.personalIdentification && (
+                          <div className="kyc-doc-item">
+                            <div className="card-label">{t('users.kyc.personalId') || 'Personal ID'}</div>
+                            <a href={kycProfile.documents.personalIdentification} target="_blank" rel="noopener noreferrer" className="kyc-doc-link">
+                              📄 {t('users.kyc.viewDocument') || 'View Document'}
+                            </a>
+                          </div>
+                        )}
+                        {kycProfile.documents?.passport && (
+                          <div className="kyc-doc-item">
+                            <div className="card-label">{t('users.kyc.passport') || 'Passport'}</div>
+                            <a href={kycProfile.documents.passport} target="_blank" rel="noopener noreferrer" className="kyc-doc-link">
+                              📄 {t('users.kyc.viewDocument') || 'View Document'}
+                            </a>
+                          </div>
+                        )}
+                        {kycProfile.documents?.proofOfAddress && (
+                          <div className="kyc-doc-item">
+                            <div className="card-label">{t('users.kyc.proofOfAddress') || 'Proof of Address'}</div>
+                            <a href={kycProfile.documents.proofOfAddress} target="_blank" rel="noopener noreferrer" className="kyc-doc-link">
+                              📄 {t('users.kyc.viewDocument') || 'View Document'}
+                            </a>
+                          </div>
+                        )}
+                        {!kycProfile.documents?.personalIdentification && !kycProfile.documents?.passport && !kycProfile.documents?.proofOfAddress && (
+                          <div className="empty-state">
+                            <div className="empty-state-message">{t('users.kyc.noDocuments') || 'No documents uploaded'}</div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Action Buttons */}
+                      {kycProfile.kycStatus === 'pending' && (
+                        <div className="kyc-actions">
+                          <button
+                            className="btn-action btn-approve kyc-action-btn"
+                            onClick={handleApproveKyc}
+                            disabled={kycActionLoading}
+                          >
+                            ✅ {t('users.kyc.approve') || 'Approve KYC'}
+                          </button>
+
+                          {!showKycRejectInput ? (
+                            <button
+                              className="btn-action btn-reject kyc-action-btn"
+                              onClick={() => setShowKycRejectInput(true)}
+                              disabled={kycActionLoading}
+                            >
+                              ❌ {t('users.kyc.reject') || 'Reject KYC'}
+                            </button>
+                          ) : (
+                            <div className="kyc-reject-form">
+                              <textarea
+                                className="kyc-reject-textarea"
+                                placeholder={t('users.kyc.rejectReasonPlaceholder') || 'Enter rejection reason...'}
+                                value={kycRejectReason}
+                                onChange={(e) => setKycRejectReason(e.target.value)}
+                                rows={3}
+                              />
+                              <div className="kyc-reject-buttons">
+                                <button
+                                  className="btn-action btn-reject kyc-action-btn"
+                                  onClick={handleRejectKyc}
+                                  disabled={kycActionLoading || !kycRejectReason.trim()}
+                                >
+                                  {t('users.kyc.confirmReject') || 'Confirm Reject'}
+                                </button>
+                                <button
+                                  className="btn-action kyc-action-btn"
+                                  onClick={() => { setShowKycRejectInput(false); setKycRejectReason(''); }}
+                                >
+                                  {t('common.cancel') || 'Cancel'}
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Timestamps */}
+                      {(kycProfile.kycSubmittedAt || kycProfile.kycReviewedAt) && (
+                        <div className="technical-section" style={{ marginTop: '1rem' }}>
+                          {kycProfile.kycSubmittedAt && (
+                            <div className="tech-info-row">
+                              <span className="tech-label">{t('users.kyc.submittedAt') || 'Submitted'}</span>
+                              <span className="tech-value">{formatDate(kycProfile.kycSubmittedAt?.toDate ? kycProfile.kycSubmittedAt.toDate() : kycProfile.kycSubmittedAt)}</span>
+                            </div>
+                          )}
+                          {kycProfile.kycReviewedAt && (
+                            <div className="tech-info-row">
+                              <span className="tech-label">{t('users.kyc.reviewedAt') || 'Reviewed'}</span>
+                              <span className="tech-value">{formatDate(kycProfile.kycReviewedAt?.toDate ? kycProfile.kycReviewedAt.toDate() : kycProfile.kycReviewedAt)}</span>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="empty-state">
+                      <div className="empty-state-icon">📋</div>
+                      <div className="empty-state-message">{t('users.kyc.noKycData') || 'No KYC data available'}</div>
                     </div>
                   )}
                 </div>

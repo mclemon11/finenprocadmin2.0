@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { addDoc, collection, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { db, storage } from '../../../firebase/firebaseConfig';
@@ -6,6 +6,9 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { FreeMode } from 'swiper/modules';
 import Swal from 'sweetalert2';
 import { useLanguage } from '../../../context/LanguageContext';
+import { getAllContacts, createContact, notifyContactAddedToProject } from '../../services/contacts.service';
+import { getAllAdvisors } from '../../services/advisor.service';
+import useAdminUsers from '../../hooks/useAdminUsers';
 import 'swiper/css';
 import 'swiper/css/free-mode';
 import './ProjectFormModal.css';
@@ -27,6 +30,12 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
     drawdown: '',
     performance: '',
     manualControl: true,
+    expectedReturn: '',
+    returnPeriod: 'monthly',
+    termsAndConditions: '',
+    allowExternalInvestors: false,
+    referralRewardType: 'percentage',
+    referralRewardValue: '',
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
@@ -34,6 +43,79 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
   const [showCreateInline, setShowCreateInline] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
   const [imageItems, setImageItems] = useState([]);
+
+  // ─── Advisor state ──────────────────────────────────────
+  const [advisorsList, setAdvisorsList] = useState([]);
+  const [selectedAdvisorId, setSelectedAdvisorId] = useState('');
+
+  // ─── Contacts state ─────────────────────────────────────
+  const [contacts, setContacts] = useState([]);
+  const [selectedContacts, setSelectedContacts] = useState([]);
+  const [contactSearch, setContactSearch] = useState('');
+  const [showContactDropdown, setShowContactDropdown] = useState(false);
+  const [showInlineContact, setShowInlineContact] = useState(false);
+  const [inlineContact, setInlineContact] = useState({ userId: '', displayName: '', email: '', location: '', expertise: '' });
+  const [inlineUserSearch, setInlineUserSearch] = useState('');
+  const [showInlineUserDropdown, setShowInlineUserDropdown] = useState(false);
+  const { users: allUsers } = useAdminUsers({});
+
+  // Load contacts & advisors on open
+  useEffect(() => {
+    if (!isOpen) return;
+    getAllContacts().then(res => {
+      if (res.success) setContacts(res.data);
+    });
+    getAllAdvisors().then(res => {
+      if (res.success) setAdvisorsList(res.data || []);
+    });
+  }, [isOpen]);
+
+  const filteredContacts = useMemo(() => {
+    if (!contactSearch) return contacts;
+    const s = contactSearch.toLowerCase();
+    return contacts.filter(c =>
+      (c.displayName || '').toLowerCase().includes(s) ||
+      (c.email || '').toLowerCase().includes(s) ||
+      (c.expertise || '').toLowerCase().includes(s)
+    );
+  }, [contacts, contactSearch]);
+
+  const getUName = (u) => u.displayName || u.fullName || '';
+
+  const filteredInlineUsers = useMemo(() => {
+    if (!inlineUserSearch) return allUsers.slice(0, 8);
+    const s = inlineUserSearch.toLowerCase();
+    return allUsers.filter(u =>
+      (u.email || '').toLowerCase().includes(s) ||
+      getUName(u).toLowerCase().includes(s)
+    ).slice(0, 8);
+  }, [allUsers, inlineUserSearch]);
+
+  const toggleContact = (contact) => {
+    setSelectedContacts(prev => {
+      const exists = prev.find(c => c.id === contact.id);
+      if (exists) return prev.filter(c => c.id !== contact.id);
+      return [...prev, contact];
+    });
+  };
+
+  const handleCreateInlineContact = async () => {
+    if (!inlineContact.userId || !inlineContact.displayName) return;
+    const res = await createContact(inlineContact);
+    if (res.success) {
+      const refreshed = await getAllContacts();
+      if (refreshed.success) {
+        setContacts(refreshed.data);
+        const newContact = refreshed.data.find(c => c.userId === inlineContact.userId);
+        if (newContact) setSelectedContacts(prev => [...prev, newContact]);
+      }
+      setInlineContact({ userId: '', displayName: '', email: '', location: '', expertise: '' });
+      setInlineUserSearch('');
+      setShowInlineContact(false);
+    } else if (res.error === 'ALREADY_EXISTS') {
+      Swal.fire({ title: t('contacts.alerts.alreadyExists'), icon: 'warning', background: '#1a1f2e', color: '#fff', confirmButtonColor: '#f59e0b' });
+    }
+  };
 
   const sampleCategories = ['Energía', 'Trading', 'Crypto', 'Inmobiliario'];
 
@@ -53,8 +135,20 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
       drawdown: '',
       performance: '',
       manualControl: true,
+      expectedReturn: '',
+      returnPeriod: 'monthly',
+      allowExternalInvestors: false,
+      referralRewardType: 'percentage',
+      referralRewardValue: '',
     });
     setError(null);
+    setSelectedAdvisorId('');
+    setSelectedContacts([]);
+    setContactSearch('');
+    setShowContactDropdown(false);
+    setShowInlineContact(false);
+    setInlineContact({ userId: '', displayName: '', email: '', location: '', expertise: '' });
+    setInlineUserSearch('');
     setImageItems((prev) => {
       for (const item of prev) {
         try {
@@ -162,6 +256,19 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
       }
     }
 
+    // Validate external investors fields
+    if (form.allowExternalInvestors) {
+      if (!form.referralRewardType) {
+        setError(t('projectForm.errors.referralTypeRequired'));
+        return;
+      }
+      const rewardVal = Number(form.referralRewardValue);
+      if (!Number.isFinite(rewardVal) || rewardVal <= 0) {
+        setError(t('projectForm.errors.referralValueRequired'));
+        return;
+      }
+    }
+
     try {
       setSaving(true);
       setError(null);
@@ -201,6 +308,8 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
           paybackPeriod: null,
           paymentFrequency: 'monthly',
           returnExpected: null,
+          expectedReturn: !isFixed && form.expectedReturn ? Number(form.expectedReturn) : null,
+          returnPeriod: !isFixed ? (form.returnPeriod || 'monthly') : null,
         },
 
         // ─── Risk ─────────────────────────────────────
@@ -239,6 +348,13 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
           kycRequired: true,
         },
 
+        // ─── External Investors / Referrals ───────────
+        referral: {
+          allowExternalInvestors: form.allowExternalInvestors || false,
+          referralRewardType: form.allowExternalInvestors ? form.referralRewardType : null,
+          referralRewardValue: form.allowExternalInvestors ? Number(form.referralRewardValue) : null,
+        },
+
         // ─── Restrictions ─────────────────────────────
         restrictions: {
           minInvestment: isFixed ? minInvestmentNum : null,
@@ -252,6 +368,21 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
 
         // ─── Documents ────────────────────────────────
         documents: { items: [], updatedAt: null },
+
+        // ─── Contacts ─────────────────────────────────
+        contacts: selectedContacts.map((c) => ({
+          contactId: c.id,
+          userId: c.userId,
+          displayName: c.displayName || '',
+          email: c.email || '',
+          expertise: c.expertise || '',
+        })),
+
+        // ─── Advisor ──────────────────────────────────
+        advisorId: selectedAdvisorId || null,
+
+        // ─── Terms & Conditions ─────────────────────
+        termsAndConditions: form.termsAndConditions?.trim() || '',
 
         // ─── Optional top-level ───────────────────────
         performance: !isFixed && form.performance ? Number(form.performance) : null,
@@ -298,6 +429,15 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
           },
           updatedAt: serverTimestamp(),
         });
+      }
+
+      // Notify contacts added to this project
+      if (selectedContacts.length > 0) {
+        await Promise.allSettled(
+          selectedContacts.map((c) =>
+            notifyContactAddedToProject(c.userId, form.name, docRef.id)
+          )
+        );
       }
 
       // Success alert
@@ -655,8 +795,245 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }) {
                   />
                   {t('projectForm.manualControl')}
                 </label>
+                <div className="form-row form-row-2">
+                  <label>
+                    {t('projectForm.expectedReturn')}
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={form.expectedReturn}
+                      onChange={(e) => setForm({ ...form, expectedReturn: e.target.value })}
+                      placeholder="10"
+                    />
+                  </label>
+                  <label>
+                    {t('projectForm.returnPeriod')}
+                    <select
+                      value={form.returnPeriod}
+                      onChange={(e) => setForm({ ...form, returnPeriod: e.target.value })}
+                    >
+                      <option value="monthly">{t('projectForm.periodMonthly')}</option>
+                      <option value="quarterly">{t('projectForm.periodQuarterly')}</option>
+                      <option value="yearly">{t('projectForm.periodYearly')}</option>
+                    </select>
+                  </label>
+                </div>
               </div>
             )}
+
+            <div className="form-section form-section-contacts">
+              <div className="form-section-header">
+                <h3>� {t('projectForm.externalInvestors')}</h3>
+                <p>{t('projectForm.externalInvestorsDesc')}</p>
+              </div>
+
+              <label className="checkbox-label switch-label">
+                <input
+                  type="checkbox"
+                  checked={form.allowExternalInvestors}
+                  onChange={(e) => setForm({ ...form, allowExternalInvestors: e.target.checked })}
+                />
+                {t('projectForm.allowExternalInvestors')}
+              </label>
+
+              {form.allowExternalInvestors && (
+                <div className="form-row form-row-2" style={{ marginTop: '1rem' }}>
+                  <label>
+                    {t('projectForm.referralRewardType')} *
+                    <select
+                      value={form.referralRewardType}
+                      onChange={(e) => setForm({ ...form, referralRewardType: e.target.value })}
+                    >
+                      <option value="percentage">{t('projectForm.rewardPercentage')}</option>
+                      <option value="fixed">{t('projectForm.rewardFixed')}</option>
+                    </select>
+                  </label>
+                  <label>
+                    {t('projectForm.referralRewardValue')} *
+                    <div className="input-with-prefix">
+                      <span className="input-prefix">{form.referralRewardType === 'percentage' ? '%' : '$'}</span>
+                      <input
+                        type="number"
+                        step={form.referralRewardType === 'percentage' ? '0.01' : '0.01'}
+                        min="0"
+                        value={form.referralRewardValue}
+                        onChange={(e) => setForm({ ...form, referralRewardValue: e.target.value })}
+                        placeholder={form.referralRewardType === 'percentage' ? '5' : '100.00'}
+                      />
+                    </div>
+                  </label>
+                </div>
+              )}
+            </div>
+
+            <div className="form-section form-section-contacts">
+              <div className="form-section-header">
+                <h3>�👥 {t('projectForm.contacts')}</h3>
+                <p>{t('projectForm.contactsDesc')}</p>
+              </div>
+
+              {/* Selected contacts */}
+              {selectedContacts.length > 0 && (
+                <div className="selected-contacts-list">
+                  {selectedContacts.map((c) => (
+                    <div key={c.id} className="selected-contact-chip">
+                      <div className="sc-avatar">{(c.displayName || '?')[0].toUpperCase()}</div>
+                      <div className="sc-info">
+                        <span className="sc-name">{c.displayName}</span>
+                        <span className="sc-expertise">{c.expertise || c.email}</span>
+                      </div>
+                      <button type="button" className="sc-remove" onClick={() => toggleContact(c)}>×</button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Contact search */}
+              <div className="contact-search-wrapper">
+                <input
+                  type="text"
+                  value={contactSearch}
+                  onChange={(e) => { setContactSearch(e.target.value); setShowContactDropdown(true); }}
+                  onFocus={() => setShowContactDropdown(true)}
+                  placeholder={t('projectForm.searchContacts')}
+                />
+                {showContactDropdown && filteredContacts.length > 0 && (
+                  <div className="contact-dropdown">
+                    {filteredContacts.slice(0, 8).map((c) => {
+                      const isSelected = selectedContacts.some(sc => sc.id === c.id);
+                      return (
+                        <div
+                          key={c.id}
+                          className={`contact-option ${isSelected ? 'selected' : ''}`}
+                          onClick={() => { toggleContact(c); setShowContactDropdown(false); setContactSearch(''); }}
+                        >
+                          <div className="co-avatar">{(c.displayName || '?')[0].toUpperCase()}</div>
+                          <div className="co-info">
+                            <div className="co-name">{c.displayName}</div>
+                            <div className="co-meta">{c.expertise || c.email} {c.location ? `· ${c.location}` : ''}</div>
+                          </div>
+                          {isSelected && <span className="co-check">✓</span>}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {/* Inline contact creation */}
+              {!showInlineContact ? (
+                <button type="button" className="inline-create-contact-btn" onClick={() => setShowInlineContact(true)}>
+                  + {t('projectForm.createContactInline')}
+                </button>
+              ) : (
+                <div className="inline-contact-form">
+                  <div className="form-section-header">
+                    <h4>{t('projectForm.newContact')}</h4>
+                  </div>
+                  <div className="form-row">
+                    <label>
+                      {t('contacts.user')} *
+                      <div className="user-search-wrapper">
+                        <input
+                          type="text"
+                          value={inlineUserSearch}
+                          onChange={(e) => { setInlineUserSearch(e.target.value); setShowInlineUserDropdown(true); }}
+                          onFocus={() => setShowInlineUserDropdown(true)}
+                          placeholder={t('contacts.searchUserPlaceholder')}
+                        />
+                        {showInlineUserDropdown && filteredInlineUsers.length > 0 && (
+                          <div className="user-dropdown">
+                            {filteredInlineUsers.map((u) => (
+                              <div
+                                key={u.uid}
+                                className="user-option"
+                                onClick={() => {
+                                  const uName = getUName(u) || u.email || '';
+                                  setInlineContact(prev => ({
+                                    ...prev,
+                                    userId: u.uid,
+                                    displayName: uName,
+                                    email: u.email || '',
+                                  }));
+                                  setInlineUserSearch(uName);
+                                  setShowInlineUserDropdown(false);
+                                }}
+                              >
+                                <div className="user-option-avatar">{(getUName(u) || u.email || '?')[0].toUpperCase()}</div>
+                                <div>
+                                  <div className="user-option-name">{getUName(u) || 'Sin nombre'}</div>
+                                  <div className="user-option-email">{u.email}</div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </label>
+                  </div>
+                  <div className="form-row form-row-2">
+                    <label>
+                      {t('contacts.location')}
+                      <input type="text" value={inlineContact.location} onChange={(e) => setInlineContact(prev => ({ ...prev, location: e.target.value }))} placeholder={t('contacts.locationPlaceholder')} />
+                    </label>
+                    <label>
+                      {t('contacts.expertise')}
+                      <input type="text" value={inlineContact.expertise} onChange={(e) => setInlineContact(prev => ({ ...prev, expertise: e.target.value }))} placeholder={t('contacts.expertisePlaceholder')} />
+                    </label>
+                  </div>
+                  <div className="inline-actions">
+                    <button type="button" className="draft-btn ghost" onClick={() => { setShowInlineContact(false); setInlineContact({ userId: '', displayName: '', email: '', location: '', expertise: '' }); setInlineUserSearch(''); }}>
+                      {t('common.cancel')}
+                    </button>
+                    <button type="button" className="submit-btn compact" onClick={handleCreateInlineContact} disabled={!inlineContact.userId || !inlineContact.displayName}>
+                      {t('projectForm.createAndAdd')}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* ─── Advisor Assignment ──────────────────── */}
+            <div className="form-section form-section-contacts">
+              <div className="form-section-header">
+                <h3>🧑‍💼 {t('projectForm.assignAdvisor')}</h3>
+                <p>{t('projectForm.assignAdvisorDesc')}</p>
+              </div>
+              <div className="form-row">
+                <label>
+                  {t('projectForm.advisor')}
+                  <select
+                    value={selectedAdvisorId}
+                    onChange={(e) => setSelectedAdvisorId(e.target.value)}
+                  >
+                    <option value="">{t('projectForm.noAdvisor')}</option>
+                    {advisorsList.map((adv) => (
+                      <option key={adv.id} value={adv.id}>
+                        {adv.name}{adv.specialty ? ` — ${adv.specialty}` : ''}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+            </div>
+
+            <div className="form-section form-section-advanced">
+              <div className="form-section-header">
+                <h3>📄 {t('projectForm.termsAndConditions')}</h3>
+                <p>{t('projectForm.termsAndConditionsDesc')}</p>
+              </div>
+              <div className="form-row">
+                <label>
+                  <textarea
+                    value={form.termsAndConditions}
+                    onChange={(e) => setForm({ ...form, termsAndConditions: e.target.value })}
+                    placeholder={t('projectForm.termsAndConditionsPlaceholder')}
+                    rows={6}
+                    className="terms-textarea"
+                  />
+                </label>
+              </div>
+            </div>
 
             <div className="form-section form-section-advanced">
               <div className="form-section-header">

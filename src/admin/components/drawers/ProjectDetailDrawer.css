@@ -1531,3 +1531,54 @@
   }
 }
 
+/* ─── Contacts Card in Project Drawer ──────────────────── */
+
+.contacts-card {
+  margin-top: 12px;
+}
+
+.project-contacts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.project-contact-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  background: rgba(99, 102, 241, 0.06);
+  border: 1px solid rgba(99, 102, 241, 0.12);
+  border-radius: 8px;
+}
+
+.pc-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #818cf8);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+.pc-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.pc-name {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+.pc-detail {
+  font-size: 0.72rem;
+  color: #94a3b8;
+}

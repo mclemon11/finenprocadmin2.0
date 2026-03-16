@@ -1,0 +1,207 @@
+.advisor-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.advisor-modal {
+  background: var(--card-bg, #1a1a2e);
+  border: 1px solid var(--glass-border, rgba(255,255,255,0.08));
+  border-radius: var(--radius-sm, 12px);
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.advisor-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--glass-border, rgba(255,255,255,0.08));
+}
+
+.advisor-modal-header h2 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--fg, #fff);
+  margin: 0;
+}
+
+.advisor-modal-close {
+  background: none;
+  border: none;
+  color: var(--fg-muted, #888);
+  font-size: 1.4rem;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.advisor-modal-close:hover {
+  background: rgba(255,255,255,0.06);
+  color: var(--fg, #fff);
+}
+
+.advisor-modal-error {
+  margin: 0.75rem 1.5rem 0;
+  padding: 0.6rem 1rem;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  color: #f87171;
+  font-size: 0.85rem;
+}
+
+.advisor-modal-body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Photo */
+.advisor-modal-photo-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.advisor-modal-photo {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--glass-border, rgba(255,255,255,0.1));
+}
+
+.advisor-modal-photo-placeholder {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  color: var(--fg-muted, #888);
+  border: 2px dashed var(--glass-border, rgba(255,255,255,0.1));
+}
+
+.advisor-modal-upload-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--glass-border, rgba(255,255,255,0.1));
+  border-radius: 8px;
+  color: var(--fg, #fff);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.advisor-modal-upload-btn:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+/* Form */
+.advisor-modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.advisor-modal-field label {
+  display: block;
+  font-size: 0.82rem;
+  color: var(--fg-muted, #aaa);
+  margin-bottom: 0.35rem;
+  font-weight: 500;
+}
+
+.advisor-modal-field input {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--glass-border, rgba(255,255,255,0.1));
+  border-radius: 8px;
+  color: var(--fg, #fff);
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.advisor-modal-field input:focus {
+  border-color: var(--accent, #6366f1);
+}
+
+.advisor-modal-field input::placeholder {
+  color: var(--fg-muted, #666);
+}
+
+/* Footer */
+.advisor-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--glass-border, rgba(255,255,255,0.08));
+}
+
+.advisor-modal-cancel {
+  padding: 0.55rem 1.25rem;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--glass-border, rgba(255,255,255,0.1));
+  border-radius: 8px;
+  color: var(--fg-muted, #aaa);
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.advisor-modal-cancel:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+.advisor-modal-save {
+  padding: 0.55rem 1.5rem;
+  background: var(--accent, #6366f1);
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.advisor-modal-save:hover {
+  opacity: 0.9;
+}
+
+.advisor-modal-save:disabled,
+.advisor-modal-cancel:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 540px) {
+  .advisor-modal {
+    max-width: 100%;
+  }
+  .advisor-modal-photo-section {
+    flex-direction: column;
+    text-align: center;
+  }
+}

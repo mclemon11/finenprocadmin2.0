@@ -336,7 +336,7 @@ export default function ProyectosPage({ adminData }) {
                                 <button
                                   className="action-menu-item"
                                   onClick={() => {
-                                    openDetail(p);
+                                    navigate(`/admin/proyectos/${p.id}`);
                                     setActionMenuOpen(null);
                                   }}
                                 >
