@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Swal from 'sweetalert2';
-import { useLanguage } from '../../../../context/LanguageContext';
-import { createProjectUpdate } from '../../../services/projectUpdates.service';
+import { useLanguage } from '../../../context/LanguageContext';
+import { createProjectUpdate } from '../../services/projectUpdates.service';
 import './RegisterUpdateModal.css';
 
 export default function RegisterUpdateModal({ projectId, isOpen, onClose, onSuccess }) {

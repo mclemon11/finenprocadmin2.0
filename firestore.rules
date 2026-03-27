@@ -90,13 +90,7 @@ service cloud.firestore {
       // KYC SUBCOLLECTION
       match /kyc/{docId} {
         allow read: if isSignedIn() && (request.auth.uid == uid || isAdmin());
-        allow create: if isSignedIn() && request.auth.uid == uid;
-        allow update: if isAdmin() || (
-          isSignedIn()
-          && request.auth.uid == uid
-          && resource.data.keys().hasAny(['status']) == false
-          || isAdmin()
-        );
+        allow create, update: if isSignedIn() && request.auth.uid == uid;
         allow delete: if isAdmin();
       }
 
