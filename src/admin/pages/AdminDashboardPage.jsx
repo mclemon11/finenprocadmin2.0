@@ -44,6 +44,8 @@ export default function AdminDashboardPage() {
     return <div className="dashboard-loading"><div>{t('adminDash.fetchingData') || t('common.loading')}</div></div>;
   }
 
+  const accentClasses = ['accent-blue', 'accent-green', 'accent-cyan', 'accent-amber', 'accent-purple', 'accent-blue'];
+
   const metrics = [
     { label: t('adminDash.totalCapital'), value: formatCurrency(kpis.totalCapital), icon: '', trend: null },
     { label: t('adminDash.capitalInvested'), value: formatCurrency(kpis.capitalInvested), icon: '', trend: null },
@@ -90,8 +92,7 @@ export default function AdminDashboardPage() {
       {/* 6 Metric Cards */}
       <div className="metrics-grid">
         {metrics.map((m, i) => (
-          <div className="metric-card" key={i}>
-            <div className="metric-icon-bg">{m.icon}</div>
+          <div className={`metric-card ${accentClasses[i] || ''}`} key={i}>
             <p className="metric-label">{m.label}</p>
             <h3 className="metric-value">{m.value}</h3>
             {m.count != null && m.count > 0 && (

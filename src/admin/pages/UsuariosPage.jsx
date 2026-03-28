@@ -67,25 +67,25 @@ export default function UsuariosPage({ adminData }) {
 
       {/* KPI Row */}
       <div className="kpi-row">
-        <div className="kpi-card">
+        <div className="kpi-card accent-blue">
           <div className="kpi-content">
             <div className="kpi-label">{t('users.totalUsers')}</div>
             <div className="kpi-value">{kpis.totalUsers}</div>
           </div>
         </div>
-        <div className="kpi-card">
+        <div className="kpi-card accent-green">
           <div className="kpi-content">
             <div className="kpi-label">{t('users.activeCount')}</div>
             <div className="kpi-value">{kpis.activeUsers}</div>
           </div>
         </div>
-        <div className="kpi-card">
+        <div className="kpi-card accent-cyan">
           <div className="kpi-content">
             <div className="kpi-label">{t('users.totalCapital')}</div>
             <div className="kpi-value">{formatCurrency(kpis.totalCapital)}</div>
           </div>
         </div>
-        <div className="kpi-card">
+        <div className="kpi-card accent-amber">
           <div className="kpi-content">
             <div className="kpi-label">{t('users.totalBalance')}</div>
             <div className="kpi-value">{formatCurrency(kpis.totalBalance)}</div>

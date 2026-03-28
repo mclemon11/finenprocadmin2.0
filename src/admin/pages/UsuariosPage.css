@@ -40,42 +40,39 @@
 
 .kpi-card {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
-  padding: 18px 20px;
-  background: rgba(255, 255, 255, 0.02);
-  backdrop-filter: blur(var(--glass-blur));
-  border: var(--glass-border);
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 18px 22px;
+  background: var(--card-bg, rgba(255, 255, 255, 0.02));
+  border: none;
   border-radius: var(--radius-sm);
+  position: relative;
+  overflow: hidden;
   transition: all 0.3s ease;
 }
 
-.kpi-card:hover {
-  background: rgba(255, 255, 255, 0.04);
-  transform: translateY(-2px);
-  border-color: rgba(16, 185, 129, 0.2);
+.kpi-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 4px; height: 100%;
+  border-radius: 4px 0 0 4px;
 }
 
-.kpi-icon {
-  font-size: 22px;
-  width: 44px;
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 10px;
-  flex-shrink: 0;
+.kpi-card.accent-blue::before   { background: #3b82f6; }
+.kpi-card.accent-green::before  { background: #22c55e; }
+.kpi-card.accent-cyan::before   { background: var(--accent); }
+.kpi-card.accent-amber::before  { background: #f59e0b; }
+
+.kpi-card:hover {
+  border-color: rgba(16, 185, 129, 0.2);
 }
-.kpi-icon.blue   { background: rgba(59,130,246,0.12); }
-.kpi-icon.green  { background: rgba(16,185,129,0.12); }
-.kpi-icon.purple { background: rgba(168,85,247,0.12); }
-.kpi-icon.teal   { background: rgba(20,184,166,0.12); }
 
 .kpi-content {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
 }
 
 .kpi-label {
@@ -83,13 +80,14 @@
   color: var(--fg-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  font-weight: 600;
   margin-bottom: 4px;
 }
 
 .kpi-value {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 700;
-  color: var(--accent);
+  color: var(--fg);
 }
 
 /* Filters Toolbar */
@@ -343,7 +341,7 @@
   .kpi-card {
     padding: var(--spacing-md);
     flex-direction: column;
-    text-align: center;
+    text-align: left;
     gap: var(--spacing-sm);
   }
 
@@ -352,7 +350,7 @@
   }
 
   .kpi-content {
-    align-items: center;
+    align-items: flex-start;
   }
 
   .kpi-value {
